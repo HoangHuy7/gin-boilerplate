@@ -1,35 +1,35 @@
 # 🏗️ gin-boilerplate
 
-> **Gin boilerplate chuẩn Production với kiến trúc module, hỗ trợ monorepo và các best practices cho hệ thống backend quy mô lớn.**
+> **Gin boilerplate "xịn sò" cho anh em dev, kiến trúc modular, monorepo chuẩn chỉ, scale thoải mái!**
 
-Repo này là một **startkit monorepo** mạnh mẽ, được thiết kế để khởi động nhanh quá trình phát triển Go backend của bạn. Dự án giúp tổ chức source code rành mạch, tránh sự hỗn độn của kiến trúc monolithic truyền thống, hướng tới thiết kế domain-driven rõ ràng, dễ dàng mở rộng theo sự phát triển của team và sản phẩm.
+Chào anh em! 👋 Đây là bộ **startkit monorepo** tâm huyết mình build để anh em đỡ phải setup lại từ đầu mỗi khi làm dự án Go backend. Nói không với code "mì ăn liền", repo này hướng tới style clean, gọn gàng, chia module rõ ràng để team đông người vẫn code vui vẻ không dẫm chân nhau.
 
-## 🌟 Điểm Nổi Bật
+## 🌟 Có gì hot? (Highlights)
 
-- **🧩 Kiến Trúc Modular**: Các domain (`iam`, `device`, `notification`) hoạt động như các **Server Con** (Child Servers/Microservices), tương tự như các module trong Maven.
-- **🏗️ Cấu Trúc Monorepo**: Thư mục **`internal`** đóng vai trò là **Core / Shared Library** (giống như Maven common/parent), chứa các logic nền tảng, DTO và cấu hình dùng chung cho tất cả các server con.
-- **🛡️ Sẵn Sàng Cho Production**: Cấu hình sẵn logging, chiến lược routing (`routerx`), và các mô hình dữ liệu (DTO) chuẩn.
-- **🔌 Khả Năng Mở Rộng**: Xây dựng trên nền tảng [Gin](https://github.com/gin-gonic/gin), sẵn sàng phát triển từ MVP startup đến hệ thống chịu tải cao.
+- **🧩 Modular Architecture**: Chia domain (`iam`, `device`, `notification`) rành mạch. Mỗi ông là một **Server Con** (Child Server) riêng biệt, như kiểu các module trong Maven á. Đỡ phải lo conflict code lung tung.
+- **🏗️ Monorepo Structure**: Thư mục **`internal`** là "trái tim" (Core/Shared Library) của cả hệ thống. Nó chứa logic dùng chung, DTO, router base... giống như cái Maven common/parent mà anh em hay dùng bên Java ấy.
+- **🛡️ Production Ready**: Đã lắp sẵn đồ chơi: logging, routing xịn (`routerx`), DTO chuẩn bài. Anh em chỉ việc clone về là chiến logic nghiệp vụ luôn.
+- **🔌 Scalable & Extensible**: Build trên nền **[Gin](https://github.com/gin-gonic/gin)** (thánh tốc độ), bao cân từ dự án MVP bé tẹo đến hệ thống triệu view.
 
-## 📂 Cấu Trúc Dự Án
+## 📂 Soi "nội thất" (Project Structure)
 
 ```text
 .
 ├── cmd
-│   ├── device          # Entry point cho Server Con Device
+│   ├── device          # Cửa chính (Entry point) cho ông Device Server
 │   │   └── main.go
-│   ├── iam             # Entry point cho Server Con IAM
+│   ├── iam             # Cửa chính cho ông IAM Server
 │   │   └── main.go
-│   └── notification    # Entry point cho Server Con Notification
+│   └── notification    # Cửa chính cho ông Notification Server
 │       └── main.go
-├── device              # Device Service (Server Con)
-├── iam                 # IAM Service (Server Con)
+├── device              # Logic/Nghiệp vụ của Device (Server con)
+├── iam                 # Logic/Nghiệp vụ của IAM (Server con)
 │   └── controller
 │       ├── Module.go
 │       ├── Router.go
 │       └── v1
 │           └── HelloController.go
-├── internal            # 🧱 Core / Thư viện dùng chung (Tương tự Maven Common)
+├── internal            # 🧱 Hàng dùng chung (Core / Shared Libs) - Đụng vào đây nhớ cẩn thận nha bro
 │   ├── base
 │   │   ├── Base.go
 │   │   └── routerx
@@ -41,7 +41,7 @@ Repo này là một **startkit monorepo** mạnh mẽ, được thiết kế đ�
 │   └── server
 │       ├── router.go
 │       └── server.go
-├── notification        # Notification Service (Server Con)
+├── notification        # Logic/Nghiệp vụ của Notification (Server con)
 │   └── controller
 │       └── v1
 ├── go.mod
@@ -49,15 +49,15 @@ Repo này là một **startkit monorepo** mạnh mẽ, được thiết kế đ�
 └── main.go
 ```
 
-## 🛠️ Hướng Dẫn Bắt Đầu
+## 🛠️ Chiến thôi! (Getting Started)
 
-### Yêu cầu
+### Cần gì?
 
-- **Go** (1.20 trở lên)
+- **Go** (bản 1.20 trở lên nha anh em)
 
 ### Cài đặt
 
-Clone repository:
+Kéo hàng về máy:
 
 ```bash
 git clone https://github.com/HoangHuy7/gin-boilerplate.git
@@ -65,18 +65,18 @@ cd gin-boilerplate
 go mod download
 ```
 
-### Chạy Service
+### Lên nhạc (Run Service)
 
-Mỗi domain (module) có entry point riêng nằm trong thư mục `cmd`. Ví dụ để chạy **IAM Service**:
+Mỗi module (domain) có file chạy riêng trong folder `cmd`. Ví dụ anh em muốn chạy con **IAM** lên để test:
 
 ```bash
 go run cmd/iam/main.go
 ```
 
-## 🤝 Đóng Góp
+## 🤝 Góp gạch xây nhà (Contribution)
 
-Mọi sự đóng góp đều được hoan nghênh! Hãy đảm bảo code trong thư mục `internal` luôn gọn gàng và có tính tái sử dụng cao.
+Anh em thấy gì hay ho hoặc chỗ nào chuối cứ tự nhiên PR nha! Chỉ cần nhớ quy tắc là giữ cho folder `internal` sạch đẹp, gọn gàng để cả làng dùng chung là được.
 
 ---
 
-Phát triển bởi **HoangHuy7**
+Code with ❤️ by **HoangHuy7**
