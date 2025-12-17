@@ -1,11 +1,13 @@
 package main
 
 import (
-	"monorepo/iam/controller"
+	"monorepo/apps/iam/app"
+	"monorepo/apps/iam/controller"
 	"monorepo/internal/logger"
 	"monorepo/internal/server"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
 )
@@ -17,21 +19,20 @@ func NewGinEngine(gl *logger.GoLogger) *gin.Engine {
 	return r
 }
 
+var (
+	APP_NAME = "iam"
+	INSTANCE = uuid.New().Version().String()
+)
+
 func main() {
-	//config.LoadConfig()
 	fx.New(
+		app.Module,
+		controller.Module,
+		logger.Module,
 		fx.WithLogger(func(gl *logger.GoLogger) fxevent.Logger {
 			return &fxevent.ZapLogger{Logger: gl.Zap}
 		}),
-		fx.Provide(
-			NewGinEngine,
-		),
-		controller.Module,
-		//middleware.Module,
-		//database.Module,
-		//http.Module,
-		logger.Module,
-		//casbinConfig.Module,
+		fx.Provide(NewGinEngine),
 		fx.Invoke(server.RunServer),
 	).Run()
 }

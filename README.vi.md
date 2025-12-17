@@ -8,49 +8,49 @@ Chào đồng, lại là tôi đây! 👋 Đây là cái bộ **startkit monorep
 
 - **🧩 Modular Architecture**: Chia domain (`iam`, `device`, `notification`) ra đàng hoàng. Mỗi ông một **Server Con** (Child Server) riêng biệt, thằng nào chết thằng ấy tự chịu, không kéo cả lò chết chùm. Kiểu module trong Maven ấy, chắc bro biết rồi (chưa biết thì search Google đi).
 - **🏗️ Monorepo Structure**: Cái folder **`internal`** kia là "bảo vật trấn môn" (Core/Shared Library). Logic dùng chung, DTO, router base... nhét hết vào đấy. Nó giống cái Maven parent mà mấy ông Java hay thần thánh hóa ấy.
+- **🔐 Authorization (Casbin)**: Đã tích hợp **Casbin** để phân quyền (RBAC). Đừng để user thường vào xoá database là được.
+- **⚙️ Config Xịn Xò**: Quản lý config tập trung trong folder `configs`. Đừng hardcode password trong code nữa nhé, quê lắm.
 - **📜 Swagger "Tự Động Hóa"**: Tôi gắn sẵn `swaggest` rồi, viết code xong là có document Swagger luôn. Khỏi phải ngồi hì hục viết doc bằng cơm ("chạy bằng cơm") nữa nhé, thời gian đấy để đi chơi với người yêu.
 - **🛡️ Production Ready**: Tôi đã gắn sẵn logging, routing xịn (`routerx`), DTO chuẩn cơm mẹ nấu rồi. Anh em chỉ việc clone về, đắp logic nghiệp vụ vào rồi đi nhậu thôi.
 - **🔌 Scalable & Extensible**: Chạy bằng **[Gin](https://github.com/gin-gonic/gin)** (nhanh vãi linh hồn), cân được từ cái MVP "làm cho vui" đến hệ thống triệu view (nếu bro đủ trình marketing).
 
 ## 📂 Soi "nội thất" (Project Structure)
 
-Nhìn cho kĩ cái cây này, đừng có ném file lung tung rồi hỏi sao code không chạy:
+Nhìn cho kĩ cái cây này, project giờ xịn hơn rồi, nhiều folder hơn nên đừng lác mắt:
 
 ```text
 .
-├── apps                # 🏢 Khu tập thể cho các Server Con (Logic nằm hết ở đây)
-│   ├── device          # Logic Device - Code gì thì code, đừng làm cháy máy
-│   ├── iam             # Logic IAM - Đừng để lộ password là được
-│   │   └── controller
-│   │       ├── Module.go
-│   │       ├── Router.go
+├── apps                    # 🏢 Khu tập thể cho các Server Con
+│   ├── device              # Logic Device
+│   ├── iam                 # Logic IAM - Đừng để lộ password là được
+│   │   ├── app             # 🔌 Dây điện chằng chịt (Config, DB, Auth)
+│   │   │   ├── casbin      # Phân quyền Casbin (Bảo kê)
+│   │   │   ├── config      # Load file config
+│   │   │   └── database    # Kết nối DB
+│   │   └── controller      # Controller nhận request
 │   │       └── v1
 │   │           └── HelloController.go
-│   └── notification    # Logic Notification - Spam khách ít thôi bro
-│       └── controller
-│           └── v1
+│   └── notification        # Logic Notification
 ├── cmd
-│   ├── device          # Cổng vào cho ông Device Server
+│   ├── device              # Cổng vào cho ông Device Server
 │   │   └── main.go
-│   ├── iam             # Cổng vào cho ông IAM Server - Chỗ mấy ông hay quên authen này
+│   ├── iam                 # Cổng vào cho ông IAM Server
 │   │   └── main.go
-│   └── notification    # Cổng vào cho Notification Server
+│   └── notification        # Cổng vào cho Notification Server
 │       └── main.go
-├── internal            # 🧱 Hàng dùng chung (Core) - Cấm táy máy lung tung, sửa bậy là cả làng "ăn cám"
+├── configs                 # ⚙️ Chỗ để file cấu hình (YAML, Policy)
+│   └── iam
+│       ├── application.yaml
+│       └── casbin
+├── internal                # 🧱 Hàng dùng chung (Core) - Cấm táy máy lung tung
 │   ├── base
-│   │   ├── Base.go
-│   │   └── routerx
-│   │       └── Routerx.go
 │   ├── dto
-│   │   └── system.go
 │   ├── logger
-│   │   └── module.go
-│   └── server
-│       ├── router.go
-│       └── server.go
+│   ├── server
+│   └── utils               # 🛠️ Đồ nghề lặt vặt (Utils)
 ├── go.mod
 ├── go.sum
-└── main.go             # File này để ngắm thôi, đừng có sửa gì vào đây
+└── main.go                 # File này để ngắm thôi
 ```
 
 ## 🛠️ Chiến thôi! (Getting Started)

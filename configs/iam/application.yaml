@@ -1,0 +1,25 @@
+go:
+  port: 8081
+---
+database:
+  master:
+    host: 127.0.0.1
+    port: 5432
+    user: postgres
+    password: postgres
+    dbname: masterdb
+    sslmode: disable
+  worker:
+    host: 127.0.0.1
+    port: 5432
+    user: postgres
+    password: postgres
+    dbname: workerdb
+    sslmode: disable
+---
+oidc:
+  - tenancy: iam
+    ClientID: iam
+    ClientSecret: gMWmIgGYXG6QZY713t8Jsh3w86ATSEOj
+    issuer: http://iot.auth.localhost/realms/iot-customer
+    jwks_url: http://iot.auth.localhost/realms/iot-customer/protocol/openid-connect/certs
