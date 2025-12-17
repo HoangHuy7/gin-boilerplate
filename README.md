@@ -8,6 +8,7 @@ This repository serves as a powerful **startkit monorepo** designed to jumpstart
 
 - **🧩 Modular Architecture**: Distinct domains (`iam`, `device`, `notification`) functioning as **child servers** (microservices), similar to Maven modules.
 - **🏗️ Monorepo Structure**: **`internal`** acts as the **Core/Shared Library** (like a Maven parent/common), holding base logic, DTOs, and router configurations used by all child services.
+- **📜 Auto Swagger / OpenAPI**: Automatic API documentation generation using `swaggest/openapi-go`. Just define your DTOs and Controller metadata, and the docs are ready!
 - **🛡️ Production Ready**: Pre-configured with logging, robust routing strategies, and standard DTOs.
 - **🔌 Scalable & Extensible**: Built on top of [Gin](https://github.com/gin-gonic/gin), ready to grow from a startup MVP to a high-load system.
 
@@ -72,6 +73,12 @@ Each domain has its own entry point in `cmd/`. For example, to run the **IAM** s
 ```bash
 go run cmd/iam/main.go
 ```
+
+### 📚 API Documentation (Swagger)
+
+After running a service, you can access the Swagger UI at:
+- **URL**: `http://localhost:8080/swagger/` (Port may vary based on configuration)
+
 
 ## 🤝 Contribution
 

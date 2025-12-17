@@ -8,6 +8,7 @@ Chào đồng, lại là tôi đây! 👋 Đây là cái bộ **startkit monorep
 
 - **🧩 Modular Architecture**: Chia domain (`iam`, `device`, `notification`) ra đàng hoàng. Mỗi ông một **Server Con** (Child Server) riêng biệt, thằng nào chết thằng ấy tự chịu, không kéo cả lò chết chùm. Kiểu module trong Maven ấy, chắc bro biết rồi (chưa biết thì search Google đi).
 - **🏗️ Monorepo Structure**: Cái folder **`internal`** kia là "bảo vật trấn môn" (Core/Shared Library). Logic dùng chung, DTO, router base... nhét hết vào đấy. Nó giống cái Maven parent mà mấy ông Java hay thần thánh hóa ấy.
+- **📜 Swagger "Tự Động Hóa"**: Tôi gắn sẵn `swaggest` rồi, viết code xong là có document Swagger luôn. Khỏi phải ngồi hì hục viết doc bằng cơm ("chạy bằng cơm") nữa nhé, thời gian đấy để đi chơi với người yêu.
 - **🛡️ Production Ready**: Tôi đã gắn sẵn logging, routing xịn (`routerx`), DTO chuẩn cơm mẹ nấu rồi. Anh em chỉ việc clone về, đắp logic nghiệp vụ vào rồi đi nhậu thôi.
 - **🔌 Scalable & Extensible**: Chạy bằng **[Gin](https://github.com/gin-gonic/gin)** (nhanh vãi linh hồn), cân được từ cái MVP "làm cho vui" đến hệ thống triệu view (nếu bro đủ trình marketing).
 
@@ -74,6 +75,12 @@ Muốn chạy con nào thì vào `cmd` gọi con đấy dậy. Ví dụ muốn t
 ```bash
 go run cmd/iam/main.go
 ```
+
+### 📚 Tài liệu API (Swagger)
+
+Chạy server lên xong thì vào đường link này mà ngắm API, đừng hỏi tôi API có những gì:
+- **Link**: `http://localhost:8080/swagger/` (Cổng 8080 hay bao nhiêu tùy bro config nhé)
+
 
 ## 🤝 Góp gạch xây nhà (Contribution)
 
