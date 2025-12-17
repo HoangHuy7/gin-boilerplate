@@ -18,6 +18,17 @@ Nhìn cho kĩ cái cây này, đừng có ném file lung tung rồi hỏi sao co
 
 ```text
 .
+├── apps                # 🏢 Khu tập thể cho các Server Con (Logic nằm hết ở đây)
+│   ├── device          # Logic Device - Code gì thì code, đừng làm cháy máy
+│   ├── iam             # Logic IAM - Đừng để lộ password là được
+│   │   └── controller
+│   │       ├── Module.go
+│   │       ├── Router.go
+│   │       └── v1
+│   │           └── HelloController.go
+│   └── notification    # Logic Notification - Spam khách ít thôi bro
+│       └── controller
+│           └── v1
 ├── cmd
 │   ├── device          # Cổng vào cho ông Device Server
 │   │   └── main.go
@@ -25,13 +36,6 @@ Nhìn cho kĩ cái cây này, đừng có ném file lung tung rồi hỏi sao co
 │   │   └── main.go
 │   └── notification    # Cổng vào cho Notification Server
 │       └── main.go
-├── device              # Logic Device - Code gì thì code, đừng làm cháy máy
-├── iam                 # Logic IAM - Đừng để lộ password là được
-│   └── controller
-│       ├── Module.go
-│       ├── Router.go
-│       └── v1
-│           └── HelloController.go
 ├── internal            # 🧱 Hàng dùng chung (Core) - Cấm táy máy lung tung, sửa bậy là cả làng "ăn cám"
 │   ├── base
 │   │   ├── Base.go
@@ -44,9 +48,6 @@ Nhìn cho kĩ cái cây này, đừng có ném file lung tung rồi hỏi sao co
 │   └── server
 │       ├── router.go
 │       └── server.go
-├── notification        # Logic Notification - Spam khách ít thôi bro
-│   └── controller
-│       └── v1
 ├── go.mod
 ├── go.sum
 └── main.go             # File này để ngắm thôi, đừng có sửa gì vào đây

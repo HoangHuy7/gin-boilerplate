@@ -16,6 +16,17 @@ This repository serves as a powerful **startkit monorepo** designed to jumpstart
 
 ```text
 .
+├── apps                # 🏢 Container for all Child Servers logic
+│   ├── device          # Device Service Logic
+│   ├── iam             # IAM Service Logic
+│   │   └── controller
+│   │       ├── Module.go
+│   │       ├── Router.go
+│   │       └── v1
+│   │           └── HelloController.go
+│   └── notification    # Notification Service Logic
+│       └── controller
+│           └── v1
 ├── cmd
 │   ├── device          # Entry point for Device Child Server
 │   │   └── main.go
@@ -23,13 +34,6 @@ This repository serves as a powerful **startkit monorepo** designed to jumpstart
 │   │   └── main.go
 │   └── notification    # Entry point for Notification Child Server
 │       └── main.go
-├── device              # Device Service (Child Server Logic)
-├── iam                 # IAM Service (Child Server Logic)
-│   └── controller
-│       ├── Module.go
-│       ├── Router.go
-│       └── v1
-│           └── HelloController.go
 ├── internal            # 🧱 Core / Shared Libraries (Maven-like Common Module)
 │   ├── base
 │   │   ├── Base.go
@@ -42,9 +46,6 @@ This repository serves as a powerful **startkit monorepo** designed to jumpstart
 │   └── server
 │       ├── router.go
 │       └── server.go
-├── notification        # Notification Service (Child Server Logic)
-│   └── controller
-│       └── v1
 ├── go.mod
 ├── go.sum
 └── main.go
