@@ -2,78 +2,92 @@
 
 > **Gin boilerplate "xịn sò" cho anh em, kiến trúc modular, monorepo chuẩn chỉ kèm automation bằng Uber-fx.**
 
-Chào đồng bào! 👋 Đây là cái bộ **startkit monorepo** tôi làm ra để anh em đỡ phải ngồi setup lại từ đầu mỗi khi "vẽ vời" dự án mới. Code cái này là để anh em bớt tạo nghiệp với mấy con monolith to như cái nhà mà sửa một chỗ chết chục chỗ nhé.
+Chào đồng bào! 👋 Đây là cái bộ **startkit monorepo** tôi làm ra để anh em khỏi phải lo chuyện setup. Code chuẩn, tách lớp và tự động hóa tận răng.
 
 ## 🌟 Có gì mà khoe? (Highlights)
 
-- **🧩 Modular Architecture**: Chia domain (`iam`, `device`, `notification`) ra đàng hoàng. Mỗi ông một module riêng biệt, tách bạch logic.
-- **🏗️ Monorepo Structure**: Folder **`internal`** là "bảo vật trấn môn" (Core/Shared Library). Logic dùng chung, DTO, router base... nhét hết vào đấy.
-- **⚡ Dependency Injection**: Sử dụng **Uber-fx** để quản lý lifecycle và tự động hóa việc kết nối các component.
-- **🤖 Controller Tự Động Hóa**: Không cần phải khai báo router thủ công cho từng controller. Chỉ cần ném vào module là nó tự chạy. 
-- **� Authorization (Casbin)**: Đã tích hợp **Casbin** để phân quyền (RBAC/ABAC) chuẩn chỉ.
-- **� Swagger "Tự Động Hóa"**: Sử dụng `swaggest/openapi-go` để gen Swagger từ code. Viết xong là có doc luôn, không phải "chạy bằng cơm".
+- **🧩 Modular Architecture**: Chia domain (`iam`, `device`, ...) ra đàng hoàng, độc lập và dễ mở rộng.
+- **🏗️ Monorepo Structure**: Folder **`internal`** bảo mật và dùng chung logic cho toàn bộ hệ thống.
+- **⚡ Dependency Injection**: Sử dụng **Uber-fx** để tự động kết nối (wiring) các component.
+- **🤖 Tự động hóa hoàn toàn**: Cả Controller và OpenAPI đều được đăng ký tự động. Code tới đâu, doc tới đó.
+- **🔐 Authorization (Casbin)**: Tích hợp sẵn RBAC/ABAC cực mạnh.
+- **📜 OpenAPI/Swagger Tự Động**: Không cần viết comment, chỉ cần định nghĩa DTO là có ngay giao diện Swagger đẹp mắt.
 
 ## 📂 Soi "nội thất" (Project Structure)
 
 ```text
 .
-├── apps                    # 🏢 Module nghiệp vụ / Domain Logic
-│   ├── device              # Logic Device
-│   ├── iam                 # Logic IAM (Identity & Access)
-│   │   ├── app             # App wiring (Config, DB, Auth)
-│   │   └── controller      # Controller nhận request
-│   └── notification        # Logic Notification
-├── cmd                     # 🚀 File thực thi (Entry Points)
-│   ├── device/main.go
+├── apps                    # 🏢 Nghiệp vụ chính (Domain Logic)
+│   ├── device
+│   ├── iam                 # Quản lý định danh
+│   │   ├── app             # Đấu nối module (DB, Auth, Config, Module)
+│   │   │   ├── casbin
+│   │   │   ├── config
+│   │   │   ├── database
+│   │   │   └── Module.go
+│   │   └── controller      # Xử lý HTTP Request
+│   │       ├── v1
+│   │       │   └── HelloController.go
+│   │       └── Module.go   # Nơi đăng ký controller với Fx
+│   └── notification
+├── cmd                     # 🚀 Cổng vào thực thi
 │   ├── iam/main.go
-│   └── notification/main.go
-├── configs                 # ⚙️ Cấu hình (YAML, Policy)
-├── internal                # 🧱 Hàng dùng chung (Core) - Cấm táy máy lung tung
-│   ├── base                # Interface gốc (Controller, ...)
+├── configs                 # ⚙️ Cấu hình hệ thống
+├── internal                # 🧱 "Trái tim" hệ thống (Shared Core)
+│   ├── base                # Interface chung & base controller
+│   ├── dto                 # Định nghĩa dữ liệu truyền tải
 │   ├── logger              # Zap Logger xịn sò
-│   ├── server              # Core HTTP Server & Router logic
-│   └── utils               # Đồ nghề lặt vặt
+│   ├── server              # Core Server, Router & logic OpenAPI
+│   └── utils               # Đồ nghề hỗ trợ
 ├── go.mod
-└── main.go                 # File này để ngắm thôi
+└── main.go
 ```
 
-## 🤖 Cách Automation hoạt động
+## 🤖 Hướng dẫn Tự động hóa (Automation)
 
-Cái project này tận dụng [Uber-fx](https://github.com/uber-go/fx) để tự động hóa việc đăng ký Controller mà không cần code tay từng dòng router.
+Project này sử dụng sức mạnh của **Uber-fx** để giải phóng đôi tay của bạn.
 
-### 1. Tại Core Router (`internal/server`)
-Hàm `NewRouter` trong `internal/server/router.go` được thiết kế để nhận một list các controller qua DI:
-```go
-func NewRouter(controllers []base.Controller, ...) *Router
-```
-
-### 2. Tự động đăng ký (`apps/iam/controller`)
-Trong file `Module.go` của từng module (ví dụ `apps/iam/controller/Module.go`), chúng ta sử dụng **Group Tags**:
+### 1. Đăng ký Controller
+Bạn không cần gọi `router.GET` ở khắp nơi. Chỉ cần khai báo trong module của folder `controller`:
 ```go
 fx.Annotate(
     v1.NewHelloController,
     fx.As(new(base.Controller)),
-    fx.ResultTags(`group:"controllers"`), // Gom vào tập đoàn "controllers"
-)
-```
-Sau đó inject cả tập đoàn này vào `NewRouter`:
-```go
-fx.Annotate(
-    server.NewRouter,
-    fx.ParamTags(`group:"controllers"`), // Gọi cả hội controller ra
+    fx.ResultTags(`group:"controllers"`),
 )
 ```
 
-### 3. Kích hoạt (`cmd/iam`)
-Trong file `main.go`, chỉ cần gọi cái module controller đó ra là xong:
+### 2. Tích hợp OpenAPI Tự động (Không dùng Comment)
+Quên việc viết `// @Summary` đi, ở đây chúng ta dùng **Code-First** với `routerx`.
+
+#### Bước 1: Khai báo Endpoint trong Controller
+Trong hàm `Register`, hãy mô tả API bằng struct `dto.OpenEndpoint`:
 ```go
-fx.New(
-    app.Module,
-    controller.Module, // Phép thuật nằm ở đây
-    // ...
-    fx.Invoke(server.RunServer),
-).Run()
+func (this *HelloController) Register(rg *routerx.Routerx) {
+    rg.POST(dto.OpenEndpoint{
+        Path:        "/create",
+        Handler:     this.Create,
+        Summary:     "Tạo mới gì đó",
+        Request:     &dto.CreatePostRequest{}, // Tự gen schema từ struct luôn!
+        Responses:   map[int]any{
+            200: gin.H{"status": "success"},
+        },
+    })
+}
 ```
+
+#### Bước 2: Bật OpenAPI trong Metadata
+Đảm bảo biến `EnableOpenAPI` là `true` trong metadata của Controller:
+```go
+Metadata: dto.Metadata{
+    Tag:           "IAM Service",
+    EnableOpenAPI: true,
+}
+```
+
+#### Bước 3: Tận hưởng
+Chạy server và truy cập:
+`http://localhost:8080/swagger/`
 
 ## 🛠️ Chiến thôi! (Getting Started)
 
@@ -88,12 +102,6 @@ go mod download
 ```bash
 go run cmd/iam/main.go
 ```
-
-### 📚 Tài liệu API (Swagger)
-Chạy server lên xong thì vào: `http://localhost:8080/swagger/` (Cổng tùy theo config nhé).
-
-## 🤝 Góp gạch xây nhà (Contribution)
-Anh em nhớ giữ cái folder `internal` sạch sẽ. Thêm cái gì mới thì nhớ check xem có dùng chung được cho các module khác không nhé.
 
 ---
 Code with ❤️ by **HoangHuy7**
