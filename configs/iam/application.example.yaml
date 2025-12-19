@@ -19,5 +19,5 @@ oidc:
   - tenancy: iam
     ClientID: iam
     ClientSecret: YOUR_CLIENT_SECRET
-    issuer: http://iot.auth.localhost/realms/iot-customer
-    jwks_url: http://iot.auth.localhost/realms/iot-customer/protocol/openid-connect/certs
+    issuer: ${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}
+    jwks_url: ${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs

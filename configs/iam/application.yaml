@@ -19,5 +19,5 @@ oidc:
   - tenancy: iam
     ClientID: iam
     ClientSecret: ${OIDC_CLIENT_SECRET}
-    issuer: ${OIDC_ISSUER}
-    jwks_url: ${OIDC_JWKS_URL}
+    issuer: ${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}
+    jwks_url: ${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs
