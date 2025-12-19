@@ -96,6 +96,27 @@ func (this *HelloController) Register(rg *routerx.Routerx) {
 #### Bước 3: Kiểm tra
 Chạy server và truy cập: `http://localhost:8080/swagger/`
 
+## 🟦 Hướng dẫn Cấu hình
+
+Hệ thống sử dụng [Viper](https://github.com/spf13/viper) kết hợp với khả năng đọc biến môi trường (Environment Variables).
+
+### 1. File Cấu hình
+Mỗi app sẽ có folder cấu hình riêng tại: `configs/<tên_app>/`.
+- `application.yaml`: File chạy chính (đã được tham số hóa).
+- `application.example.yaml`: File mẫu chứa các cấu hình cần thiết.
+
+### 2. Sử dụng Biến môi trường
+Bạn có thể sử dụng cú pháp `${TEN_BIEN}` trong file YAML để bảo mật các thông tin nhạy cảm:
+```yaml
+database:
+  master:
+    password: ${DB_MASTER_PASSWORD}
+```
+
+### 3. Các bước thiết lập
+1. Copy `application.example.yaml` thành `application.yaml`.
+2. Thiết lập các biến môi trường tương ứng trong terminal hoặc IDE của bạn.
+
 ## 🟦 Bắt đầu
 
 ### Cài đặt

@@ -103,6 +103,27 @@ Metadata: dto.Metadata{
 #### Step 3: Access it
 Run your service and navigate to: `http://localhost:8080/swagger/`
 
+## 🟦 Configuration
+
+The project uses [Viper](https://github.com/spf13/viper) with environment variable expansion support.
+
+### 1. Configuration Files
+Each app has its own configuration directory: `configs/<app_name>/`.
+- `application.yaml`: The main config file (parameterized with env vars).
+- `application.example.yaml`: A template for required configurations.
+
+### 2. Environment Variables
+You can define secrets and environment-specific values in your YAML using `${VAR_NAME}` syntax:
+```yaml
+database:
+  master:
+    password: ${DB_MASTER_PASSWORD}
+```
+
+### 3. Setup
+1. Copy `application.example.yaml` to `application.yaml`.
+2. Set the required environment variables in your system or IDE.
+
 ## 🟦 Getting Started
 
 ### Installation
