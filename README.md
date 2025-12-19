@@ -55,7 +55,6 @@
 │   ├── server              # Core HTTP server, Router & OpenAPI logic
 │   └── utils               # Shared utilities
 ├── go.mod
-└── main.go
 ```
 
 ## 🟦 Automation Logic

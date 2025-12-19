@@ -55,7 +55,6 @@
 │   ├── server              # Core Server & OpenAPI logic
 │   └── utils               # Đồ nghề hỗ trợ
 ├── go.mod
-└── main.go
 ```
 
 ## 🟦 Hướng dẫn Tự động hóa
