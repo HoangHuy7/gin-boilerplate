@@ -1,10 +1,23 @@
-# Gin Monorepo Boilerplate
+<p align="center">
+  <img src="https://raw.githubusercontent.com/HoangHuy7/gin-boilerplate/main/.github/assets/banner.png" alt="Gin Monorepo Banner" width="100%">
+</p>
 
-> **Production-ready Gin boilerplate with modular architecture, monorepo support, and Uber-fx powered automation.**
+<h1 align="center">Gin Monorepo Boilerplate</h1>
 
-This repository is a startkit monorepo designed for scalable Go backend development. It features a domain-driven design that separates core logic from application-specific modules.
+<p align="center">
+  <em>Production-ready Gin boilerplate with modular architecture, monorepo support, and Uber-fx powered automation.</em>
+</p>
 
-## Highlights
+<p align="center">
+  <img src="https://img.shields.io/badge/Go-1.20+-00ADD8?style=flat-square&logo=go" alt="Go Version">
+  <img src="https://img.shields.io/badge/Gin-Framework-blue?style=flat-square" alt="Gin Framework">
+  <img src="https://img.shields.io/badge/Uber--fx-DI-red?style=flat-square" alt="Uber-fx">
+  <img src="https://img.shields.io/badge/Casbin-Auth-orange?style=flat-square" alt="Casbin">
+</p>
+
+---
+
+## 🟦 Highlights
 
 - **Modular Architecture**: Domains like `iam`, `device`, and `notification` function as independent modules.
 - **Monorepo Structure**: The `internal` directory holds shared logic (Core), DTOs, and server configurations.
@@ -13,7 +26,7 @@ This repository is a startkit monorepo designed for scalable Go backend developm
 - **Authorization**: Built-in Casbin support for RBAC/ABAC.
 - **Auto Swagger / OpenAPI**: Reflection-based Swagger generation. No manual documentation required.
 
-## Project Structure
+## 🟦 Project Structure
 
 ```text
 .
@@ -43,7 +56,7 @@ This repository is a startkit monorepo designed for scalable Go backend developm
 └── main.go
 ```
 
-## Automation Logic
+## 🟦 Automation Logic
 
 The boilerplate uses [Uber-fx](https://github.com/uber-go/fx) to handle dependency injection and lifecycle.
 
@@ -89,7 +102,7 @@ Metadata: dto.Metadata{
 #### Step 3: Access it
 Run your service and navigate to: `http://localhost:8080/swagger/`
 
-## Getting Started
+## 🟦 Getting Started
 
 ### Installation
 ```bash
@@ -104,4 +117,4 @@ go run cmd/iam/main.go
 ```
 
 ---
-Crafted by **HoangHuy7**
+<p align="center">Crafted with ❤️ by <b>HoangHuy7</b></p>

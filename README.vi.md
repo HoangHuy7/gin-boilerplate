@@ -1,10 +1,23 @@
-# Gin Monorepo Boilerplate
+<p align="center">
+  <img src="https://raw.githubusercontent.com/HoangHuy7/gin-boilerplate/main/.github/assets/banner.png" alt="Gin Monorepo Banner" width="100%">
+</p>
 
-> **Gin boilerplate cho anh em, kiến trúc modular, monorepo chuẩn chỉ kèm automation bằng Uber-fx.**
+<h1 align="center">Gin Monorepo Boilerplate</h1>
 
-Chào đồng bào! Đây là bộ startkit monorepo giúp anh em khỏi phải lo chuyện setup lại từ đầu. Code được thiết kế tách lớp, dễ mở rộng và tự động hóa tối đa.
+<p align="center">
+  <em>Bộ startkit monorepo xịn sò cho Go backend, kiến trúc modular, monorepo chuẩn chỉ kèm automation bằng Uber-fx.</em>
+</p>
 
-## Highlights
+<p align="center">
+  <img src="https://img.shields.io/badge/Go-1.20+-00ADD8?style=flat-square&logo=go" alt="Go Version">
+  <img src="https://img.shields.io/badge/Gin-Framework-blue?style=flat-square" alt="Gin Framework">
+  <img src="https://img.shields.io/badge/Uber--fx-DI-red?style=flat-square" alt="Uber-fx">
+  <img src="https://img.shields.io/badge/Casbin-Auth-orange?style=flat-square" alt="Casbin">
+</p>
+
+---
+
+## 🟦 Highlights
 
 - **Modular Architecture**: Chia domain (`iam`, `device`, ...) rõ ràng, độc lập và dễ quản lý.
 - **Monorepo Structure**: Thư mục `internal` chứa toàn bộ logic dùng chung, đảm bảo tính nhất quán.
@@ -13,7 +26,7 @@ Chào đồng bào! Đây là bộ startkit monorepo giúp anh em khỏi phải 
 - **Authorization**: Tích hợp sẵn Casbin cho việc phân quyền RBAC/ABAC.
 - **OpenAPI/Swagger**: Tự động sinh documentation từ code, không cần viết comment thủ công.
 
-## Cấu trúc dự án
+## 🟦 Cấu trúc dự án
 
 ```text
 .
@@ -43,7 +56,7 @@ Chào đồng bào! Đây là bộ startkit monorepo giúp anh em khỏi phải 
 └── main.go
 ```
 
-## Hướng dẫn Tự động hóa
+## 🟦 Hướng dẫn Tự động hóa
 
 Project tận dụng sức mạnh của Uber-fx để giải phóng việc khai báo router thủ công.
 
@@ -82,7 +95,7 @@ func (this *HelloController) Register(rg *routerx.Routerx) {
 #### Bước 3: Kiểm tra
 Chạy server và truy cập: `http://localhost:8080/swagger/`
 
-## Bắt đầu
+## 🟦 Bắt đầu
 
 ### Cài đặt
 ```bash
@@ -97,4 +110,4 @@ go run cmd/iam/main.go
 ```
 
 ---
-Code with ❤️ by **HoangHuy7**
+<p align="center">Code with ❤️ by <b>HoangHuy7</b></p>
