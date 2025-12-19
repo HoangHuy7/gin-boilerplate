@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"monorepo/internal/dto"
+	"os"
 	"regexp"
 	"time"
 
@@ -24,14 +25,23 @@ func LoadConfig[T any](appName string) (*T, error) {
 	v.AddConfigPath(fmt.Sprintf("configs/%s", appName))
 	v.AutomaticEnv()
 
-	var cfg T
-
 	if err := v.ReadInConfig(); err != nil {
 		log.Fatalf("Error loading config: %v", err)
 	}
 
+	// Expand environment variables in the config file
+	// This allows using ${VAR} syntax in application.yaml
+	configKeys := v.AllKeys()
+	for _, key := range configKeys {
+		val := v.Get(key)
+		if str, ok := val.(string); ok {
+			v.Set(key, os.ExpandEnv(str))
+		}
+	}
+
 	log.Println("Config file used:", v.ConfigFileUsed())
 
+	var cfg T
 	if err := v.Unmarshal(&cfg); err != nil {
 		log.Fatalf("Error parsing config: %v", err)
 	}

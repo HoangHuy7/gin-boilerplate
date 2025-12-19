@@ -2,22 +2,22 @@ go:
   port: 8081
 database:
   master:
-    host: 127.0.0.1
-    port: 5432
-    user: postgres
-    password: postgres
-    dbname: masterdb
-    sslmode: disable
+    host: ${DB_MASTER_HOST}
+    port: ${DB_MASTER_PORT}
+    user: ${DB_MASTER_USER}
+    password: ${DB_MASTER_PASSWORD}
+    dbname: ${DB_MASTER_NAME}
+    sslmode: ${DB_MASTER_SSL}
   worker:
-    host: 127.0.0.1
-    port: 5432
-    user: postgres
-    password: postgres
-    dbname: workerdb
-    sslmode: disable
+    host: ${DB_WORKER_HOST}
+    port: ${DB_WORKER_PORT}
+    user: ${DB_WORKER_USER}
+    password: ${DB_WORKER_PASSWORD}
+    dbname: ${DB_WORKER_NAME}
+    sslmode: ${DB_WORKER_SSL}
 oidc:
   - tenancy: iam
     ClientID: iam
-    ClientSecret: gMWmIgGYXG6QZY713t8Jsh3w86ATSEOj
-    issuer: http://iot.auth.localhost/realms/iot-customer
-    jwks_url: http://iot.auth.localhost/realms/iot-customer/protocol/openid-connect/certs
+    ClientSecret: ${OIDC_CLIENT_SECRET}
+    issuer: ${OIDC_ISSUER}
+    jwks_url: ${OIDC_JWKS_URL}
