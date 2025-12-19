@@ -14,6 +14,7 @@
   <img src="https://img.shields.io/badge/Uber--fx-DI-red?style=flat-square" alt="Uber-fx">
   <img src="https://img.shields.io/badge/Casbin-Auth-orange?style=flat-square" alt="Casbin">
   <img src="https://img.shields.io/badge/GORM-ORM-blue?style=flat-square" alt="GORM">
+  <img src="https://img.shields.io/badge/Swagger-OpenAPI-85EA2D?style=flat-square&logo=swagger" alt="Swagger">
 </p>
 
 ---
