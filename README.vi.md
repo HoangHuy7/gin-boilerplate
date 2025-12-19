@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/HoangHuy7/gin-boilerplate/main/.github/assets/banner.png" alt="Gin Monorepo Banner" width="100%">
+  <img src="https://raw.githubusercontent.com/HoangHuy7/gin-boilerplate/main/.github/assets/banner.png" alt="Gin Monorepo Banner" style="width: 100%; height: 200px; object-fit: cover;">
 </p>
 
 <h1 align="center">Gin Monorepo Boilerplate</h1>
