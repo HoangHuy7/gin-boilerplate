@@ -1,26 +1,26 @@
-# 🏗️ gin-boilerplate
+# Gin Monorepo Boilerplate
 
-> **Gin boilerplate "xịn sò" cho anh em, kiến trúc modular, monorepo chuẩn chỉ kèm automation bằng Uber-fx.**
+> **Gin boilerplate cho anh em, kiến trúc modular, monorepo chuẩn chỉ kèm automation bằng Uber-fx.**
 
-Chào đồng bào! 👋 Đây là cái bộ **startkit monorepo** tôi làm ra để anh em khỏi phải lo chuyện setup. Code chuẩn, tách lớp và tự động hóa tận răng.
+Chào đồng bào! Đây là bộ startkit monorepo giúp anh em khỏi phải lo chuyện setup lại từ đầu. Code được thiết kế tách lớp, dễ mở rộng và tự động hóa tối đa.
 
-## 🌟 Có gì mà khoe? (Highlights)
+## Highlights
 
-- **🧩 Modular Architecture**: Chia domain (`iam`, `device`, ...) ra đàng hoàng, độc lập và dễ mở rộng.
-- **🏗️ Monorepo Structure**: Folder **`internal`** bảo mật và dùng chung logic cho toàn bộ hệ thống.
-- **⚡ Dependency Injection**: Sử dụng **Uber-fx** để tự động kết nối (wiring) các component.
-- **🤖 Tự động hóa hoàn toàn**: Cả Controller và OpenAPI đều được đăng ký tự động. Code tới đâu, doc tới đó.
-- **🔐 Authorization (Casbin)**: Tích hợp sẵn RBAC/ABAC cực mạnh.
-- **📜 OpenAPI/Swagger Tự Động**: Không cần viết comment, chỉ cần định nghĩa DTO là có ngay giao diện Swagger đẹp mắt.
+- **Modular Architecture**: Chia domain (`iam`, `device`, ...) rõ ràng, độc lập và dễ quản lý.
+- **Monorepo Structure**: Thư mục `internal` chứa toàn bộ logic dùng chung, đảm bảo tính nhất quán.
+- **Dependency Injection**: Sử dụng Uber-fx để tự động hóa việc kết nối các component.
+- **Automatic Automation**: Cả Controller và OpenAPI đều được đăng ký tự động qua hệ thống module.
+- **Authorization**: Tích hợp sẵn Casbin cho việc phân quyền RBAC/ABAC.
+- **OpenAPI/Swagger**: Tự động sinh documentation từ code, không cần viết comment thủ công.
 
-## 📂 Soi "nội thất" (Project Structure)
+## Cấu trúc dự án
 
 ```text
 .
-├── apps                    # 🏢 Nghiệp vụ chính (Domain Logic)
+├── apps                    # Nghiệp vụ chính (Domain Logic)
 │   ├── device
 │   ├── iam                 # Quản lý định danh
-│   │   ├── app             # Đấu nối module (DB, Auth, Config, Module)
+│   │   ├── app             # Cấu hình module (DB, Auth, Config, Module)
 │   │   │   ├── casbin
 │   │   │   ├── config
 │   │   │   ├── database
@@ -28,27 +28,27 @@ Chào đồng bào! 👋 Đây là cái bộ **startkit monorepo** tôi làm ra 
 │   │   └── controller      # Xử lý HTTP Request
 │   │       ├── v1
 │   │       │   └── HelloController.go
-│   │       └── Module.go   # Nơi đăng ký controller với Fx
+│   │       └── Module.go   # Đăng ký controller với Fx
 │   └── notification
-├── cmd                     # 🚀 Cổng vào thực thi
+├── cmd                     # Entry points thực thi
 │   ├── iam/main.go
-├── configs                 # ⚙️ Cấu hình hệ thống
-├── internal                # 🧱 "Trái tim" hệ thống (Shared Core)
-│   ├── base                # Interface chung & base controller
-│   ├── dto                 # Định nghĩa dữ liệu truyền tải
-│   ├── logger              # Zap Logger xịn sò
-│   ├── server              # Core Server, Router & logic OpenAPI
+├── configs                 # Cấu hình hệ thống (YAML, Policy)
+├── internal                # Shared Core (Trái tim hệ thống)
+│   ├── base                # Base interfaces
+│   ├── dto                 # Data Transfer Objects
+│   ├── logger              # Zap Logger
+│   ├── server              # Core Server & OpenAPI logic
 │   └── utils               # Đồ nghề hỗ trợ
 ├── go.mod
 └── main.go
 ```
 
-## 🤖 Hướng dẫn Tự động hóa (Automation)
+## Hướng dẫn Tự động hóa
 
-Project này sử dụng sức mạnh của **Uber-fx** để giải phóng đôi tay của bạn.
+Project tận dụng sức mạnh của Uber-fx để giải phóng việc khai báo router thủ công.
 
 ### 1. Đăng ký Controller
-Bạn không cần gọi `router.GET` ở khắp nơi. Chỉ cần khai báo trong module của folder `controller`:
+Chỉ cần khai báo controller trong module tương ứng, hệ thống sẽ tự động nhận diện:
 ```go
 fx.Annotate(
     v1.NewHelloController,
@@ -57,18 +57,18 @@ fx.Annotate(
 )
 ```
 
-### 2. Tích hợp OpenAPI Tự động (Không dùng Comment)
-Quên việc viết `// @Summary` đi, ở đây chúng ta dùng **Code-First** với `routerx`.
+### 2. Tích hợp OpenAPI Tự động
+Sử dụng phương pháp Code-First với `routerx` để sinh Swagger UI mà không cần viết annotation phức tạp.
 
-#### Bước 1: Khai báo Endpoint trong Controller
-Trong hàm `Register`, hãy mô tả API bằng struct `dto.OpenEndpoint`:
+#### Bước 1: Khai báo Endpoint
+Mô tả API trực tiếp trong hàm `Register` của Controller:
 ```go
 func (this *HelloController) Register(rg *routerx.Routerx) {
     rg.POST(dto.OpenEndpoint{
         Path:        "/create",
         Handler:     this.Create,
-        Summary:     "Tạo mới gì đó",
-        Request:     &dto.CreatePostRequest{}, // Tự gen schema từ struct luôn!
+        Summary:     "Tạo mới dữ liệu",
+        Request:     &dto.CreatePostRequest{},
         Responses:   map[int]any{
             200: gin.H{"status": "success"},
         },
@@ -76,20 +76,13 @@ func (this *HelloController) Register(rg *routerx.Routerx) {
 }
 ```
 
-#### Bước 2: Bật OpenAPI trong Metadata
-Đảm bảo biến `EnableOpenAPI` là `true` trong metadata của Controller:
-```go
-Metadata: dto.Metadata{
-    Tag:           "IAM Service",
-    EnableOpenAPI: true,
-}
-```
+#### Bước 2: Kích hoạt trong Metadata
+Đảm bảo `EnableOpenAPI: true` trong biến metadata của Controller.
 
-#### Bước 3: Tận hưởng
-Chạy server và truy cập:
-`http://localhost:8080/swagger/`
+#### Bước 3: Kiểm tra
+Chạy server và truy cập: `http://localhost:8080/swagger/`
 
-## 🛠️ Chiến thôi! (Getting Started)
+## Bắt đầu
 
 ### Cài đặt
 ```bash

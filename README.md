@@ -1,23 +1,23 @@
-# 🏗️ gin-boilerplate
+# Gin Monorepo Boilerplate
 
 > **Production-ready Gin boilerplate with modular architecture, monorepo support, and Uber-fx powered automation.**
 
-This repository is a **startkit monorepo** designed for scalable Go backend development. It features a domain-driven design that separates core logic from application-specific modules.
+This repository is a startkit monorepo designed for scalable Go backend development. It features a domain-driven design that separates core logic from application-specific modules.
 
-## 🌟 Highlights
+## Highlights
 
-- **🧩 Modular Architecture**: Domains like `iam`, `device`, and `notification` function as independent modules.
-- **🏗️ Monorepo Structure**: The `internal` directory holds shared logic (Core), DTOs, and server configurations.
-- **⚡ Dependency Injection**: Powered by **Uber-fx** for clean lifestyle management and automatic component wiring.
-- **🤖 Automated Registration**: Controllers and OpenAPI documentation are registered automatically.
-- **🔐 Authorization**: Built-in **Casbin** support for RBAC/ABAC.
-- **📜 Auto Swagger / OpenAPI**: Reflection-based Swagger generation. Just define your endpoints, and the UI is ready!
+- **Modular Architecture**: Domains like `iam`, `device`, and `notification` function as independent modules.
+- **Monorepo Structure**: The `internal` directory holds shared logic (Core), DTOs, and server configurations.
+- **Dependency Injection**: Powered by Uber-fx for clean lifestyle management and automatic component wiring.
+- **Automated Registration**: Controllers and OpenAPI documentation are registered automatically.
+- **Authorization**: Built-in Casbin support for RBAC/ABAC.
+- **Auto Swagger / OpenAPI**: Reflection-based Swagger generation. No manual documentation required.
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 .
-├── apps                    # 🏢 Micro-apps / Domain Logic
+├── apps                    # Micro-apps / Domain Logic
 │   ├── device
 │   ├── iam                 # Identity & Access Management
 │   │   ├── app             # App Wiring (DB, Auth, Config, Module)
@@ -30,10 +30,10 @@ This repository is a **startkit monorepo** designed for scalable Go backend deve
 │   │       │   └── HelloController.go
 │   │       └── Module.go   # Fx registration logic
 │   └── notification
-├── cmd                     # 🚀 Execution Entry Points
+├── cmd                     # Execution Entry Points
 │   ├── iam/main.go
-├── configs                 # ⚙️ App Configurations (YAML, Casbin)
-├── internal                # 🧱 Shared Core Library
+├── configs                 # App Configurations (YAML, Casbin)
+├── internal                # Shared Core Library
 │   ├── base                # Base interfaces (Controller, etc.)
 │   ├── dto                 # Shared DTOs & Search/Metadata schemas
 │   ├── logger              # Zap-based logging
@@ -43,7 +43,7 @@ This repository is a **startkit monorepo** designed for scalable Go backend deve
 └── main.go
 ```
 
-## 🤖 How Automation Works
+## Automation Logic
 
 The boilerplate uses [Uber-fx](https://github.com/uber-go/fx) to handle dependency injection and lifecycle.
 
@@ -59,7 +59,7 @@ fx.Annotate(
 The `internal/server` consumes this group to mount all routes automatically.
 
 ### 2. Automatic OpenAPI Integration
-Unlike traditional Swagger where you write comments, this project uses a **code-first reflection approach** via `routerx`.
+This project uses a code-first reflection approach via `routerx`.
 
 #### Step 1: Define the endpoint in Controller
 In your `Register` method, use `dto.OpenEndpoint` to describe your API:
@@ -69,7 +69,7 @@ func (this *HelloController) Register(rg *routerx.Routerx) {
         Path:        "/json",
         Handler:     this.JSON,
         Summary:     "Create something",
-        Request:     &dto.CreatePostRequest{}, // Automatically generates schema!
+        Request:     &dto.CreatePostRequest{},
         Responses:   map[int]any{
             200: gin.H{"status": "ok"},
         },
@@ -87,10 +87,9 @@ Metadata: dto.Metadata{
 ```
 
 #### Step 3: Access it
-Run your service and navigate to:
-`http://localhost:8080/swagger/`
+Run your service and navigate to: `http://localhost:8080/swagger/`
 
-## 🛠️ Getting Started
+## Getting Started
 
 ### Installation
 ```bash
@@ -105,4 +104,4 @@ go run cmd/iam/main.go
 ```
 
 ---
-Crafted with ❤️ by **HoangHuy7**
+Crafted by **HoangHuy7**
