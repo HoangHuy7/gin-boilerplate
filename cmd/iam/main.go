@@ -7,7 +7,6 @@ import (
 	"monorepo/internal/server"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
 )
@@ -18,11 +17,6 @@ func NewGinEngine(gl *logger.GoLogger) *gin.Engine {
 	r.Use(logger.ZapLogger(gl.Zap))
 	return r
 }
-
-var (
-	APP_NAME = "iam"
-	INSTANCE = uuid.New().Version().String()
-)
 
 func main() {
 	fx.New(

@@ -1,6 +1,5 @@
 go:
   port: 8081
----
 database:
   master:
     host: 127.0.0.1
@@ -16,7 +15,6 @@ database:
     password: postgres
     dbname: workerdb
     sslmode: disable
----
 oidc:
   - tenancy: iam
     ClientID: iam

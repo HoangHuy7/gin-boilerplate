@@ -1,8 +1,9 @@
 package controller
 
 import (
-	v1 "monorepo/iam/controller/v1"
+	"monorepo/apps/iam/controller/v1"
 	"monorepo/internal/base"
+	"monorepo/internal/server"
 
 	"go.uber.org/fx"
 )
@@ -10,7 +11,7 @@ import (
 var Module = fx.Options(
 	fx.Provide(
 		fx.Annotate(
-			NewRouter,
+			server.NewRouter,
 			fx.ParamTags(`group:"controllers"`),
 		),
 		fx.Annotate(

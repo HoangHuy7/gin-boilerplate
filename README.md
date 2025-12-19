@@ -1,90 +1,99 @@
 # 🏗️ gin-boilerplate
 
-> **Production-ready Gin boilerplate with modular architecture, monorepo support, and best practices for scalable backend systems.**
+> **Production-ready Gin boilerplate with modular architecture, monorepo support, and Uber-fx powered automation.**
 
-This repository serves as a powerful **startkit monorepo** designed to jumpstart your Go backend development. It moves away from monolithic chaos, embracing a clean, domain-driven design that scales with your team and product.
+This repository is a **startkit monorepo** designed for scalable Go backend development. It features a domain-driven design that separates core logic from application-specific modules.
 
 ## 🌟 Highlights
 
-- **🧩 Modular Architecture**: Distinct domains (`iam`, `device`, `notification`) functioning as **child servers** (microservices), similar to Maven modules.
-- **🏗️ Monorepo Structure**: **`internal`** acts as the **Core/Shared Library** (like a Maven parent/common), holding base logic, DTOs, and router configurations used by all child services.
-- **🔐 Authorization**: Built-in support for **Casbin** (RBAC/ABAC) ensuring secure access control.
-- **⚙️ Configuration**: Centralized configuration management with `configs` directory (YAML support).
-- **📜 Auto Swagger / OpenAPI**: Automatic API documentation generation using `swaggest/openapi-go`. Just define your DTOs and Controller metadata, and the docs are ready!
-- **🛡️ Production Ready**: Pre-configured with logging, robust routing strategies, and standard DTOs.
-- **🔌 Scalable & Extensible**: Built on top of [Gin](https://github.com/gin-gonic/gin), ready to grow from a startup MVP to a high-load system.
+- **🧩 Modular Architecture**: Domains like `iam`, `device`, and `notification` function as independent modules.
+- **🏗️ Monorepo Structure**: The `internal` directory holds shared logic (Core), DTOs, and server configurations.
+- **⚡ Dependency Injection**: Powered by **Uber-fx** for clean lifecycle management and automatic component wiring.
+- **🤖 Automated Controller Registration**: No more manual routing for every controller. Just provide it to the module, and it's live.
+- **🔐 Authorization**: Built-in **Casbin** support for RBAC/ABAC.
+- **📜 Auto Swagger / OpenAPI**: Reflection-based Swagger generation using `swaggest/openapi-go`.
 
 ## 📂 Project Structure
 
 ```text
 .
-├── apps                    # 🏢 Container for all Child Servers logic
-│   ├── device              # Device Service Logic
-│   ├── iam                 # IAM Service Logic
-│   │   ├── app             # 🔌 App Wiring (Config, DB, Auth)
-│   │   │   ├── casbin      # Casbin Authorization
-│   │   │   ├── config      # Config Loading
-│   │   │   └── database    # Database Connection
-│   │   └── controller      # HTTP Controllers
-│   │       └── v1
-│   │           └── HelloController.go
-│   └── notification        # Notification Service Logic
-├── cmd
-│   ├── device              # Entry point for Device Server
-│   │   └── main.go
-│   ├── iam                 # Entry point for IAM Server
-│   │   └── main.go
-│   └── notification        # Entry point for Notification Server
-│       └── main.go
-├── configs                 # ⚙️ Configuration & Policy Files
-│   └── iam
-│       ├── application.yaml
-│       └── casbin
-├── internal                # 🧱 Core / Shared Libraries
-│   ├── base
-│   ├── dto
-│   ├── logger
-│   ├── server
-│   └── utils               # 🛠️ Utility Functions
+├── apps                    # 🏢 Micro-apps / Domain Logic
+│   ├── device              # Device Domain
+│   ├── iam                 # Identity & Access Management
+│   │   ├── app             # App-specific wiring (DB, Auth, Config)
+│   │   └── controller      # HTTP Handlers
+│   └── notification        # Notification Domain
+├── cmd                     # 🚀 Execution Entry Points
+│   ├── device/main.go
+│   ├── iam/main.go
+│   └── notification/main.go
+├── configs                 # ⚙️ App Configurations (YAML, Casbin)
+├── internal                # 🧱 Shared Core Library
+│   ├── base                # Base interfaces (Controller, etc.)
+│   ├── logger              # Zap-based logging
+│   ├── server              # Core HTTP server & Router logic
+│   └── utils               # Shared utilities
 ├── go.mod
-├── go.sum
-└── main.go
+└── main.go                 # Root entry (optional/bridge)
+```
+
+## 🤖 How Automation Works
+
+The boilerplate uses [Uber-fx](https://github.com/uber-go/fx) to automate the wiring of dependencies, specifically for controllers.
+
+### 1. The Core Router (`internal/server`)
+The `NewRouter` function in `internal/server/router.go` is designed to receive a list of controllers via dependency injection:
+```go
+func NewRouter(controllers []base.Controller, ...) *Router
+```
+
+### 2. Automatic Registration (`apps/iam/controller`)
+In your module's controller package (e.g., `apps/iam/controller/Module.go`), you register controllers using **Group Tags**:
+```go
+fx.Annotate(
+    v1.NewHelloController,
+    fx.As(new(base.Controller)),
+    fx.ResultTags(`group:"controllers"`), // Adds to the "controllers" group
+)
+```
+And then inject that group into the `NewRouter`:
+```go
+fx.Annotate(
+    server.NewRouter,
+    fx.ParamTags(`group:"controllers"`), // Injects all controllers from the group
+)
+```
+
+### 3. Wiring it up (`cmd/iam`)
+In the `main.go` of your service, simply include the controller module:
+```go
+fx.New(
+    app.Module,
+    controller.Module, // Automation happens here
+    // ...
+    fx.Invoke(server.RunServer),
+).Run()
 ```
 
 ## 🛠️ Getting Started
 
-### Prerequisites
-
-- **Go** (1.20 or higher)
-
 ### Installation
-
-Clone the repository:
-
 ```bash
 git clone https://github.com/HoangHuy7/gin-boilerplate.git
 cd gin-boilerplate
 go mod download
 ```
 
-### Running a Microservice
-
-Each domain has its own entry point in `cmd/`. For example, to run the **IAM** service:
-
+### Running a Service
 ```bash
 go run cmd/iam/main.go
 ```
 
-### 📚 API Documentation (Swagger)
-
-After running a service, you can access the Swagger UI at:
-- **URL**: `http://localhost:8080/swagger/` (Port may vary based on configuration)
-
+### 📚 API Documentation
+Access Swagger UI at: `http://localhost:8080/swagger/` (Port depends on your config).
 
 ## 🤝 Contribution
-
-Contributions are welcome! Focus on keeping the `internal` directory clean and reusable across different domains.
+Keep the `internal` directory clean and reusable. If you add a new shared utility, ensure it follows the base interfaces.
 
 ---
-
 Crafted with ❤️ by **HoangHuy7**

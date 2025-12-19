@@ -1,7 +1,7 @@
-package Casbin
+package casbin
 
 import (
-	"gin-quickstart/internal/database"
+	"monorepo/apps/iam/app/database"
 
 	"github.com/casbin/casbin/v2"
 	gormadapter "github.com/casbin/gorm-adapter/v3"

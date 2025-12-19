@@ -1,49 +1,37 @@
-package app
+package config
 
 import (
 	"log"
-	"github.com/spf13/viper"
+	"monorepo/internal/dto"
+	"monorepo/internal/utils"
+
+	"github.com/google/uuid"
 )
 
-type DatabaseConfig struct {
-	Host     string `mapstructure:"host"`
-	Port     int    `mapstructure:"port"`
-	User     string `mapstructure:"user"`
-	Password string `mapstructure:"password"`
-	DBName   string `mapstructure:"dbname"`
-	SSLMode  string `mapstructure:"sslmode"`
-}
-type GoConfig struct {
-	Port int `mapstructure:"port"`
-}
 type Config struct {
 	Database struct {
-		Master DatabaseConfig `mapstructure:"master"`
-		Worker DatabaseConfig `mapstructure:"worker"`
+		Master dto.DatabaseConfig `mapstructure:"master"`
+		Worker dto.DatabaseConfig `mapstructure:"worker"`
 	} `mapstructure:"database"`
-
-	Go GoConfig `mapstructure:"go"`
 }
 
-var C Config // global for convenience
+func NewAppMetadata() *dto.AppMetadata {
+	return &dto.AppMetadata{
+		AppName:     "iam",
+		Instance:    uuid.New().String(),
+		Port:        8080,
+		ContextPath: "",
+	}
+}
+func NewConfig(metadata *dto.AppMetadata) *Config {
 
-func LoadConfig() {
-	viper.SetConfigName("configs")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
-	viper.AddConfigPath("./configs")
-	viper.SetEnvPrefix("")
-	viper.AutomaticEnv()
+	cfg, err := utils.LoadConfig[Config](metadata.AppName)
 
-	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("Error loading config: %v", err)
+	if err != nil {
+		panic("Load config failed: " + err.Error())
 	}
 
-	if err := viper.Unmarshal(&C); err != nil {
-		log.Fatalf("Error parsing config: %v", err)
-	}
+	log.Println("Config loaded for app:", metadata.AppName, "instance:", metadata.Instance)
 
-	if C.Go.Port == 0 {
-		C.Go.Port = 8080 // default port
-	}
+	return cfg
 }

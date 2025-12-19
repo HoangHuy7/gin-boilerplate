@@ -6,7 +6,7 @@ import (
 	"monorepo/internal/base/routerx"
 	"monorepo/internal/dto"
 	"monorepo/internal/logger"
-	"regexp"
+	"monorepo/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/swaggest/openapi-go"
@@ -25,18 +25,13 @@ type Router struct {
 	Logger      *logger.GoLogger
 }
 
-func ginPathToOpenAPI(path string) string {
-	re := regexp.MustCompile(`:([a-zA-Z0-9_]+)`)
-	return re.ReplaceAllString(path, `{$1}`)
-}
-
 func (this *Router) registerOpenAPI(meta *dto.Metadata, base string) {
 
 	for _, ep := range meta.Endpoints {
 		// 1️⃣ tạo operation context
 		oc, err := this.OpenAPI.NewOperationContext(
 			ep.Method,
-			base+ginPathToOpenAPI(ep.Path),
+			base+utils.GinPathToOpenAPI(ep.Path),
 		)
 		if err != nil {
 			panic(err) // hoặc log
@@ -93,31 +88,66 @@ func (this *Router) exposeSwagger(r *gin.Engine) {
 	})
 	r.GET("/swagger/*any", gin.WrapH(
 		v5emb.New(
-			"Gin Quickstathis API", // title
-			"/openapi.json",        // OpenAPI spec URL
-			"/swagger/",            // base path (BẮT BUỘC có / cuối)
+			"Gin Quickstathis API",
+			"/openapi.json",
+			"/swagger/",
 		),
 	))
 }
 
-func (this *Router) RegisterAll(r *gin.Engine) {
+func (this *Router) RegisterAll(r *gin.Engine, appMeta *dto.AppMetadata) {
 	for _, ctrl := range this.Controllers {
 		meta := ctrl.Controller.GetMetadata()
-		base := builderPath(meta)
+		base := builderPath(meta, appMeta.ContextPath)
 		ginGroup := r.Group(base)
 		rg := routerx.NewRouterx(ginGroup, meta)
 		ctrl.Controller.Register(rg)
-		if meta.EnableOpenAPI {
-			this.registerOpenAPI(meta, base)
+		if this.OpenAPI != nil {
+			if meta.EnableOpenAPI {
+				this.registerOpenAPI(meta, base)
+			}
+			this.Logger.INFO("Registered controller",
+				zap.String("url", base))
+		} else {
+			this.Logger.Zap.Info("OpenAPI is disabled; controller not registered in OpenAPI spec")
 		}
-		this.Logger.INFO("Registered controller",
-			zap.String("url", base))
+
 		//ctrl.Controller.Register(r.Group(builderPath(ctrl.Controller.GetMetadata())))
 	}
-	this.exposeSwagger(r)
+	if this.OpenAPI != nil {
+		this.exposeSwagger(r)
+	}
 
 }
 
-func builderPath(config *dto.Metadata) string {
-	return fmt.Sprintf("/api%s%s", config.Version, config.Path)
+func builderPath(config *dto.Metadata, contextPath string) string {
+	return fmt.Sprintf("%s/api%s%s", contextPath, config.Version, config.Path)
+}
+
+func NewRouter(controllers []base.Controller, appMeta *dto.AppMetadata, lg *logger.GoLogger) *Router {
+	rt := &Router{
+		OpenAPI: openapi3.NewReflector(),
+		Logger:  lg,
+	}
+
+	rt.OpenAPI.SpecEns().
+		Info.
+		WithTitle(utils.NVL(&appMeta.OpenAPIInfo.Title, fmt.Sprintf("Swagger Service %s", appMeta.AppName))).
+		WithVersion("1.0.0").
+		WithDescription("This is an example api for swagger example")
+	for _, c := range controllers {
+		rt.Controllers = append(rt.Controllers, APIGroup{Controller: c})
+	}
+	return rt
+}
+
+func NewRouterWithOpenAPI(controllers []base.Controller, lg *logger.GoLogger) *Router {
+	rt := &Router{
+		OpenAPI: nil,
+		Logger:  lg,
+	}
+	for _, c := range controllers {
+		rt.Controllers = append(rt.Controllers, APIGroup{Controller: c})
+	}
+	return rt
 }

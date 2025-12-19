@@ -34,11 +34,41 @@ func (this *HelloController) Register(rg *routerx.Routerx) {
 		Description: "Hello World Description",
 	})
 
+	rg.POST(dto.OpenEndpoint{
+		Path:        "/json",
+		Handler:     this.JSON,
+		Summary:     "Hello World Summary",
+		Description: "Hello World Description",
+		Request:     &dto.CreatePostRequest{},
+		Responses: map[int]any{
+			200: map[string]any{
+				"message": "string",
+				"data":    dto.CreatePostRequest{},
+			},
+			400: gin.H{"error": "string"},
+		},
+	})
+
 }
 
 func (this *HelloController) Hello(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"message": "Hello World",
+	})
+}
+
+func (this *HelloController) JSON(c *gin.Context) {
+	var req dto.CreatePostRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Hello World",
+		"data":    req,
 	})
 }
