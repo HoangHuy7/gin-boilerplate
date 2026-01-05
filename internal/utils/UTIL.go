@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
@@ -113,4 +114,19 @@ func ToJSON[T any](v T) ([]byte, error) {
 
 func FromJSON[T any](value string, out *T) error {
 	return json.Unmarshal([]byte(value), out)
+}
+
+func LogAndReturn(err error, log *zap.Logger) error {
+	if err != nil {
+		log.Error(err.Error())
+	}
+	return err
+}
+
+func ErrorResponse(err error) gin.H {
+	return gin.H{
+		"message": err.Error(),
+		"status":  "error",
+		"data":    nil,
+	}
 }

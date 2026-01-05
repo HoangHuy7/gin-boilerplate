@@ -4,8 +4,10 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"monorepo/internal/base"
 	"monorepo/internal/base/routerx"
+	"monorepo/internal/base/security"
 	"monorepo/internal/dto"
 	"monorepo/internal/logger"
 	"monorepo/internal/utils"
@@ -28,6 +30,15 @@ type Router struct {
 }
 
 func (this *Router) registerOpenAPI(meta *dto.Metadata, base string) {
+	spec := this.OpenAPI.SpecSchema()
+	spec.
+		SetHTTPBearerTokenSecurity("bearerAuth",
+			"JWT Authorization header using the Bearer scheme",
+			"")
+	spec.SetAPIKeySecurity("apiKeyAuth", "X-API-KEY", "header", "ds")
+	spec.SetTitle("Gin Quickstart API")
+	spec.SetVersion("1.0.0")
+	spec.SetDescription("This is an example api for swagger example")
 
 	for _, ep := range meta.Endpoints {
 		// 1️⃣ tạo operation context
@@ -42,6 +53,10 @@ func (this *Router) registerOpenAPI(meta *dto.Metadata, base string) {
 		// 2️⃣ set summary (nếu có)
 		if ep.Summary != "" {
 			oc.SetSummary(ep.Summary)
+		}
+		if !meta.IsNotAuth {
+			oc.AddSecurity("apiKeyAuth")
+			oc.AddSecurity("bearerAuth")
 		}
 		if ep.Description != "" {
 			oc.SetDescription(ep.Description)
@@ -95,13 +110,18 @@ func (this *Router) exposeSwagger(r *gin.Engine) {
 			"/swagger/",
 		),
 	))
+	log.Println("Starting Swagger on http://localhost:8082/swagger")
+
 }
 
-func (this *Router) RegisterAll(r *gin.Engine, appMeta *dto.AppMetadata) {
+func (this *Router) RegisterAll(r *gin.Engine, appMeta *dto.AppMetadata, se *security.Security) {
 	for _, ctrl := range this.Controllers {
 		meta := ctrl.Controller.GetMetadata()
 		base := builderPath(meta, appMeta.ContextPath)
 		ginGroup := r.Group(base)
+		if !meta.IsNotAuth {
+			ginGroup.Use(se.BeforeFilter())
+		}
 		rg := routerx.NewRouterx(ginGroup, meta)
 		ctrl.Controller.Register(rg)
 		if this.OpenAPI != nil {

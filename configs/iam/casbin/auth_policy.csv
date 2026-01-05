@@ -1,4 +1,0 @@
-p, admin, /api/v1/users, GET
-p, admin, /api/v1/users, POST
-p, user, /api/v1/profile, GET
-p, offline_access, /api/v1/hello-auth, GET

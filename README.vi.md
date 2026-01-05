@@ -128,7 +128,7 @@ go mod download
 
 ### Chạy Service
 ```bash
-go run cmd/iam/main.go
+go run cmd/gas/main.go
 ```
 
 ---

@@ -34,6 +34,7 @@ type OpenEndpoint struct {
 	Responses   map[int]any
 	Summary     string
 	Description string
+	IsNotAuth   bool
 }
 type OpenGroup struct {
 	Gin       *gin.RouterGroup
@@ -46,6 +47,7 @@ type Metadata struct {
 	Tag           string
 	Endpoints     []OpenEndpoint
 	EnableOpenAPI bool
+	IsNotAuth     bool
 }
 
 type DatabaseConfig struct {
@@ -61,4 +63,12 @@ type CreatePostRequest struct {
 	Title       string    `json:"title" binding:"required"`
 	Description string    `json:"description"`
 	Date        time.Time `json:"date"`
+}
+
+type OIDC struct {
+	Realm        string
+	Issuer       string
+	ClientID     string
+	RealmName    string
+	ClientSecret string
 }

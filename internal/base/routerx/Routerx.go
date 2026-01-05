@@ -35,14 +35,14 @@ func (this *Routerx) POST(oe dto.OpenEndpoint) {
 
 func (this *Routerx) DELETE(oe dto.OpenEndpoint) {
 	oe.Method = http.MethodDelete
-	this.Gin.GET(oe.Path, oe.Handler)
+	this.Gin.DELETE(oe.Path, oe.Handler)
 	this.addEndpoint(oe)
 
 }
 
 func (this *Routerx) PUT(oe dto.OpenEndpoint) {
 	oe.Method = http.MethodPut
-	this.Gin.POST(oe.Path, oe.Handler)
+	this.Gin.PUT(oe.Path, oe.Handler)
 	this.addEndpoint(oe)
 }
 

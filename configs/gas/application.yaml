@@ -1,0 +1,22 @@
+go:
+  port: 8081
+database:
+  master:
+    host: 127.0.0.1
+    port: 5432
+    user: postgres
+    password: postgres
+    dbname: masterdb
+    sslmode: disable
+  worker:
+    host: 127.0.0.1
+    port: 5432
+    user: postgres
+    password: postgres
+    dbname: workerdb
+    sslmode: disable
+oidc:
+  realm: gas
+  client_id: gas_app
+  client_secret: M8Q8jdu0pXX22gGsy0ArORes7dUEw7GM
+  issuer: http://localhost:8080/realms/gas
