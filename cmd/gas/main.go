@@ -3,8 +3,10 @@
 package main
 
 import (
-	"monorepo/apps/gas"
 	"monorepo/apps/gas/app"
+	"monorepo/apps/gas/controller"
+	"monorepo/apps/gas/domain"
+	"monorepo/apps/gas/service"
 	"monorepo/internal/base/security"
 	"monorepo/internal/logger"
 	"monorepo/internal/server"
@@ -24,8 +26,10 @@ func NewGinEngine(gl *logger.GoLogger, s *security.Security) *gin.Engine {
 func main() {
 	fx.New(
 		app.Module,
-		gas.Module,
+		controller.Module,
+		service.Module,
 		logger.Module,
+		domain.Module,
 		security.Module,
 		fx.WithLogger(func(gl *logger.GoLogger) fxevent.Logger {
 			return &fxevent.ZapLogger{Logger: gl.Zap}

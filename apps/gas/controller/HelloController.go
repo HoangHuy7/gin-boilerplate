@@ -1,6 +1,6 @@
 // hoanghuy7 from Vietnamese with love!
 
-package gas
+package controller
 
 import (
 	"monorepo/internal/base/routerx"

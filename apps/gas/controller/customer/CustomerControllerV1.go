@@ -1,6 +1,7 @@
 package customer
 
 import (
+	"monorepo/apps/gas/service"
 	"monorepo/internal/base/routerx"
 	"monorepo/internal/dto"
 	"monorepo/internal/utils"
@@ -11,13 +12,13 @@ import (
 
 type CustomerController struct {
 	Metadata        dto.Metadata
-	customerService *CustomerService
+	customerService *service.CustomerService
 }
 
 func (p *CustomerController) GetMetadata() *dto.Metadata {
 	return &p.Metadata
 }
-func NewCustomerController(ps *CustomerService) *CustomerController {
+func NewCustomerController(ps *service.CustomerService) *CustomerController {
 	return &CustomerController{
 		customerService: ps,
 		Metadata: dto.Metadata{

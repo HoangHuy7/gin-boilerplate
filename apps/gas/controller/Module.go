@@ -1,9 +1,8 @@
-// hoanghuy7 from Vietnamese with love!
-
-package gas
+package controller
 
 import (
-	"monorepo/apps/gas/customer"
+	"monorepo/apps/gas/controller/customer"
+	"monorepo/apps/gas/controller/menu"
 	"monorepo/internal/base"
 	"monorepo/internal/server"
 
@@ -26,8 +25,10 @@ var Module = fx.Options(
 			fx.As(new(base.Controller)),
 			fx.ResultTags(`group:"controllers"`),
 		),
-	),
-	fx.Provide(
-		customer.NewProductService,
+		fx.Annotate(
+			menu.NewMenuControllerV1,
+			fx.As(new(base.Controller)),
+			fx.ResultTags(`group:"controllers"`),
+		),
 	),
 )

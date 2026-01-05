@@ -1,4 +1,4 @@
-package customer
+package service
 
 import (
 	"monorepo/apps/gas/app/database"
