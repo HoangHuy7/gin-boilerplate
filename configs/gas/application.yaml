@@ -20,3 +20,8 @@ oidc:
   client_id: gas_app
   client_secret: M8Q8jdu0pXX22gGsy0ArORes7dUEw7GM
   issuer: http://localhost:8080/realms/gas
+
+redis:
+  host: localhost:6373
+  password: ""
+  db: 0

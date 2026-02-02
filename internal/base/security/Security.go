@@ -3,6 +3,7 @@ package security
 import (
 	"context"
 	"fmt"
+	"monorepo/apps/gas/service"
 	"monorepo/internal/dto"
 	"monorepo/internal/logger"
 	"strings"
@@ -20,7 +21,7 @@ type Security struct {
 	Verifier *oidc.IDTokenVerifier
 }
 
-func NewSecurity(tenant *dto.OIDC, goLogger *logger.GoLogger) *Security {
+func NewSecurity(tenant *dto.OIDC, goLogger *logger.GoLogger, r *service.RedisService) *Security {
 	ctx := context.Background()
 	provider, err := oidc.NewProvider(ctx, tenant.Issuer)
 	if err != nil {

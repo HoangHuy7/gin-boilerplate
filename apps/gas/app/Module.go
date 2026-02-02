@@ -5,6 +5,7 @@ package app
 import (
 	"monorepo/apps/gas/app/config"
 	"monorepo/apps/gas/app/database"
+	"monorepo/apps/gas/app/redis"
 	"monorepo/internal/dto"
 
 	"go.uber.org/fx"
@@ -23,5 +24,6 @@ var Module = fx.Options(
 	fx.Provide(
 		config.NewAppMetadata,
 		database.NewDataSources,
+		redis.NewRedisClient,
 	),
 )

@@ -70,7 +70,7 @@ func (this CustomerController) edit(c *gin.Context) {
 		c.JSON(400, utils.ErrorResponse(err))
 		return
 	}
-	rows_affected, err := this.customerService.EditCustomer(&customer)
+	rows_affected, err := this.customerService.EditCustomer(c, &customer)
 	if err != nil {
 		c.JSON(500, utils.ErrorResponse(err))
 		return

@@ -6,6 +6,7 @@ import (
 	"monorepo/internal/utils"
 	"monorepo/shares/entities/workerdb"
 
+	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -47,7 +48,7 @@ func (this *CustomerService) DeleteCustomer(id string) int64 {
 	return tx.RowsAffected
 }
 
-func (this *CustomerService) EditCustomer(input *workerdb.Gastb_Customer) (int64, error) {
+func (this *CustomerService) EditCustomer(c *gin.Context, input *workerdb.Gastb_Customer) (int64, error) {
 
 	var rows_affected int64
 

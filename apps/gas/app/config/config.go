@@ -22,6 +22,12 @@ type Config struct {
 		ClientSecret string `mapstxructure:"client_secret"`
 		Issuer       string `mapstructure:"issuer"`
 	}
+
+	Redis struct {
+		Host     string `mapstructure:"host"`
+		Password string `mapstructure:"password"`
+		DB       int    `mapstructure:"db"`
+	}
 }
 
 func NewAppMetadata() *dto.AppMetadata {
