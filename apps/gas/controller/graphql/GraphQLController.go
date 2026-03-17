@@ -13,7 +13,7 @@ import (
 
 // GraphQLController handles GraphQL endpoints
 type GraphQLController struct {
-	handler       *handler.Server
+	handler          *handler.Server
 	enablePlayground bool
 }
 
@@ -22,7 +22,7 @@ func NewGraphQLController(
 	handler *handler.Server,
 ) *GraphQLController {
 	return &GraphQLController{
-		handler:       handler,
+		handler:          handler,
 		enablePlayground: true,
 	}
 }
@@ -38,7 +38,7 @@ func (c *GraphQLController) Register(r *routerx.Routerx) {
 		Path:    "",
 		Handler: c.graphqlHandler(),
 	})
-	
+
 	// GraphQL Playground endpoint
 	if c.enablePlayground {
 		r.GET(dto.OpenEndpoint{
@@ -56,7 +56,7 @@ func (c *GraphQLController) GetMetadata() *dto.Metadata {
 		Tag:           "GraphQL",
 		Endpoints:     []dto.OpenEndpoint{},
 		EnableOpenAPI: false,
-		IsNotAuth:     true, // Set to false if you want authentication
+		IsNotAuth:     false, // Set to false if you want authentication
 	}
 }
 

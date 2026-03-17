@@ -16,12 +16,10 @@ type Config struct {
 		//Worker dto.DatabaseConfig `mapstructure:"worker"`
 	} `mapstructure:"database"`
 
-	Oidc struct {
-		Realm        string `mapstructure:"realm"`
-		ClientID     string `mapstructure:"client_id"`
-		ClientSecret string `mapstxructure:"client_secret"`
-		Issuer       string `mapstructure:"issuer"`
-	}
+	// Casdoor configuration for multi-organization support
+	Casdoor struct {
+		Organizations map[string]dto.CasdoorOrgConfig `mapstructure:"organizations"`
+	} `mapstructure:"casdoor"`
 
 	Redis struct {
 		Host     string `mapstructure:"host"`

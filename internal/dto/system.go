@@ -65,6 +65,22 @@ type CreatePostRequest struct {
 	Date        time.Time `json:"date"`
 }
 
+// CasdoorOrgConfig holds configuration for a single Casdoor organization
+type CasdoorOrgConfig struct {
+	ServerURL    string `mapstructure:"server_url"`
+	ClientID     string `mapstructure:"client_id"`
+	ClientSecret string `mapstructure:"client_secret"`
+	Organization string `mapstructure:"organization"`
+	Application  string `mapstructure:"application"`
+	Certificate  string `mapstructure:"certificate"`
+}
+
+// CasdoorConfig holds all organizations
+type CasdoorConfig struct {
+	Organizations map[string]CasdoorOrgConfig
+}
+
+// OIDC struct kept for backward compatibility
 type OIDC struct {
 	Realm        string
 	Issuer       string

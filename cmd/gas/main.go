@@ -8,6 +8,7 @@ import (
 	"monorepo/apps/gas/domain"
 	"monorepo/apps/gas/graph"
 	"monorepo/apps/gas/service"
+	"monorepo/internal/base/security"
 	"monorepo/internal/logger"
 	"monorepo/internal/server"
 
@@ -17,8 +18,7 @@ import (
 )
 
 func NewGinEngine(gl *logger.GoLogger,
-
-// s *security.Security,
+	s *security.Security,
 ) *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
@@ -34,7 +34,7 @@ func main() {
 		logger.Module,
 		domain.Module,
 		graph.Module,
-		//security.Module,
+		security.Module,
 		fx.WithLogger(func(gl *logger.GoLogger) fxevent.Logger {
 			return &fxevent.ZapLogger{Logger: gl.Zap}
 		}),
