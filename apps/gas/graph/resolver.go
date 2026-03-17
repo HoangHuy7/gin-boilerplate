@@ -7,7 +7,6 @@ import (
 )
 
 // Resolver is the root resolver that holds all service dependencies
-// This resolver is injected with Uber FX
 type Resolver struct {
 	CustomerService *service.CustomerService
 	MenuService     *service.MenuService

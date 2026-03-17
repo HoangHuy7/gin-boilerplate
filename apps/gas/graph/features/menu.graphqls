@@ -1,0 +1,39 @@
+# Menu Feature Schema
+
+extend type Query {
+  menus: [Menu!]!
+  menu(id: ID!): Menu
+}
+
+extend type Mutation {
+  createMenu(input: CreateMenuInput!): Menu!
+  updateMenu(id: ID!, input: UpdateMenuInput!): Menu!
+  deleteMenu(id: ID!): Boolean!
+}
+
+type Menu {
+  id: ID!
+  name: String!
+  description: String
+  price: Float!
+  category: String
+  isAvailable: Boolean!
+  createdAt: String
+  updatedAt: String
+}
+
+input CreateMenuInput {
+  name: String!
+  description: String
+  price: Float!
+  category: String
+  isAvailable: Boolean
+}
+
+input UpdateMenuInput {
+  name: String
+  description: String
+  price: Float
+  category: String
+  isAvailable: Boolean
+}

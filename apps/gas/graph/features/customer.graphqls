@@ -1,0 +1,36 @@
+# Customer Feature Schema
+
+extend type Query {
+  customers: [Customer!]!
+  customer(id: ID!): Customer
+}
+
+extend type Mutation {
+  createCustomer(input: CreateCustomerInput!): Customer!
+  updateCustomer(id: ID!, input: UpdateCustomerInput!): Customer!
+  deleteCustomer(id: ID!): Boolean!
+}
+
+type Customer {
+  id: ID!
+  name: String!
+  email: String!
+  phone: String
+  address: String
+  createdAt: String
+  updatedAt: String
+}
+
+input CreateCustomerInput {
+  name: String!
+  email: String!
+  phone: String
+  address: String
+}
+
+input UpdateCustomerInput {
+  name: String
+  email: String
+  phone: String
+  address: String
+}
