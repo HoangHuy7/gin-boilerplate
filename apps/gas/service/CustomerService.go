@@ -21,16 +21,6 @@ func NewProductService(db *database.DataSources, lg *logger.GoLogger) *CustomerS
 	}
 }
 
-func (this *CustomerService) GetCustomerList() []workerdb.Gastb_Customer {
-
-	return nil
-}
-
-func (this *CustomerService) AddCustomer(customer *workerdb.Gastb_Customer) int64 {
-
-	return 0
-}
-
 func (this *CustomerService) DeleteCustomer(id string) int64 {
 
 	return 1

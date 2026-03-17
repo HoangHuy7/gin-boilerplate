@@ -1,0 +1,20 @@
+package mekyra_db
+
+import "github.com/google/uuid"
+
+// =========================
+// ORDER ITEMS
+// =========================
+type Mkrtb_OrderItem struct {
+	Id          uuid.UUID `gorm:"column:id;type:uuid;default:gen_random_uuid();primaryKey"`
+	OrderId     uuid.UUID `gorm:"column:order_id;type:uuid"`
+	ProductId   uuid.UUID `gorm:"column:product_id;type:uuid"`
+	ProductName string    `gorm:"column:product_name;type:text"`
+	Quantity    int       `gorm:"column:quantity"`
+	Price       string    `gorm:"column:price;type:decimal(12,2)"`
+	Total       string    `gorm:"column:total;type:decimal(12,2)"`
+}
+
+func (Mkrtb_OrderItem) TableName() string {
+	return "mkrtb_order_items"
+}

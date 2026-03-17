@@ -69,7 +69,7 @@ func (c *GraphQLController) graphqlHandler() gin.HandlerFunc {
 
 // playgroundHandler returns a Gin handler for GraphQL Playground
 func (c *GraphQLController) playgroundHandler() gin.HandlerFunc {
-	h := playground.Handler("GraphQL Playground", "/api/graphql")
+	h := playground.Handler("GraphQL Playground", "/graphql")
 	return func(ctx *gin.Context) {
 		h.ServeHTTP(ctx.Writer, ctx.Request)
 	}
