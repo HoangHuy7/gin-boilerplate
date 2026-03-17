@@ -14,25 +14,23 @@ import (
 )
 
 type DataSources struct {
-	Master *gorm.DB
-	Worker *gorm.DB
-	logger *zap.Logger
+	Mekyra_db *gorm.DB
+	logger    *zap.Logger
 }
 
 func NewDataSources(cfg *config.Config, gLogger *logger.GoLogger) *DataSources {
-	master, err := utils.Connect(&cfg.Database.Master, gLogger.Zap)
+	master, err := utils.Connect(&cfg.Database.Mekyra_db, gLogger.Zap)
 	if err != nil {
 		panic(err)
 	}
 
-	worker, err := utils.Connect(&cfg.Database.Worker, gLogger.Zap)
-	if err != nil {
-		panic(err)
-	}
+	//worker, err := utils.Connect(&cfg.Database.Worker, gLogger.Zap)
+	//if err != nil {
+	//	panic(err)
+	//}
 
 	return &DataSources{
-		Master: master,
-		Worker: worker,
+		Mekyra_db: master,
 	}
 }
 

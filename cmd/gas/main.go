@@ -7,7 +7,6 @@ import (
 	"monorepo/apps/gas/controller"
 	"monorepo/apps/gas/domain"
 	"monorepo/apps/gas/service"
-	"monorepo/internal/base/security"
 	"monorepo/internal/logger"
 	"monorepo/internal/server"
 
@@ -16,7 +15,10 @@ import (
 	"go.uber.org/fx/fxevent"
 )
 
-func NewGinEngine(gl *logger.GoLogger, s *security.Security) *gin.Engine {
+func NewGinEngine(gl *logger.GoLogger,
+
+// s *security.Security,
+) *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	r.Use(logger.ZapLogger(gl.Zap))
@@ -30,7 +32,7 @@ func main() {
 		service.Module,
 		logger.Module,
 		domain.Module,
-		security.Module,
+		//security.Module,
 		fx.WithLogger(func(gl *logger.GoLogger) fxevent.Logger {
 			return &fxevent.ZapLogger{Logger: gl.Zap}
 		}),

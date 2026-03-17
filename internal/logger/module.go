@@ -25,7 +25,7 @@ type GoLogger struct {
 func NewLogger() *GoLogger {
 	env := os.Getenv("APP_ENV") // dev | prod
 
-	if env == "prod" {
+	if env != "prod" {
 		// ========== PROD MODE ==========
 		cfg := zap.NewProductionConfig()
 		cfg.EncoderConfig.EncodeDuration = zapcore.MillisDurationEncoder
@@ -35,18 +35,18 @@ func NewLogger() *GoLogger {
 
 		logger, _ := cfg.Build()
 		return &GoLogger{Zap: logger}
+	} else {
+		// ========== DEV MODE ==========
+		cfg := zap.NewDevelopmentConfig()
+		cfg.Encoding = "console"
+		cfg.EncoderConfig.EncodeDuration = zapcore.MillisDurationEncoder
+		cfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+		cfg.OutputPaths = []string{"stdout"}
+
+		logger, _ := cfg.Build()
+		return &GoLogger{Zap: logger}
 	}
-
-	// ========== DEV MODE ==========
-	cfg := zap.NewDevelopmentConfig()
-	cfg.Encoding = "console"
-	cfg.EncoderConfig.EncodeDuration = zapcore.MillisDurationEncoder
-	cfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-	cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	cfg.OutputPaths = []string{"stdout"}
-
-	logger, _ := cfg.Build()
-	return &GoLogger{Zap: logger}
 }
 
 func ZapLogger(logger *zap.Logger) gin.HandlerFunc {

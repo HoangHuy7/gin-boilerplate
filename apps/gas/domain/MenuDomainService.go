@@ -8,7 +8,6 @@ import (
 	"monorepo/shares/entities/workerdb/view"
 
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
 
 type MenuDomainService struct {
@@ -27,12 +26,6 @@ func NewMenuDomainService(logger *logger.GoLogger, menuService *service.MenuServ
 
 func (this *MenuDomainService) GetMenuTree(context context.Context, user map[string]string) []view.Vw_UserMenu {
 	var list = make([]view.Vw_UserMenu, 0)
-
-	this.db.Worker.Transaction(func(tx *gorm.DB) error {
-		list = this.menuService.GetMenuTree(tx)
-
-		return nil
-	})
 
 	return list
 }

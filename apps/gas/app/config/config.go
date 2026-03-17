@@ -12,8 +12,8 @@ import (
 
 type Config struct {
 	Database struct {
-		Master dto.DatabaseConfig `mapstructure:"master"`
-		Worker dto.DatabaseConfig `mapstructure:"worker"`
+		Mekyra_db dto.DatabaseConfig `mapstructure:"mekyra_db"`
+		//Worker dto.DatabaseConfig `mapstructure:"worker"`
 	} `mapstructure:"database"`
 
 	Oidc struct {

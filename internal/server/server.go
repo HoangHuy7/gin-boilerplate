@@ -4,7 +4,7 @@ package server
 
 import (
 	"context"
-	"monorepo/internal/base/security"
+	//"monorepo/internal/base/security"
 	"monorepo/internal/dto"
 
 	"github.com/gin-gonic/gin"
@@ -14,11 +14,11 @@ import (
 func RunServer(lc fx.Lifecycle,
 	sr *Router,
 	am *dto.AppMetadata,
-	se *security.Security,
+	//se *security.Security,
 	router *gin.Engine) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			sr.RegisterAll(router, am, se)
+			//sr.RegisterAll(router, am, se)
 			go router.Run(":8082")
 
 			return nil
