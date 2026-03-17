@@ -6,6 +6,7 @@ import (
 	"monorepo/apps/gas/app"
 	"monorepo/apps/gas/controller"
 	"monorepo/apps/gas/domain"
+	"monorepo/apps/gas/graph"
 	"monorepo/apps/gas/service"
 	"monorepo/internal/logger"
 	"monorepo/internal/server"
@@ -32,6 +33,7 @@ func main() {
 		service.Module,
 		logger.Module,
 		domain.Module,
+		graph.Module,
 		//security.Module,
 		fx.WithLogger(func(gl *logger.GoLogger) fxevent.Logger {
 			return &fxevent.ZapLogger{Logger: gl.Zap}

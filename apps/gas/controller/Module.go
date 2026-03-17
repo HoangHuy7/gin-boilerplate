@@ -2,6 +2,7 @@ package controller
 
 import (
 	"monorepo/apps/gas/controller/customer"
+	"monorepo/apps/gas/controller/graphql"
 	"monorepo/apps/gas/controller/menu"
 	"monorepo/internal/base"
 	"monorepo/internal/server"
@@ -27,6 +28,11 @@ var Module = fx.Options(
 		),
 		fx.Annotate(
 			menu.NewMenuControllerV1,
+			fx.As(new(base.Controller)),
+			fx.ResultTags(`group:"controllers"`),
+		),
+		fx.Annotate(
+			graphql.NewGraphQLController,
 			fx.As(new(base.Controller)),
 			fx.ResultTags(`group:"controllers"`),
 		),

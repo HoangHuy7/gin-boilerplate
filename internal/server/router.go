@@ -119,7 +119,7 @@ func (this *Router) RegisterAll(r *gin.Engine, appMeta *dto.AppMetadata, se *sec
 		meta := ctrl.Controller.GetMetadata()
 		base := builderPath(meta, appMeta.ContextPath)
 		ginGroup := r.Group(base)
-		if !meta.IsNotAuth {
+		if !meta.IsNotAuth && se != nil {
 			ginGroup.Use(se.BeforeFilter())
 		}
 		rg := routerx.NewRouterx(ginGroup, meta)
