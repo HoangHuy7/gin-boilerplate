@@ -143,7 +143,7 @@ func (this *Router) RegisterAll(r *gin.Engine, appMeta *dto.AppMetadata, se *sec
 }
 
 func builderPath(config *dto.Metadata, contextPath string) string {
-	return fmt.Sprintf("%s/api%s%s", contextPath, config.Version, config.Path)
+	return fmt.Sprintf("%s%s%s", contextPath, config.Version, config.Path)
 }
 
 func NewRouter(controllers []base.Controller, appMeta *dto.AppMetadata, lg *logger.GoLogger) *Router {

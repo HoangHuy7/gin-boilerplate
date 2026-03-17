@@ -34,5 +34,14 @@ func (r *queryResolver) Menus(ctx context.Context) ([]*model.Menu, error) {
 // Menu is the resolver for the menu field.
 func (r *queryResolver) Menu(ctx context.Context, id string) (*model.Menu, error) {
 	println("123")
-	panic(fmt.Errorf("not implemented: Menu - menu"))
+	return &model.Menu{
+		ID:          "1",
+		Name:        "123",
+		Description: nil,
+		Price:       123,
+		Category:    nil,
+		IsAvailable: false,
+		CreatedAt:   nil,
+		UpdatedAt:   nil,
+	}, nil
 }
