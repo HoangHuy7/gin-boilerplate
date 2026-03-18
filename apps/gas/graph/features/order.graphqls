@@ -1,0 +1,76 @@
+# =========================
+# TYPES
+# =========================
+
+type Order {
+    id: ID!
+    code: String
+    customer_id: ID
+    customer: Customer
+    total_amount: Decimal!
+    paid_amount: Decimal!
+    debt_amount: Decimal!
+    status: String!
+    note: String
+    items: [OrderItem!]!
+    created_at: Time
+}
+
+type OrderItem {
+    id: ID!
+    order_id: ID!
+    product_id: ID!
+    product: Product
+    product_name: String!
+    quantity: Int!
+    price: Decimal!
+    total: Decimal!
+}
+
+# =========================
+# INPUTS
+# =========================
+input CreateOrderItemInput {
+    product_id: ID!
+    quantity: Int!
+    price: Decimal!
+}
+
+input CreateOrderInput {
+    customer_id: ID
+    items: [CreateOrderItemInput!]!
+    paid_amount: Decimal!
+    note: String
+}
+
+input UpdateOrderInput {
+    status: String
+    note: String
+}
+
+input OrderFilter {
+    status: String
+    customer_id: ID
+    from_date: Time
+    to_date: Time
+}
+
+# =========================
+# QUERY
+# =========================
+extend type Query {
+    orders(
+        filter: OrderFilter
+        pagination: PaginationInput
+    ): [Order!]!
+    order(id: ID!): Order
+}
+
+# =========================
+# MUTATION
+# =========================
+extend type Mutation {
+    createOrder(input: CreateOrderInput!): Order!
+    updateOrder(id: ID!, input: UpdateOrderInput!): Order!
+    deleteOrder(id: ID!): Boolean!
+}

@@ -1,0 +1,49 @@
+# =========================
+# TYPES
+# =========================
+
+type InventoryLog {
+    id: ID!
+    product_id: ID!
+    product: Product
+    type: String!
+    quantity: Int!
+    note: String
+    created_at: Time
+}
+
+# =========================
+# INPUTS
+# =========================
+input CreateInventoryLogInput {
+    product_id: ID!
+    type: String!
+    quantity: Int!
+    note: String
+}
+
+input InventoryLogFilter {
+    product_id: ID
+    type: String
+    from_date: Time
+    to_date: Time
+}
+
+# =========================
+# QUERY
+# =========================
+extend type Query {
+    inventoryLogs(
+        filter: InventoryLogFilter
+        pagination: PaginationInput
+    ): [InventoryLog!]!
+    inventoryLog(id: ID!): InventoryLog
+}
+
+# =========================
+# MUTATION
+# =========================
+extend type Mutation {
+    createInventoryLog(input: CreateInventoryLogInput!): InventoryLog!
+    deleteInventoryLog(id: ID!): Boolean!
+}

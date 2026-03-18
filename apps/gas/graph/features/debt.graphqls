@@ -1,0 +1,52 @@
+# =========================
+# TYPES
+# =========================
+
+type DebtTransaction {
+    id: ID!
+    customer_id: ID!
+    customer: Customer
+    order_id: ID
+    order: Order
+    amount: Decimal!
+    type: String!
+    note: String
+    created_at: Time
+}
+
+# =========================
+# INPUTS
+# =========================
+input CreateDebtTransactionInput {
+    customer_id: ID!
+    order_id: ID
+    amount: Decimal!
+    type: String!
+    note: String
+}
+
+input DebtTransactionFilter {
+    customer_id: ID
+    type: String
+    from_date: Time
+    to_date: Time
+}
+
+# =========================
+# QUERY
+# =========================
+extend type Query {
+    debtTransactions(
+        filter: DebtTransactionFilter
+        pagination: PaginationInput
+    ): [DebtTransaction!]!
+    debtTransaction(id: ID!): DebtTransaction
+}
+
+# =========================
+# MUTATION
+# =========================
+extend type Mutation {
+    createDebtTransaction(input: CreateDebtTransactionInput!): DebtTransaction!
+    deleteDebtTransaction(id: ID!): Boolean!
+}

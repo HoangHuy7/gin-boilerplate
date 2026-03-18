@@ -1,0 +1,56 @@
+# =========================
+# TYPES
+# =========================
+
+type Delivery {
+    id: ID!
+    order_id: ID!
+    order: Order
+    delivery_date: Time!
+    status: String!
+    note: String
+    created_at: Time
+}
+
+# =========================
+# INPUTS
+# =========================
+input CreateDeliveryInput {
+    order_id: ID!
+    delivery_date: Time!
+    note: String
+}
+
+input UpdateDeliveryInput {
+    delivery_date: Time
+    status: String
+    note: String
+}
+
+input DeliveryFilter {
+    status: String
+    delivery_date: Time
+    from_date: Time
+    to_date: Time
+}
+
+# =========================
+# QUERY
+# =========================
+extend type Query {
+    deliveries(
+        filter: DeliveryFilter
+        pagination: PaginationInput
+    ): [Delivery!]!
+    delivery(id: ID!): Delivery
+    todayDeliveries: [Delivery!]!
+}
+
+# =========================
+# MUTATION
+# =========================
+extend type Mutation {
+    createDelivery(input: CreateDeliveryInput!): Delivery!
+    updateDelivery(id: ID!, input: UpdateDeliveryInput!): Delivery!
+    deleteDelivery(id: ID!): Boolean!
+}

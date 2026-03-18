@@ -10,9 +10,29 @@ import (
 
 type CreateCustomerInput struct {
 	Name    string  `json:"name"`
-	Email   string  `json:"email"`
 	Phone   *string `json:"phone,omitempty"`
 	Address *string `json:"address,omitempty"`
+}
+
+type CreateDebtTransactionInput struct {
+	CustomerID string          `json:"customer_id"`
+	OrderID    *string         `json:"order_id,omitempty"`
+	Amount     decimal.Decimal `json:"amount"`
+	Type       string          `json:"type"`
+	Note       *string         `json:"note,omitempty"`
+}
+
+type CreateDeliveryInput struct {
+	OrderID      string    `json:"order_id"`
+	DeliveryDate time.Time `json:"delivery_date"`
+	Note         *string   `json:"note,omitempty"`
+}
+
+type CreateInventoryLogInput struct {
+	ProductID string  `json:"product_id"`
+	Type      string  `json:"type"`
+	Quantity  int     `json:"quantity"`
+	Note      *string `json:"note,omitempty"`
 }
 
 type CreateMenuInput struct {
@@ -21,6 +41,19 @@ type CreateMenuInput struct {
 	Price       float64 `json:"price"`
 	Category    *string `json:"category,omitempty"`
 	IsAvailable *bool   `json:"isAvailable,omitempty"`
+}
+
+type CreateOrderInput struct {
+	CustomerID *string                 `json:"customer_id,omitempty"`
+	Items      []*CreateOrderItemInput `json:"items"`
+	PaidAmount decimal.Decimal         `json:"paid_amount"`
+	Note       *string                 `json:"note,omitempty"`
+}
+
+type CreateOrderItemInput struct {
+	ProductID string          `json:"product_id"`
+	Quantity  int             `json:"quantity"`
+	Price     decimal.Decimal `json:"price"`
 }
 
 type CreateProductInput struct {
@@ -34,13 +67,70 @@ type CreateProductInput struct {
 }
 
 type Customer struct {
-	ID        string  `json:"id"`
-	Name      string  `json:"name"`
-	Email     string  `json:"email"`
-	Phone     *string `json:"phone,omitempty"`
-	Address   *string `json:"address,omitempty"`
-	CreatedAt *string `json:"createdAt,omitempty"`
-	UpdatedAt *string `json:"updatedAt,omitempty"`
+	ID        string          `json:"id"`
+	Name      string          `json:"name"`
+	Phone     *string         `json:"phone,omitempty"`
+	Address   *string         `json:"address,omitempty"`
+	TotalDebt decimal.Decimal `json:"total_debt"`
+	CreatedAt *time.Time      `json:"created_at,omitempty"`
+}
+
+type CustomerFilter struct {
+	Search *string `json:"search,omitempty"`
+	Phone  *string `json:"phone,omitempty"`
+}
+
+type DebtTransaction struct {
+	ID         string          `json:"id"`
+	CustomerID string          `json:"customer_id"`
+	Customer   *Customer       `json:"customer,omitempty"`
+	OrderID    *string         `json:"order_id,omitempty"`
+	Order      *Order          `json:"order,omitempty"`
+	Amount     decimal.Decimal `json:"amount"`
+	Type       string          `json:"type"`
+	Note       *string         `json:"note,omitempty"`
+	CreatedAt  *time.Time      `json:"created_at,omitempty"`
+}
+
+type DebtTransactionFilter struct {
+	CustomerID *string    `json:"customer_id,omitempty"`
+	Type       *string    `json:"type,omitempty"`
+	FromDate   *time.Time `json:"from_date,omitempty"`
+	ToDate     *time.Time `json:"to_date,omitempty"`
+}
+
+type Delivery struct {
+	ID           string     `json:"id"`
+	OrderID      string     `json:"order_id"`
+	Order        *Order     `json:"order,omitempty"`
+	DeliveryDate time.Time  `json:"delivery_date"`
+	Status       string     `json:"status"`
+	Note         *string    `json:"note,omitempty"`
+	CreatedAt    *time.Time `json:"created_at,omitempty"`
+}
+
+type DeliveryFilter struct {
+	Status       *string    `json:"status,omitempty"`
+	DeliveryDate *time.Time `json:"delivery_date,omitempty"`
+	FromDate     *time.Time `json:"from_date,omitempty"`
+	ToDate       *time.Time `json:"to_date,omitempty"`
+}
+
+type InventoryLog struct {
+	ID        string     `json:"id"`
+	ProductID string     `json:"product_id"`
+	Product   *Product   `json:"product,omitempty"`
+	Type      string     `json:"type"`
+	Quantity  int        `json:"quantity"`
+	Note      *string    `json:"note,omitempty"`
+	CreatedAt *time.Time `json:"created_at,omitempty"`
+}
+
+type InventoryLogFilter struct {
+	ProductID *string    `json:"product_id,omitempty"`
+	Type      *string    `json:"type,omitempty"`
+	FromDate  *time.Time `json:"from_date,omitempty"`
+	ToDate    *time.Time `json:"to_date,omitempty"`
 }
 
 type Menu struct {
@@ -55,6 +145,38 @@ type Menu struct {
 }
 
 type Mutation struct {
+}
+
+type Order struct {
+	ID          string          `json:"id"`
+	Code        *string         `json:"code,omitempty"`
+	CustomerID  *string         `json:"customer_id,omitempty"`
+	Customer    *Customer       `json:"customer,omitempty"`
+	TotalAmount decimal.Decimal `json:"total_amount"`
+	PaidAmount  decimal.Decimal `json:"paid_amount"`
+	DebtAmount  decimal.Decimal `json:"debt_amount"`
+	Status      string          `json:"status"`
+	Note        *string         `json:"note,omitempty"`
+	Items       []*OrderItem    `json:"items"`
+	CreatedAt   *time.Time      `json:"created_at,omitempty"`
+}
+
+type OrderFilter struct {
+	Status     *string    `json:"status,omitempty"`
+	CustomerID *string    `json:"customer_id,omitempty"`
+	FromDate   *time.Time `json:"from_date,omitempty"`
+	ToDate     *time.Time `json:"to_date,omitempty"`
+}
+
+type OrderItem struct {
+	ID          string          `json:"id"`
+	OrderID     string          `json:"order_id"`
+	ProductID   string          `json:"product_id"`
+	Product     *Product        `json:"product,omitempty"`
+	ProductName string          `json:"product_name"`
+	Quantity    int             `json:"quantity"`
+	Price       decimal.Decimal `json:"price"`
+	Total       decimal.Decimal `json:"total"`
 }
 
 type PaginationInput struct {
@@ -88,9 +210,14 @@ type Query struct {
 
 type UpdateCustomerInput struct {
 	Name    *string `json:"name,omitempty"`
-	Email   *string `json:"email,omitempty"`
 	Phone   *string `json:"phone,omitempty"`
 	Address *string `json:"address,omitempty"`
+}
+
+type UpdateDeliveryInput struct {
+	DeliveryDate *time.Time `json:"delivery_date,omitempty"`
+	Status       *string    `json:"status,omitempty"`
+	Note         *string    `json:"note,omitempty"`
 }
 
 type UpdateMenuInput struct {
@@ -99,6 +226,11 @@ type UpdateMenuInput struct {
 	Price       *float64 `json:"price,omitempty"`
 	Category    *string  `json:"category,omitempty"`
 	IsAvailable *bool    `json:"isAvailable,omitempty"`
+}
+
+type UpdateOrderInput struct {
+	Status *string `json:"status,omitempty"`
+	Note   *string `json:"note,omitempty"`
 }
 
 type UpdateProductInput struct {

@@ -1,0 +1,57 @@
+# SpectaQL Configuration for GraphQL Documentation
+# Documentation: https://github.com/anvilco/spectaql
+
+# Introspection source - fetch from live GraphQL endpoint
+introspection:
+  url: http://localhost:8082/graphql
+  # Optional: metadata for examples
+  # metadataFile: ./scripts/graphql-metadata.json
+
+# SpectaQL options
+spectaql:
+  # Logo and favicon (optional)
+  # logoFile: ./assets/logo.png
+  # faviconFile: ./assets/favicon.ico
+  
+  # Page title
+  logoCaption: "GraphQL API Documentation"
+  
+  # Description shown in header
+  info:
+    title: "GraphQL API Documentation"
+    description: |
+      API documentation for the Agricultural Supply Store Management System.
+      
+      ## Features
+      - Product Management (Thuốc trừ sâu, Phân bón, Thức ăn chăn nuôi)
+      - Customer Management with Debt Tracking
+      - Order Management (POS, Invoices)
+      - Inventory Management
+      - Delivery Management
+      
+      ## Authentication
+      This API requires authentication via JWT tokens.
+    
+  # Hide/show sections
+  hideMutations: false
+  hideQueries: false
+  hideSubscriptions: true
+  
+  # Expand/collapse sections by default
+  expandAll: false
+  
+  # Theme customization
+  # themeFile: ./scripts/spectaql-theme.css
+
+# Extensions
+extensions:
+  # Show examples for scalars
+  graphqlScalarExamples: true
+  
+  # Sort fields alphabetically
+  sort: true
+
+# Server options (for development)
+# server:
+#   port: 4400
+#   watch: true

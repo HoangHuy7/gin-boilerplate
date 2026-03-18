@@ -8,5 +8,9 @@ var Module = fx.Options(
 		NewProductService,
 		NewRedisService,
 		NewMenuService,
+		NewOrderService,
+		NewInventoryService,
+		NewDebtService,
+		NewDeliveryService,
 	),
 )

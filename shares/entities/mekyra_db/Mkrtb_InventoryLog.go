@@ -12,7 +12,7 @@ import (
 type Mkrtb_InventoryLog struct {
 	Id        uuid.UUID `gorm:"column:id;type:uuid;default:gen_random_uuid();primaryKey"`
 	ProductId uuid.UUID `gorm:"column:product_id;type:uuid"`
-	Type      string    `gorm:"column:type;type:text"`
+	Type      string    `gorm:"column:type;type:text"` // import / sale / adjust
 	Quantity  int       `gorm:"column:quantity"`
 	Note      string    `gorm:"column:note;type:text"`
 	CreatedAt time.Time `gorm:"column:created_at;autoCreateTime"`

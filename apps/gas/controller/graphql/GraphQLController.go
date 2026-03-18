@@ -3,6 +3,8 @@
 package graphql
 
 import (
+	"embed"
+	"html/template"
 	"monorepo/internal/base/routerx"
 	"monorepo/internal/dto"
 
@@ -10,6 +12,9 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gin-gonic/gin"
 )
+
+//go:embed templates/*
+var templatesFS embed.FS
 
 // GraphQLController handles GraphQL endpoints
 type GraphQLController struct {
@@ -45,6 +50,11 @@ func (c *GraphQLController) Register(r *routerx.Routerx) {
 			Path:    "/playground",
 			Handler: c.playgroundHandler(),
 		})
+		// 👇 thêm endpoint docs với tài liệu API
+		r.GET(dto.OpenEndpoint{
+			Path:    "/docs",
+			Handler: c.docsHandler(),
+		})
 	}
 }
 
@@ -56,7 +66,7 @@ func (c *GraphQLController) GetMetadata() *dto.Metadata {
 		Tag:           "GraphQL",
 		Endpoints:     []dto.OpenEndpoint{},
 		EnableOpenAPI: false,
-		IsNotAuth:     false, // Set to false if you want authentication
+		IsNotAuth:     true, // Set to false if you want authentication
 	}
 }
 
@@ -74,3 +84,18 @@ func (c *GraphQLController) playgroundHandler() gin.HandlerFunc {
 		h.ServeHTTP(ctx.Writer, ctx.Request)
 	}
 }
+
+// docsHandler returns a Gin handler for API documentation
+func (c *GraphQLController) docsHandler() gin.HandlerFunc {
+	tmpl, _ := template.ParseFS(templatesFS, "templates/docs.html")
+	return func(ctx *gin.Context) {
+		data := map[string]interface{}{
+			"Title":       "GraphQL API Documentation",
+			"Endpoint":    "/graphql",
+			"Playground":  "/graphql/playground",
+			"Description": "API cho hệ thống quản lý cửa hàng vật tư nông nghiệp",
+		}
+		tmpl.Execute(ctx.Writer, data)
+	}
+}
+

@@ -8,9 +8,13 @@ import (
 
 // Resolver is the root resolver that holds all service dependencies
 type Resolver struct {
-	CustomerService *service.CustomerService
-	MenuService     *service.MenuService
-	ProdService     *service.ProductService
+	CustomerService   *service.CustomerService
+	MenuService       *service.MenuService
+	ProdService       *service.ProductService
+	OrderService      *service.OrderService
+	InventoryService  *service.InventoryService
+	DebtService       *service.DebtService
+	DeliveryService   *service.DeliveryService
 }
 
 // NewResolver creates a new Resolver with all dependencies injected via Uber FX
@@ -18,10 +22,18 @@ func NewResolver(
 	customerService *service.CustomerService,
 	menuService *service.MenuService,
 	prodService *service.ProductService,
+	orderService *service.OrderService,
+	inventoryService *service.InventoryService,
+	debtService *service.DebtService,
+	deliveryService *service.DeliveryService,
 ) *Resolver {
 	return &Resolver{
-		CustomerService: customerService,
-		MenuService:     menuService,
-		ProdService:     prodService,
+		CustomerService:   customerService,
+		MenuService:       menuService,
+		ProdService:       prodService,
+		OrderService:      orderService,
+		InventoryService:  inventoryService,
+		DebtService:       debtService,
+		DeliveryService:   deliveryService,
 	}
 }

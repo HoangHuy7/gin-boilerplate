@@ -7,25 +7,26 @@ import (
 	"monorepo/apps/gas/app/database"
 	"monorepo/shares/entities/mekyra_db"
 	"monorepo/shares/utils"
+	"time"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
-type CustomerService struct {
+type DeliveryService struct {
 	db     *database.DataSources
 	logger *zap.Logger
 }
 
-func NewCustomerService(db *database.DataSources, lg *zap.Logger) *CustomerService {
-	return &CustomerService{
+func NewDeliveryService(db *database.DataSources, lg *zap.Logger) *DeliveryService {
+	return &DeliveryService{
 		db:     db,
 		logger: lg,
 	}
 }
 
-func (s *CustomerService) FindAll(ctx context.Context) *[]*mekyra_db.Mkrtb_Customer {
-	var list []*mekyra_db.Mkrtb_Customer
+func (s *DeliveryService) FindAll(ctx context.Context) *[]*mekyra_db.Mkrtb_Delivery {
+	var list []*mekyra_db.Mkrtb_Delivery
 	org, err := utils.GetOrg(ctx)
 	if err {
 		s.logger.Error("Failed to get organization from context")
@@ -47,8 +48,8 @@ func (s *CustomerService) FindAll(ctx context.Context) *[]*mekyra_db.Mkrtb_Custo
 	return &list
 }
 
-func (s *CustomerService) FindByID(ctx context.Context, id string) *mekyra_db.Mkrtb_Customer {
-	var customer mekyra_db.Mkrtb_Customer
+func (s *DeliveryService) FindByID(ctx context.Context, id string) *mekyra_db.Mkrtb_Delivery {
+	var delivery mekyra_db.Mkrtb_Delivery
 	org, err := utils.GetOrg(ctx)
 	if err {
 		s.logger.Error("Failed to get organization from context")
@@ -64,13 +65,37 @@ func (s *CustomerService) FindByID(ctx context.Context, id string) *mekyra_db.Mk
 		ctx,
 		tenancy,
 		func(tx *gorm.DB) error {
-			return tx.First(&customer, "id = ?", id).Error
+			return tx.First(&delivery, "id = ?", id).Error
 		},
 	)
-	return &customer
+	return &delivery
 }
 
-func (s *CustomerService) Create(ctx context.Context, customer *mekyra_db.Mkrtb_Customer) error {
+func (s *DeliveryService) FindTodayDeliveries(ctx context.Context) *[]*mekyra_db.Mkrtb_Delivery {
+	var list []*mekyra_db.Mkrtb_Delivery
+	org, err := utils.GetOrg(ctx)
+	if err {
+		s.logger.Error("Failed to get organization from context")
+		return nil
+	}
+	tenancy, err := config.GetTenancy(org)
+	if err {
+		s.logger.Error("Failed to get tenancy")
+		return nil
+	}
+	today := time.Now().Format("2006-01-02")
+	_ = database.WithTenant(
+		s.db.Mekyra_db,
+		ctx,
+		tenancy,
+		func(tx *gorm.DB) error {
+			return tx.Where("DATE(delivery_date) = ?", today).Find(&list).Error
+		},
+	)
+	return &list
+}
+
+func (s *DeliveryService) Create(ctx context.Context, delivery *mekyra_db.Mkrtb_Delivery) error {
 	org, err := utils.GetOrg(ctx)
 	if err {
 		s.logger.Error("Failed to get organization from context")
@@ -86,12 +111,12 @@ func (s *CustomerService) Create(ctx context.Context, customer *mekyra_db.Mkrtb_
 		ctx,
 		tenancy,
 		func(tx *gorm.DB) error {
-			return tx.Create(customer).Error
+			return tx.Create(delivery).Error
 		},
 	)
 }
 
-func (s *CustomerService) Update(ctx context.Context, customer *mekyra_db.Mkrtb_Customer) error {
+func (s *DeliveryService) Update(ctx context.Context, delivery *mekyra_db.Mkrtb_Delivery) error {
 	org, err := utils.GetOrg(ctx)
 	if err {
 		s.logger.Error("Failed to get organization from context")
@@ -107,12 +132,12 @@ func (s *CustomerService) Update(ctx context.Context, customer *mekyra_db.Mkrtb_
 		ctx,
 		tenancy,
 		func(tx *gorm.DB) error {
-			return tx.Save(customer).Error
+			return tx.Save(delivery).Error
 		},
 	)
 }
 
-func (s *CustomerService) Delete(ctx context.Context, id string) error {
+func (s *DeliveryService) Delete(ctx context.Context, id string) error {
 	org, err := utils.GetOrg(ctx)
 	if err {
 		s.logger.Error("Failed to get organization from context")
@@ -128,7 +153,7 @@ func (s *CustomerService) Delete(ctx context.Context, id string) error {
 		ctx,
 		tenancy,
 		func(tx *gorm.DB) error {
-			return tx.Delete(&mekyra_db.Mkrtb_Customer{}, "id = ?", id).Error
+			return tx.Delete(&mekyra_db.Mkrtb_Delivery{}, "id = ?", id).Error
 		},
 	)
 }

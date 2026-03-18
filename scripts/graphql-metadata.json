@@ -1,0 +1,30 @@
+{
+  "Query": {
+    "products": {
+      "examples": [
+        {
+          "query": "{ products { id name price stockQuantity barcode } }"
+        }
+      ]
+    },
+    "orders": {
+      "examples": [
+        {
+          "query": "{ orders { id code totalAmount status createdAt } }"
+        }
+      ]
+    }
+  },
+  "Mutation": {
+    "createOrder": {
+      "examples": [
+        {
+          "query": "mutation { createOrder(input: { customerId: \"uuid\", items: [{ productId: \"uuid\", quantity: 2, price: 35000 }], paidAmount: 70000 }) { id totalAmount status } }"
+        }
+      ]
+    }
+  },
+  "Decimal": {
+    "example": 1234.56
+  }
+}

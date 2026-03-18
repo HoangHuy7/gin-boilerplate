@@ -1,36 +1,52 @@
-# Customer Feature Schema
-
-extend type Query {
-  customers: [Customer!]!
-  customer(id: ID!): Customer
-}
-
-extend type Mutation {
-  createCustomer(input: CreateCustomerInput!): Customer!
-  updateCustomer(id: ID!, input: UpdateCustomerInput!): Customer!
-  deleteCustomer(id: ID!): Boolean!
-}
+# =========================
+# TYPES
+# =========================
 
 type Customer {
-  id: ID!
-  name: String!
-  email: String!
-  phone: String
-  address: String
-  createdAt: String
-  updatedAt: String
+    id: ID!
+    name: String!
+    phone: String
+    address: String
+    total_debt: Decimal!
+    created_at: Time
 }
 
+# =========================
+# INPUTS
+# =========================
 input CreateCustomerInput {
-  name: String!
-  email: String!
-  phone: String
-  address: String
+    name: String!
+    phone: String
+    address: String
 }
 
 input UpdateCustomerInput {
-  name: String
-  email: String
-  phone: String
-  address: String
+    name: String
+    phone: String
+    address: String
+}
+
+input CustomerFilter {
+    search: String
+    phone: String
+}
+
+# =========================
+# QUERY
+# =========================
+extend type Query {
+    customers(
+        filter: CustomerFilter
+        pagination: PaginationInput
+    ): [Customer!]!
+    customer(id: ID!): Customer
+}
+
+# =========================
+# MUTATION
+# =========================
+extend type Mutation {
+    createCustomer(input: CreateCustomerInput!): Customer!
+    updateCustomer(id: ID!, input: UpdateCustomerInput!): Customer!
+    deleteCustomer(id: ID!): Boolean!
 }

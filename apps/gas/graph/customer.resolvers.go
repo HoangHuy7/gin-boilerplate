@@ -9,29 +9,112 @@ import (
 	"context"
 	"fmt"
 	"monorepo/apps/gas/graph/model"
+	"monorepo/shares/entities/mekyra_db"
+
+	"github.com/google/uuid"
 )
 
 // CreateCustomer is the resolver for the createCustomer field.
 func (r *mutationResolver) CreateCustomer(ctx context.Context, input model.CreateCustomerInput) (*model.Customer, error) {
-	panic(fmt.Errorf("not implemented: CreateCustomer - createCustomer"))
+	customer := &mekyra_db.Mkrtb_Customer{
+		Name:    input.Name,
+		Phone:   "",
+		Address: "",
+	}
+	if input.Phone != nil {
+		customer.Phone = *input.Phone
+	}
+	if input.Address != nil {
+		customer.Address = *input.Address
+	}
+
+	if err := r.CustomerService.Create(ctx, customer); err != nil {
+		return nil, err
+	}
+
+	return &model.Customer{
+		ID:        customer.Id.String(),
+		Name:      customer.Name,
+		Phone:     &customer.Phone,
+		Address:   &customer.Address,
+		TotalDebt: customer.TotalDebt,
+		CreatedAt: &customer.CreatedAt,
+	}, nil
 }
 
 // UpdateCustomer is the resolver for the updateCustomer field.
 func (r *mutationResolver) UpdateCustomer(ctx context.Context, id string, input model.UpdateCustomerInput) (*model.Customer, error) {
-	panic(fmt.Errorf("not implemented: UpdateCustomer - updateCustomer"))
+	_, err := uuid.Parse(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid customer ID: %w", err)
+	}
+
+	existing := r.CustomerService.FindByID(ctx, id)
+	if existing == nil || existing.Id == uuid.Nil {
+		return nil, fmt.Errorf("customer not found")
+	}
+
+	if input.Name != nil {
+		existing.Name = *input.Name
+	}
+	if input.Phone != nil {
+		existing.Phone = *input.Phone
+	}
+	if input.Address != nil {
+		existing.Address = *input.Address
+	}
+
+	if err := r.CustomerService.Update(ctx, existing); err != nil {
+		return nil, err
+	}
+
+	return &model.Customer{
+		ID:        existing.Id.String(),
+		Name:      existing.Name,
+		Phone:     &existing.Phone,
+		Address:   &existing.Address,
+		TotalDebt: existing.TotalDebt,
+		CreatedAt: &existing.CreatedAt,
+	}, nil
 }
 
 // DeleteCustomer is the resolver for the deleteCustomer field.
 func (r *mutationResolver) DeleteCustomer(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteCustomer - deleteCustomer"))
+	if err := r.CustomerService.Delete(ctx, id); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // Customers is the resolver for the customers field.
-func (r *queryResolver) Customers(ctx context.Context) ([]*model.Customer, error) {
-	panic(fmt.Errorf("not implemented: Customers - customers"))
+func (r *queryResolver) Customers(ctx context.Context, filter *model.CustomerFilter, pagination *model.PaginationInput) ([]*model.Customer, error) {
+	list := r.CustomerService.FindAll(ctx)
+	var result []*model.Customer
+	for _, c := range *list {
+		result = append(result, &model.Customer{
+			ID:        c.Id.String(),
+			Name:      c.Name,
+			Phone:     &c.Phone,
+			Address:   &c.Address,
+			TotalDebt: c.TotalDebt,
+			CreatedAt: &c.CreatedAt,
+		})
+	}
+	return result, nil
 }
 
 // Customer is the resolver for the customer field.
 func (r *queryResolver) Customer(ctx context.Context, id string) (*model.Customer, error) {
-	panic(fmt.Errorf("not implemented: Customer - customer"))
+	c := r.CustomerService.FindByID(ctx, id)
+	if c == nil || c.Id == uuid.Nil {
+		return nil, fmt.Errorf("customer not found")
+	}
+	return &model.Customer{
+		ID:        c.Id.String(),
+		Name:      c.Name,
+		Phone:     &c.Phone,
+		Address:   &c.Address,
+		TotalDebt: c.TotalDebt,
+		CreatedAt: &c.CreatedAt,
+	}, nil
 }
