@@ -21,6 +21,8 @@ type Config struct {
 		Organizations map[string]dto.CasdoorOrgConfig `mapstructure:"organizations"`
 	} `mapstructure:"casdoor"`
 
+	Tenancies map[string]string `mapstructure:"tenancies"`
+
 	Redis struct {
 		Host     string `mapstructure:"host"`
 		Password string `mapstructure:"password"`
@@ -36,6 +38,18 @@ func NewAppMetadata() *dto.AppMetadata {
 		ContextPath: "",
 	}
 }
+
+var appConfig *Config
+
+func GetTenancy(key string) (string, bool) {
+	if appConfig == nil {
+		panic("config not initialized")
+	}
+
+	val, ok := appConfig.Tenancies[key]
+	return val, !ok
+}
+
 func NewConfig(metadata *dto.AppMetadata) *Config {
 
 	cfg, err := utils.LoadConfig[Config](metadata.AppName)
@@ -45,6 +59,6 @@ func NewConfig(metadata *dto.AppMetadata) *Config {
 	}
 
 	log.Println("Config loaded for app:", metadata.AppName, "instance:", metadata.Instance)
-
+	appConfig = cfg
 	return cfg
 }

@@ -5,6 +5,7 @@ import (
 	"monorepo/apps/gas/service"
 	"monorepo/internal/dto"
 	"monorepo/internal/logger"
+	"monorepo/shares/utils"
 	"strings"
 
 	"github.com/casdoor/casdoor-go-sdk/casdoorsdk"
@@ -51,10 +52,10 @@ func NewSecurity(config *dto.CasdoorConfig, goLogger *logger.GoLogger, r *servic
 
 func (s *Security) BeforeFilter() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if true {
-			c.Next()
-			return
-		}
+		//if true {
+		//	c.Next()
+		//	return
+		//}
 		tokenString, err := extractToken(c)
 		if err != nil {
 			s.Logger.Error("Missing token", zap.Error(err))
@@ -106,7 +107,11 @@ func (s *Security) BeforeFilter() gin.HandlerFunc {
 		}
 
 		// Set context for downstream
-		c.Set("organization", orgName)
+		//c.Set("organization", orgName)
+		// Set context for downstream
+		ctx := utils.SetOrg(c.Request.Context(), orgName)
+		c.Request = c.Request.WithContext(ctx)
+
 		c.Set("user", verifiedClaims)
 		c.Next()
 	}

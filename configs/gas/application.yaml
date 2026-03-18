@@ -8,13 +8,10 @@ database:
     password: postgres
     dbname: mekyra_db
     sslmode: disable
-#  worker:
-#    host: 127.0.0.1
-#    port: 5432
-#    user: postgres
-#    password: postgres
-#    dbname: workerdb
-#    sslmode: disable
+
+tenancies:
+  mekyra-web: vattumyloc
+
 casdoor:
   organizations:
     mekyra-web:
@@ -52,17 +49,6 @@ casdoor:
         HnqHPUwi8Ey126hLS5mtqf8V2U3GoSDs64mu/cPgE8WbkfgFphUHxCegGczXjhsj
         cB92U0LXM3mRXdhBMGp4u8qJnByi8bn7LiyaoKkCw/Mg1+oJYV/fCnpLa7VS
         -----END CERTIFICATE-----
-    # Add more organizations as needed
-    # org2:
-    #   server_url: http://localhost:8000
-    #   client_id: another-client-id
-    #   client_secret: another-secret
-    #   organization: org2
-    #   application: app2
-    #   certificate: |
-    #     -----BEGIN CERTIFICATE-----
-    #     ANOTHER_CERTIFICATE
-    #     -----END CERTIFICATE-----
 
 redis:
   host: localhost:6373
