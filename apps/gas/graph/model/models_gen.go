@@ -4,6 +4,8 @@ package model
 
 import (
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 type CreateCustomerInput struct {
@@ -22,13 +24,13 @@ type CreateMenuInput struct {
 }
 
 type CreateProductInput struct {
-	Name          string   `json:"name"`
-	Category      *string  `json:"category,omitempty"`
-	Unit          *string  `json:"unit,omitempty"`
-	Price         float64  `json:"price"`
-	CostPrice     *float64 `json:"cost_price,omitempty"`
-	StockQuantity *int     `json:"stock_quantity,omitempty"`
-	Barcode       *string  `json:"barcode,omitempty"`
+	Name          string           `json:"name"`
+	Category      *string          `json:"category,omitempty"`
+	Unit          *string          `json:"unit,omitempty"`
+	Price         decimal.Decimal  `json:"price"`
+	CostPrice     *decimal.Decimal `json:"cost_price,omitempty"`
+	StockQuantity *int             `json:"stock_quantity,omitempty"`
+	Barcode       *string          `json:"barcode,omitempty"`
 }
 
 type Customer struct {
@@ -61,24 +63,24 @@ type PaginationInput struct {
 }
 
 type Product struct {
-	ID            string     `json:"id"`
-	Name          string     `json:"name"`
-	Category      *string    `json:"category,omitempty"`
-	Unit          *string    `json:"unit,omitempty"`
-	Price         float64    `json:"price"`
-	CostPrice     *float64   `json:"cost_price,omitempty"`
-	StockQuantity int        `json:"stock_quantity"`
-	Barcode       *string    `json:"barcode,omitempty"`
-	CreatedAt     *time.Time `json:"created_at,omitempty"`
-	UpdatedAt     *time.Time `json:"updated_at,omitempty"`
+	ID            string           `json:"id"`
+	Name          string           `json:"name"`
+	Category      *string          `json:"category,omitempty"`
+	Unit          *string          `json:"unit,omitempty"`
+	Price         decimal.Decimal  `json:"price"`
+	CostPrice     *decimal.Decimal `json:"cost_price,omitempty"`
+	StockQuantity int              `json:"stock_quantity"`
+	Barcode       *string          `json:"barcode,omitempty"`
+	CreatedAt     *time.Time       `json:"created_at,omitempty"`
+	UpdatedAt     *time.Time       `json:"updated_at,omitempty"`
 }
 
 type ProductFilter struct {
-	Search   *string  `json:"search,omitempty"`
-	Barcode  *string  `json:"barcode,omitempty"`
-	MinPrice *float64 `json:"min_price,omitempty"`
-	MaxPrice *float64 `json:"max_price,omitempty"`
-	Category *string  `json:"category,omitempty"`
+	Search   *string          `json:"search,omitempty"`
+	Barcode  *string          `json:"barcode,omitempty"`
+	MinPrice *decimal.Decimal `json:"min_price,omitempty"`
+	MaxPrice *decimal.Decimal `json:"max_price,omitempty"`
+	Category *string          `json:"category,omitempty"`
 }
 
 type Query struct {
@@ -100,12 +102,12 @@ type UpdateMenuInput struct {
 }
 
 type UpdateProductInput struct {
-	ID            string   `json:"id"`
-	Name          *string  `json:"name,omitempty"`
-	Category      *string  `json:"category,omitempty"`
-	Unit          *string  `json:"unit,omitempty"`
-	Price         *float64 `json:"price,omitempty"`
-	CostPrice     *float64 `json:"cost_price,omitempty"`
-	StockQuantity *int     `json:"stock_quantity,omitempty"`
-	Barcode       *string  `json:"barcode,omitempty"`
+	ID            string           `json:"id"`
+	Name          *string          `json:"name,omitempty"`
+	Category      *string          `json:"category,omitempty"`
+	Unit          *string          `json:"unit,omitempty"`
+	Price         *decimal.Decimal `json:"price,omitempty"`
+	CostPrice     *decimal.Decimal `json:"cost_price,omitempty"`
+	StockQuantity *int             `json:"stock_quantity,omitempty"`
+	Barcode       *string          `json:"barcode,omitempty"`
 }

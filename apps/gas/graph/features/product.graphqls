@@ -3,14 +3,15 @@
 # =========================
 
 scalar Time
+scalar Decimal
 
 type Product {
     id: ID!
     name: String!
     category: String
     unit: String
-    price: Float!
-    cost_price: Float
+    price: Decimal!
+    cost_price: Decimal
     stock_quantity: Int!
     barcode: String
     created_at: Time
@@ -24,8 +25,8 @@ input CreateProductInput {
     name: String!
     category: String
     unit: String
-    price: Float!
-    cost_price: Float
+    price: Decimal!
+    cost_price: Decimal
     stock_quantity: Int
     barcode: String
 }
@@ -35,8 +36,8 @@ input UpdateProductInput {
     name: String
     category: String
     unit: String
-    price: Float
-    cost_price: Float
+    price: Decimal
+    cost_price: Decimal
     stock_quantity: Int
     barcode: String
 }
@@ -46,8 +47,8 @@ input UpdateProductInput {
 input ProductFilter {
     search: String
     barcode: String
-    min_price: Float
-    max_price: Float
+    min_price: Decimal
+    max_price: Decimal
     category: String
 }
 

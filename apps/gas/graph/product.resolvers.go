@@ -9,22 +9,119 @@ import (
 	"context"
 	"fmt"
 	"monorepo/apps/gas/graph/model"
-	"strconv"
+	"monorepo/shares/entities/mekyra_db"
+
+	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 // CreateProduct is the resolver for the createProduct field.
 func (r *mutationResolver) CreateProduct(ctx context.Context, input model.CreateProductInput) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented: CreateProduct - createProduct"))
+	product := &mekyra_db.Mkrtb_Product{
+		Name:     input.Name,
+		Price:    input.Price,
+		Category: "",
+		Unit:     "",
+	}
+
+	if input.Category != nil {
+		product.Category = *input.Category
+	}
+	if input.Unit != nil {
+		product.Unit = *input.Unit
+	}
+	if input.CostPrice != nil {
+		product.CostPrice = *input.CostPrice
+	}
+	if input.StockQuantity != nil {
+		product.StockQuantity = *input.StockQuantity
+	}
+	if input.Barcode != nil {
+		product.Barcode = *input.Barcode
+	}
+
+	if err := r.ProdService.Create(ctx, product); err != nil {
+		return nil, err
+	}
+
+	var resultCostPrice *decimal.Decimal
+	if !product.CostPrice.IsZero() {
+		resultCostPrice = &product.CostPrice
+	}
+
+	return &model.Product{
+		ID:            product.Id.String(),
+		Name:          product.Name,
+		Price:         product.Price,
+		CostPrice:     resultCostPrice,
+		StockQuantity: product.StockQuantity,
+		Category:      &product.Category,
+		Unit:          &product.Unit,
+		Barcode:       &product.Barcode,
+	}, nil
 }
 
 // UpdateProduct is the resolver for the updateProduct field.
 func (r *mutationResolver) UpdateProduct(ctx context.Context, input model.UpdateProductInput) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented: UpdateProduct - updateProduct"))
+	_, err := uuid.Parse(input.ID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid product ID: %w", err)
+	}
+
+	existingProduct := r.ProdService.FindByID(ctx, input.ID)
+	if existingProduct == nil || existingProduct.Id == uuid.Nil {
+		return nil, fmt.Errorf("product not found")
+	}
+
+	if input.Name != nil {
+		existingProduct.Name = *input.Name
+	}
+	if input.Price != nil {
+		existingProduct.Price = *input.Price
+	}
+	if input.CostPrice != nil {
+		existingProduct.CostPrice = *input.CostPrice
+	}
+	if input.StockQuantity != nil {
+		existingProduct.StockQuantity = *input.StockQuantity
+	}
+	if input.Category != nil {
+		existingProduct.Category = *input.Category
+	}
+	if input.Unit != nil {
+		existingProduct.Unit = *input.Unit
+	}
+	if input.Barcode != nil {
+		existingProduct.Barcode = *input.Barcode
+	}
+
+	if err := r.ProdService.Update(ctx, existingProduct); err != nil {
+		return nil, err
+	}
+
+	var resultCostPrice *decimal.Decimal
+	if !existingProduct.CostPrice.IsZero() {
+		resultCostPrice = &existingProduct.CostPrice
+	}
+
+	return &model.Product{
+		ID:            existingProduct.Id.String(),
+		Name:          existingProduct.Name,
+		Price:         existingProduct.Price,
+		CostPrice:     resultCostPrice,
+		StockQuantity: existingProduct.StockQuantity,
+		Category:      &existingProduct.Category,
+		Unit:          &existingProduct.Unit,
+		Barcode:       &existingProduct.Barcode,
+	}, nil
 }
 
 // DeleteProduct is the resolver for the deleteProduct field.
 func (r *mutationResolver) DeleteProduct(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteProduct - deleteProduct"))
+	if err := r.ProdService.Delete(ctx, id); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // Products is the resolver for the products field.
@@ -33,13 +130,16 @@ func (r *queryResolver) Products(ctx context.Context, filter *model.ProductFilte
 
 	var result []*model.Product
 	for _, p := range *list {
-		// Parse price from string to float64
-		price, _ := strconv.ParseFloat(p.Price, 64)
+		var costPrice *decimal.Decimal
+		if !p.CostPrice.IsZero() {
+			costPrice = &p.CostPrice
+		}
 
 		result = append(result, &model.Product{
 			ID:            p.Id.String(),
 			Name:          p.Name,
-			Price:         price,
+			Price:         p.Price,
+			CostPrice:     costPrice,
 			StockQuantity: p.StockQuantity,
 			Category:      &p.Category,
 			Unit:          &p.Unit,
@@ -51,5 +151,24 @@ func (r *queryResolver) Products(ctx context.Context, filter *model.ProductFilte
 
 // Product is the resolver for the product field.
 func (r *queryResolver) Product(ctx context.Context, id string) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented: Product - product"))
+	p := r.ProdService.FindByID(ctx, id)
+	if p == nil || p.Id == uuid.Nil {
+		return nil, fmt.Errorf("product not found")
+	}
+
+	var costPrice *decimal.Decimal
+	if !p.CostPrice.IsZero() {
+		costPrice = &p.CostPrice
+	}
+
+	return &model.Product{
+		ID:            p.Id.String(),
+		Name:          p.Name,
+		Price:         p.Price,
+		CostPrice:     costPrice,
+		StockQuantity: p.StockQuantity,
+		Category:      &p.Category,
+		Unit:          &p.Unit,
+		Barcode:       &p.Barcode,
+	}, nil
 }
