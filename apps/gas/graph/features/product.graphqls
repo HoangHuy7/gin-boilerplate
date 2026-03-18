@@ -1,0 +1,77 @@
+# =========================
+# TYPES
+# =========================
+
+scalar Time
+
+type Product {
+    id: ID!
+    name: String!
+    category: String
+    unit: String
+    price: Float!
+    cost_price: Float
+    stock_quantity: Int!
+    barcode: String
+    created_at: Time
+    updated_at: Time
+}
+
+# =========================
+# INPUTS
+# =========================
+input CreateProductInput {
+    name: String!
+    category: String
+    unit: String
+    price: Float!
+    cost_price: Float
+    stock_quantity: Int
+    barcode: String
+}
+
+input UpdateProductInput {
+    id: ID!
+    name: String
+    category: String
+    unit: String
+    price: Float
+    cost_price: Float
+    stock_quantity: Int
+    barcode: String
+}
+# =========================
+# FILTER
+# =========================
+input ProductFilter {
+    search: String
+    barcode: String
+    min_price: Float
+    max_price: Float
+    category: String
+}
+
+input PaginationInput {
+    limit: Int = 20
+    offset: Int = 0
+}
+
+# =========================
+# QUERY
+# =========================
+extend type Query {
+    products(
+        filter: ProductFilter
+        pagination: PaginationInput
+    ): [Product!]!
+    product(id: ID!): Product
+}
+
+# =========================
+# MUTATION
+# =========================
+extend type Mutation {
+    createProduct(input: CreateProductInput!): Product!
+    updateProduct(input: UpdateProductInput!): Product!
+    deleteProduct(id: ID!): Boolean!
+}

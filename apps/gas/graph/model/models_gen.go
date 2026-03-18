@@ -2,6 +2,10 @@
 
 package model
 
+import (
+	"time"
+)
+
 type CreateCustomerInput struct {
 	Name    string  `json:"name"`
 	Email   string  `json:"email"`
@@ -15,6 +19,16 @@ type CreateMenuInput struct {
 	Price       float64 `json:"price"`
 	Category    *string `json:"category,omitempty"`
 	IsAvailable *bool   `json:"isAvailable,omitempty"`
+}
+
+type CreateProductInput struct {
+	Name          string   `json:"name"`
+	Category      *string  `json:"category,omitempty"`
+	Unit          *string  `json:"unit,omitempty"`
+	Price         float64  `json:"price"`
+	CostPrice     *float64 `json:"cost_price,omitempty"`
+	StockQuantity *int     `json:"stock_quantity,omitempty"`
+	Barcode       *string  `json:"barcode,omitempty"`
 }
 
 type Customer struct {
@@ -41,6 +55,32 @@ type Menu struct {
 type Mutation struct {
 }
 
+type PaginationInput struct {
+	Limit  *int `json:"limit,omitempty"`
+	Offset *int `json:"offset,omitempty"`
+}
+
+type Product struct {
+	ID            string     `json:"id"`
+	Name          string     `json:"name"`
+	Category      *string    `json:"category,omitempty"`
+	Unit          *string    `json:"unit,omitempty"`
+	Price         float64    `json:"price"`
+	CostPrice     *float64   `json:"cost_price,omitempty"`
+	StockQuantity int        `json:"stock_quantity"`
+	Barcode       *string    `json:"barcode,omitempty"`
+	CreatedAt     *time.Time `json:"created_at,omitempty"`
+	UpdatedAt     *time.Time `json:"updated_at,omitempty"`
+}
+
+type ProductFilter struct {
+	Search   *string  `json:"search,omitempty"`
+	Barcode  *string  `json:"barcode,omitempty"`
+	MinPrice *float64 `json:"min_price,omitempty"`
+	MaxPrice *float64 `json:"max_price,omitempty"`
+	Category *string  `json:"category,omitempty"`
+}
+
 type Query struct {
 }
 
@@ -57,4 +97,15 @@ type UpdateMenuInput struct {
 	Price       *float64 `json:"price,omitempty"`
 	Category    *string  `json:"category,omitempty"`
 	IsAvailable *bool    `json:"isAvailable,omitempty"`
+}
+
+type UpdateProductInput struct {
+	ID            string   `json:"id"`
+	Name          *string  `json:"name,omitempty"`
+	Category      *string  `json:"category,omitempty"`
+	Unit          *string  `json:"unit,omitempty"`
+	Price         *float64 `json:"price,omitempty"`
+	CostPrice     *float64 `json:"cost_price,omitempty"`
+	StockQuantity *int     `json:"stock_quantity,omitempty"`
+	Barcode       *string  `json:"barcode,omitempty"`
 }

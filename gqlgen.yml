@@ -43,3 +43,7 @@ models:
   Int32:
     model:
       - github.com/99designs/gqlgen/graphql.Int32
+  Time:
+    model:
+      - github.com/99designs/gqlgen/graphql.Time
+      - time.Time

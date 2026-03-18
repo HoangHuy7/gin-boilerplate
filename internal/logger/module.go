@@ -15,6 +15,10 @@ import (
 var Module = fx.Options(
 	fx.Provide(
 		NewLogger,
+		// Also provide *zap.Logger for services that need it directly
+		func(gl *GoLogger) *zap.Logger {
+			return gl.Zap
+		},
 	),
 )
 

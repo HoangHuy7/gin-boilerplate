@@ -14,7 +14,7 @@ type CustomerService struct {
 	logger *zap.Logger
 }
 
-func NewProductService(db *database.DataSources, lg *logger.GoLogger) *CustomerService {
+func NewCustomerService(db *database.DataSources, lg *logger.GoLogger) *CustomerService {
 	return &CustomerService{
 		db:     db,
 		logger: lg.Zap,
