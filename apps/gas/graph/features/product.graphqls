@@ -52,9 +52,9 @@ input ProductFilter {
     category: String
 }
 
-input PaginationInput {
-    limit: Int = 20
-    offset: Int = 0
+type ProductPaginationResponse {
+    data: [Product!]
+    page_info: PageInfo!
 }
 
 # =========================
@@ -64,7 +64,7 @@ extend type Query {
     products(
         filter: ProductFilter
         pagination: PaginationInput
-    ): [Product!]!
+    ): ProductPaginationResponse
     product(id: ID!): Product
 }
 

@@ -1,3 +1,15 @@
 # Root Schema - định nghĩa Query và Mutation rỗng
 type Query
 type Mutation
+
+
+input PaginationInput {
+    offset: Int = 0
+    limit: Int = 20
+}
+type PageInfo {
+    total: Int!
+    page: Int!
+    page_size: Int!
+    has_next: Boolean!
+}

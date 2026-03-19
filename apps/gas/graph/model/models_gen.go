@@ -179,9 +179,16 @@ type OrderItem struct {
 	Total       decimal.Decimal `json:"total"`
 }
 
+type PageInfo struct {
+	Total    int  `json:"total"`
+	Page     int  `json:"page"`
+	PageSize int  `json:"page_size"`
+	HasNext  bool `json:"has_next"`
+}
+
 type PaginationInput struct {
-	Limit  *int `json:"limit,omitempty"`
 	Offset *int `json:"offset,omitempty"`
+	Limit  *int `json:"limit,omitempty"`
 }
 
 type Product struct {
@@ -203,6 +210,11 @@ type ProductFilter struct {
 	MinPrice *decimal.Decimal `json:"min_price,omitempty"`
 	MaxPrice *decimal.Decimal `json:"max_price,omitempty"`
 	Category *string          `json:"category,omitempty"`
+}
+
+type ProductPaginationResponse struct {
+	Data     []*Product `json:"data,omitempty"`
+	PageInfo *PageInfo  `json:"page_info"`
 }
 
 type Query struct {

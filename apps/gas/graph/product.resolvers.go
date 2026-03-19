@@ -125,11 +125,26 @@ func (r *mutationResolver) DeleteProduct(ctx context.Context, id string) (bool, 
 }
 
 // Products is the resolver for the products field.
-func (r *queryResolver) Products(ctx context.Context, filter *model.ProductFilter, pagination *model.PaginationInput) ([]*model.Product, error) {
-	list := r.ProdService.FindAll(ctx)
+func (r *queryResolver) Products(ctx context.Context, filter *model.ProductFilter, pagination *model.PaginationInput) (*model.ProductPaginationResponse, error) {
+	offset := 0
+	limit := 20
+
+	if pagination != nil {
+		if pagination.Offset != nil {
+			offset = *pagination.Offset
+		}
+		if pagination.Limit != nil {
+			limit = *pagination.Limit
+		}
+	}
+
+	list, total, err := r.ProdService.FindWithPagination(ctx, filter, offset, limit)
+	if err != nil {
+		return nil, err
+	}
 
 	var result []*model.Product
-	for _, p := range *list {
+	for _, p := range list {
 		var costPrice *decimal.Decimal
 		if !p.CostPrice.IsZero() {
 			costPrice = &p.CostPrice
@@ -146,7 +161,21 @@ func (r *queryResolver) Products(ctx context.Context, filter *model.ProductFilte
 			Barcode:       &p.Barcode,
 		})
 	}
-	return result, nil
+
+	// 👉 tính page từ offset
+	pageSize := limit
+	page := (offset / limit) + 1
+	hasNext := int64(offset+len(result)) < total
+
+	return &model.ProductPaginationResponse{
+		Data: result,
+		PageInfo: &model.PageInfo{
+			Total:    int(total),
+			Page:     page,
+			PageSize: pageSize,
+			HasNext:  hasNext,
+		},
+	}, nil
 }
 
 // Product is the resolver for the product field.

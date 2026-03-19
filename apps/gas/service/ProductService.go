@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"monorepo/apps/gas/app/config"
 	"monorepo/apps/gas/app/database"
+	"monorepo/apps/gas/graph/model"
 	"monorepo/shares/entities/mekyra_db"
 	"monorepo/shares/utils"
 
@@ -24,18 +25,17 @@ func NewProductService(db *database.DataSources, lg *zap.Logger) *ProductService
 	}
 }
 
-func (p *ProductService) FindAll(ctx context.Context) *[]*mekyra_db.Mkrtb_Product {
-
+func (p *ProductService) FindAll(ctx context.Context) ([]*mekyra_db.Mkrtb_Product, error) {
 	var list []*mekyra_db.Mkrtb_Product
 	org, err := utils.GetOrg(ctx)
 	if err {
 		p.logger.Error("Failed to get organization from context")
-		return nil
+		return nil, fmt.Errorf("failed to get organization from context")
 	}
 	tenancy, err := config.GetTenancy(org)
 	if err {
 		p.logger.Error("Failed to get tenancy")
-		return nil
+		return nil, fmt.Errorf("failed to get tenancy")
 	}
 	_ = database.WithTenant(
 		p.db.Mekyra_db,
@@ -46,7 +46,7 @@ func (p *ProductService) FindAll(ctx context.Context) *[]*mekyra_db.Mkrtb_Produc
 		},
 	)
 
-	return &list
+	return list, nil
 }
 
 func (p *ProductService) FindByID(ctx context.Context, id string) *mekyra_db.Mkrtb_Product {
@@ -133,4 +133,86 @@ func (p *ProductService) Delete(ctx context.Context, id string) error {
 			return tx.Delete(&mekyra_db.Mkrtb_Product{}, "id = ?", id).Error
 		},
 	)
+}
+func (p *ProductService) FindWithPagination(
+	ctx context.Context,
+	filter *model.ProductFilter,
+	offset int,
+	limit int,
+) ([]*mekyra_db.Mkrtb_Product, int64, error) {
+
+	var list []*mekyra_db.Mkrtb_Product
+	var total int64
+
+	org, err := utils.GetOrg(ctx)
+	if err {
+		p.logger.Error("Failed to get organization from context")
+		return nil, 0, fmt.Errorf("failed to get organization from context")
+	}
+
+	tenancy, err := config.GetTenancy(org)
+	if err {
+		p.logger.Error("Failed to get tenancy")
+		return nil, 0, fmt.Errorf("failed to get tenancy")
+	}
+
+	errDB := database.WithTenant(
+		p.db.Mekyra_db,
+		ctx,
+		tenancy,
+		func(tx *gorm.DB) error {
+
+			// 👉 base query
+			query := tx.Model(&mekyra_db.Mkrtb_Product{})
+
+			// =========================
+			// FILTER
+			// =========================
+			if filter != nil {
+
+				if filter.Search != nil && *filter.Search != "" {
+					search := "%" + *filter.Search + "%"
+					query = query.Where("name ILIKE ? OR barcode ILIKE ?", search, search)
+				}
+
+				if filter.Barcode != nil && *filter.Barcode != "" {
+					query = query.Where("barcode = ?", *filter.Barcode)
+				}
+
+				if filter.Category != nil && *filter.Category != "" {
+					query = query.Where("category = ?", *filter.Category)
+				}
+
+				if filter.MinPrice != nil {
+					query = query.Where("price >= ?", *filter.MinPrice)
+				}
+
+				if filter.MaxPrice != nil {
+					query = query.Where("price <= ?", *filter.MaxPrice)
+				}
+			}
+
+			// 👉 count (clone query để tránh bị dính limit/offset)
+			if err := query.Count(&total).Error; err != nil {
+				return err
+			}
+
+			// 👉 query data
+			if err := query.
+				Order("updated_at desc").
+				Offset(offset).
+				Limit(limit).
+				Find(&list).Error; err != nil {
+				return err
+			}
+
+			return nil
+		},
+	)
+
+	if errDB != nil {
+		return nil, 0, errDB
+	}
+
+	return list, total, nil
 }

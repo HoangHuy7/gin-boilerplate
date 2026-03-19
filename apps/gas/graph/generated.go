@@ -137,6 +137,13 @@ type ComplexityRoot struct {
 		Total       func(childComplexity int) int
 	}
 
+	PageInfo struct {
+		HasNext  func(childComplexity int) int
+		Page     func(childComplexity int) int
+		PageSize func(childComplexity int) int
+		Total    func(childComplexity int) int
+	}
+
 	Product struct {
 		Barcode       func(childComplexity int) int
 		Category      func(childComplexity int) int
@@ -148,6 +155,11 @@ type ComplexityRoot struct {
 		StockQuantity func(childComplexity int) int
 		Unit          func(childComplexity int) int
 		UpdatedAt     func(childComplexity int) int
+	}
+
+	ProductPaginationResponse struct {
+		Data     func(childComplexity int) int
+		PageInfo func(childComplexity int) int
 	}
 
 	Query struct {
@@ -204,7 +216,7 @@ type QueryResolver interface {
 	Menu(ctx context.Context, id string) (*model.Menu, error)
 	Orders(ctx context.Context, filter *model.OrderFilter, pagination *model.PaginationInput) ([]*model.Order, error)
 	Order(ctx context.Context, id string) (*model.Order, error)
-	Products(ctx context.Context, filter *model.ProductFilter, pagination *model.PaginationInput) ([]*model.Product, error)
+	Products(ctx context.Context, filter *model.ProductFilter, pagination *model.PaginationInput) (*model.ProductPaginationResponse, error)
 	Product(ctx context.Context, id string) (*model.Product, error)
 }
 
@@ -775,6 +787,31 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.ComplexityRoot.OrderItem.Total(childComplexity), true
 
+	case "PageInfo.has_next":
+		if e.ComplexityRoot.PageInfo.HasNext == nil {
+			break
+		}
+
+		return e.ComplexityRoot.PageInfo.HasNext(childComplexity), true
+	case "PageInfo.page":
+		if e.ComplexityRoot.PageInfo.Page == nil {
+			break
+		}
+
+		return e.ComplexityRoot.PageInfo.Page(childComplexity), true
+	case "PageInfo.page_size":
+		if e.ComplexityRoot.PageInfo.PageSize == nil {
+			break
+		}
+
+		return e.ComplexityRoot.PageInfo.PageSize(childComplexity), true
+	case "PageInfo.total":
+		if e.ComplexityRoot.PageInfo.Total == nil {
+			break
+		}
+
+		return e.ComplexityRoot.PageInfo.Total(childComplexity), true
+
 	case "Product.barcode":
 		if e.ComplexityRoot.Product.Barcode == nil {
 			break
@@ -835,6 +872,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Product.UpdatedAt(childComplexity), true
+
+	case "ProductPaginationResponse.data":
+		if e.ComplexityRoot.ProductPaginationResponse.Data == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ProductPaginationResponse.Data(childComplexity), true
+	case "ProductPaginationResponse.page_info":
+		if e.ComplexityRoot.ProductPaginationResponse.PageInfo == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ProductPaginationResponse.PageInfo(childComplexity), true
 
 	case "Query.customer":
 		if e.ComplexityRoot.Query.Customer == nil {
@@ -4352,6 +4402,122 @@ func (ec *executionContext) fieldContext_OrderItem_total(_ context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _PageInfo_total(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_PageInfo_total,
+		func(ctx context.Context) (any, error) {
+			return obj.Total, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_PageInfo_total(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PageInfo",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PageInfo_page(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_PageInfo_page,
+		func(ctx context.Context) (any, error) {
+			return obj.Page, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_PageInfo_page(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PageInfo",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PageInfo_page_size(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_PageInfo_page_size,
+		func(ctx context.Context) (any, error) {
+			return obj.PageSize, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_PageInfo_page_size(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PageInfo",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PageInfo_has_next(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_PageInfo_has_next,
+		func(ctx context.Context) (any, error) {
+			return obj.HasNext, nil
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_PageInfo_has_next(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PageInfo",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Product_id(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -4637,6 +4803,96 @@ func (ec *executionContext) fieldContext_Product_updated_at(_ context.Context, f
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProductPaginationResponse_data(ctx context.Context, field graphql.CollectedField, obj *model.ProductPaginationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ProductPaginationResponse_data,
+		func(ctx context.Context) (any, error) {
+			return obj.Data, nil
+		},
+		nil,
+		ec.marshalOProduct2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐProductᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_ProductPaginationResponse_data(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProductPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Product_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Product_name(ctx, field)
+			case "category":
+				return ec.fieldContext_Product_category(ctx, field)
+			case "unit":
+				return ec.fieldContext_Product_unit(ctx, field)
+			case "price":
+				return ec.fieldContext_Product_price(ctx, field)
+			case "cost_price":
+				return ec.fieldContext_Product_cost_price(ctx, field)
+			case "stock_quantity":
+				return ec.fieldContext_Product_stock_quantity(ctx, field)
+			case "barcode":
+				return ec.fieldContext_Product_barcode(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Product_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_Product_updated_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ProductPaginationResponse_page_info(ctx context.Context, field graphql.CollectedField, obj *model.ProductPaginationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ProductPaginationResponse_page_info,
+		func(ctx context.Context) (any, error) {
+			return obj.PageInfo, nil
+		},
+		nil,
+		ec.marshalNPageInfo2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐPageInfo,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ProductPaginationResponse_page_info(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ProductPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "total":
+				return ec.fieldContext_PageInfo_total(ctx, field)
+			case "page":
+				return ec.fieldContext_PageInfo_page(ctx, field)
+			case "page_size":
+				return ec.fieldContext_PageInfo_page_size(ctx, field)
+			case "has_next":
+				return ec.fieldContext_PageInfo_has_next(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
 		},
 	}
 	return fc, nil
@@ -5394,9 +5650,9 @@ func (ec *executionContext) _Query_products(ctx context.Context, field graphql.C
 			return ec.Resolvers.Query().Products(ctx, fc.Args["filter"].(*model.ProductFilter), fc.Args["pagination"].(*model.PaginationInput))
 		},
 		nil,
-		ec.marshalNProduct2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐProductᚄ,
+		ec.marshalOProductPaginationResponse2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐProductPaginationResponse,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -5408,28 +5664,12 @@ func (ec *executionContext) fieldContext_Query_products(ctx context.Context, fie
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Product_id(ctx, field)
-			case "name":
-				return ec.fieldContext_Product_name(ctx, field)
-			case "category":
-				return ec.fieldContext_Product_category(ctx, field)
-			case "unit":
-				return ec.fieldContext_Product_unit(ctx, field)
-			case "price":
-				return ec.fieldContext_Product_price(ctx, field)
-			case "cost_price":
-				return ec.fieldContext_Product_cost_price(ctx, field)
-			case "stock_quantity":
-				return ec.fieldContext_Product_stock_quantity(ctx, field)
-			case "barcode":
-				return ec.fieldContext_Product_barcode(ctx, field)
-			case "created_at":
-				return ec.fieldContext_Product_created_at(ctx, field)
-			case "updated_at":
-				return ec.fieldContext_Product_updated_at(ctx, field)
+			case "data":
+				return ec.fieldContext_ProductPaginationResponse_data(ctx, field)
+			case "page_info":
+				return ec.fieldContext_ProductPaginationResponse_page_info(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type ProductPaginationResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -7737,27 +7977,20 @@ func (ec *executionContext) unmarshalInputPaginationInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	if _, present := asMap["limit"]; !present {
-		asMap["limit"] = 20
-	}
 	if _, present := asMap["offset"]; !present {
 		asMap["offset"] = 0
 	}
+	if _, present := asMap["limit"]; !present {
+		asMap["limit"] = 20
+	}
 
-	fieldsInOrder := [...]string{"limit", "offset"}
+	fieldsInOrder := [...]string{"offset", "limit"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "limit":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
-			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Limit = data
 		case "offset":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
 			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
@@ -7765,6 +7998,13 @@ func (ec *executionContext) unmarshalInputPaginationInput(ctx context.Context, o
 				return it, err
 			}
 			it.Offset = data
+		case "limit":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Limit = data
 		}
 	}
 	return it, nil
@@ -8719,6 +8959,60 @@ func (ec *executionContext) _OrderItem(ctx context.Context, sel ast.SelectionSet
 	return out
 }
 
+var pageInfoImplementors = []string{"PageInfo"}
+
+func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet, obj *model.PageInfo) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, pageInfoImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PageInfo")
+		case "total":
+			out.Values[i] = ec._PageInfo_total(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "page":
+			out.Values[i] = ec._PageInfo_page(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "page_size":
+			out.Values[i] = ec._PageInfo_page_size(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "has_next":
+			out.Values[i] = ec._PageInfo_has_next(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var productImplementors = []string{"Product"}
 
 func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, obj *model.Product) graphql.Marshaler {
@@ -8762,6 +9056,47 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 			out.Values[i] = ec._Product_created_at(ctx, field, obj)
 		case "updated_at":
 			out.Values[i] = ec._Product_updated_at(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var productPaginationResponseImplementors = []string{"ProductPaginationResponse"}
+
+func (ec *executionContext) _ProductPaginationResponse(ctx context.Context, sel ast.SelectionSet, obj *model.ProductPaginationResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, productPaginationResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ProductPaginationResponse")
+		case "data":
+			out.Values[i] = ec._ProductPaginationResponse_data(ctx, field, obj)
+		case "page_info":
+			out.Values[i] = ec._ProductPaginationResponse_page_info(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9075,16 +9410,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "products":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._Query_products(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 
@@ -9813,24 +10145,18 @@ func (ec *executionContext) marshalNOrderItem2ᚖmonorepoᚋappsᚋgasᚋgraph�
 	return ec._OrderItem(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNProduct2monorepoᚋappsᚋgasᚋgraphᚋmodelᚐProduct(ctx context.Context, sel ast.SelectionSet, v model.Product) graphql.Marshaler {
-	return ec._Product(ctx, sel, &v)
+func (ec *executionContext) marshalNPageInfo2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v *model.PageInfo) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._PageInfo(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNProduct2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐProductᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Product) graphql.Marshaler {
-	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
-		fc := graphql.GetFieldContext(ctx)
-		fc.Result = &v[i]
-		return ec.marshalNProduct2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐProduct(ctx, sel, v[i])
-	})
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
+func (ec *executionContext) marshalNProduct2monorepoᚋappsᚋgasᚋgraphᚋmodelᚐProduct(ctx context.Context, sel ast.SelectionSet, v model.Product) graphql.Marshaler {
+	return ec._Product(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNProduct2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐProduct(ctx context.Context, sel ast.SelectionSet, v *model.Product) graphql.Marshaler {
@@ -10229,6 +10555,25 @@ func (ec *executionContext) unmarshalOPaginationInput2ᚖmonorepoᚋappsᚋgas�
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalOProduct2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐProductᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Product) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNProduct2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐProduct(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalOProduct2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐProduct(ctx context.Context, sel ast.SelectionSet, v *model.Product) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -10242,6 +10587,13 @@ func (ec *executionContext) unmarshalOProductFilter2ᚖmonorepoᚋappsᚋgasᚋg
 	}
 	res, err := ec.unmarshalInputProductFilter(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOProductPaginationResponse2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐProductPaginationResponse(ctx context.Context, sel ast.SelectionSet, v *model.ProductPaginationResponse) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ProductPaginationResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v any) (*string, error) {
