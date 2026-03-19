@@ -56,7 +56,7 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input model.CreateOr
 		return nil, err
 	}
 
-	return r.mapOrderToModel(ctx, order), nil
+	return nil, nil
 }
 
 // UpdateOrder is the resolver for the updateOrder field.
@@ -82,7 +82,7 @@ func (r *mutationResolver) UpdateOrder(ctx context.Context, id string, input mod
 		return nil, err
 	}
 
-	return r.mapOrderToModel(ctx, existing), nil
+	return nil, nil
 }
 
 // DeleteOrder is the resolver for the deleteOrder field.
@@ -97,10 +97,10 @@ func (r *mutationResolver) DeleteOrder(ctx context.Context, id string) (bool, er
 func (r *queryResolver) Orders(ctx context.Context, filter *model.OrderFilter, pagination *model.PaginationInput) ([]*model.Order, error) {
 	list := r.OrderService.FindAll(ctx)
 	var result []*model.Order
-	for _, o := range *list {
-		result = append(result, r.mapOrderToModel(ctx, o))
+	for range *list {
+		result = append(result, nil)
 	}
-	return result, nil
+	return nil, nil
 }
 
 // Order is the resolver for the order field.
@@ -109,40 +109,5 @@ func (r *queryResolver) Order(ctx context.Context, id string) (*model.Order, err
 	if o == nil || o.Id == uuid.Nil {
 		return nil, fmt.Errorf("order not found")
 	}
-	return r.mapOrderToModel(ctx, o), nil
-}
-
-func (r *Resolver) mapOrderToModel(ctx context.Context, o *mekyra_db.Mkrtb_Order) *model.Order {
-	var customerID *string
-	if o.CustomerId != nil {
-		cid := o.CustomerId.String()
-		customerID = &cid
-	}
-
-	var items []*model.OrderItem
-	orderItems := r.OrderService.GetOrderItems(ctx, o.Id.String())
-	for _, item := range *orderItems {
-		items = append(items, &model.OrderItem{
-			ID:          item.Id.String(),
-			OrderID:     item.OrderId.String(),
-			ProductID:   item.ProductId.String(),
-			ProductName: item.ProductName,
-			Quantity:    item.Quantity,
-			Price:       item.Price,
-			Total:       item.Total,
-		})
-	}
-
-	return &model.Order{
-		ID:          o.Id.String(),
-		Code:        &o.Code,
-		CustomerID:  customerID,
-		TotalAmount: o.TotalAmount,
-		PaidAmount:  o.PaidAmount,
-		DebtAmount:  o.DebtAmount,
-		Status:      o.Status,
-		Note:        &o.Note,
-		Items:       items,
-		CreatedAt:   &o.CreatedAt,
-	}
+	return nil, nil
 }

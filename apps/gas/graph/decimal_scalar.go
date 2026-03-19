@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"monorepo/apps/gas/graph/model"
+	"monorepo/shares/entities/mekyra_db"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/shopspring/decimal"
@@ -50,5 +52,22 @@ func UnmarshalDecimal(v interface{}) (decimal.Decimal, error) {
 	default:
 		fmt.Printf("❌ Invalid decimal type: %T, value: %+v\n", v, v)
 		return decimal.Zero, fmt.Errorf("%T is not a valid Decimal", v)
+	}
+}
+
+func (r *Resolver) mapDebtToModel(d *mekyra_db.Mkrtb_DebtTransaction) *model.DebtTransaction {
+	var orderID *string
+	if d.OrderId != nil {
+		oid := d.OrderId.String()
+		orderID = &oid
+	}
+	return &model.DebtTransaction{
+		ID:         d.Id.String(),
+		CustomerID: d.CustomerId.String(),
+		OrderID:    orderID,
+		Amount:     d.Amount,
+		Type:       d.Type,
+		Note:       &d.Note,
+		CreatedAt:  &d.CreatedAt,
 	}
 }

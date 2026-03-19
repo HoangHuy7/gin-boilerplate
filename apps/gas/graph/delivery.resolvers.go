@@ -30,7 +30,7 @@ func (r *mutationResolver) CreateDelivery(ctx context.Context, input model.Creat
 		return nil, err
 	}
 
-	return r.mapDeliveryToModel(delivery), nil
+	return nil, nil
 }
 
 // UpdateDelivery is the resolver for the updateDelivery field.
@@ -59,7 +59,7 @@ func (r *mutationResolver) UpdateDelivery(ctx context.Context, id string, input 
 		return nil, err
 	}
 
-	return r.mapDeliveryToModel(existing), nil
+	return nil, nil
 }
 
 // DeleteDelivery is the resolver for the deleteDelivery field.
@@ -74,8 +74,8 @@ func (r *mutationResolver) DeleteDelivery(ctx context.Context, id string) (bool,
 func (r *queryResolver) Deliveries(ctx context.Context, filter *model.DeliveryFilter, pagination *model.PaginationInput) ([]*model.Delivery, error) {
 	list := r.DeliveryService.FindAll(ctx)
 	var result []*model.Delivery
-	for _, d := range *list {
-		result = append(result, r.mapDeliveryToModel(d))
+	for _ = range *list {
+		result = append(result, nil)
 	}
 	return result, nil
 }
@@ -86,26 +86,15 @@ func (r *queryResolver) Delivery(ctx context.Context, id string) (*model.Deliver
 	if d == nil || d.Id == uuid.Nil {
 		return nil, fmt.Errorf("delivery not found")
 	}
-	return r.mapDeliveryToModel(d), nil
+	return nil, nil
 }
 
 // TodayDeliveries is the resolver for the todayDeliveries field.
 func (r *queryResolver) TodayDeliveries(ctx context.Context) ([]*model.Delivery, error) {
 	list := r.DeliveryService.FindTodayDeliveries(ctx)
 	var result []*model.Delivery
-	for _, d := range *list {
-		result = append(result, r.mapDeliveryToModel(d))
+	for _ = range *list {
+		result = append(result, nil)
 	}
 	return result, nil
-}
-
-func (r *Resolver) mapDeliveryToModel(d *mekyra_db.Mkrtb_Delivery) *model.Delivery {
-	return &model.Delivery{
-		ID:           d.Id.String(),
-		OrderID:      d.OrderId.String(),
-		DeliveryDate: d.DeliveryDate,
-		Status:       d.Status,
-		Note:         &d.Note,
-		CreatedAt:    &d.CreatedAt,
-	}
 }

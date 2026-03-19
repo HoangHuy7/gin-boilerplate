@@ -63,20 +63,3 @@ func (r *queryResolver) DebtTransaction(ctx context.Context, id string) (*model.
 	}
 	return r.mapDebtToModel(d), nil
 }
-
-func (r *Resolver) mapDebtToModel(d *mekyra_db.Mkrtb_DebtTransaction) *model.DebtTransaction {
-	var orderID *string
-	if d.OrderId != nil {
-		oid := d.OrderId.String()
-		orderID = &oid
-	}
-	return &model.DebtTransaction{
-		ID:         d.Id.String(),
-		CustomerID: d.CustomerId.String(),
-		OrderID:    orderID,
-		Amount:     d.Amount,
-		Type:       d.Type,
-		Note:       &d.Note,
-		CreatedAt:  &d.CreatedAt,
-	}
-}
