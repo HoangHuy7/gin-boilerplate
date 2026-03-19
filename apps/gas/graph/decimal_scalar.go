@@ -2,6 +2,7 @@ package graph
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -44,7 +45,10 @@ func UnmarshalDecimal(v interface{}) (decimal.Decimal, error) {
 		return decimal.NewFromInt(v), nil
 	case decimal.Decimal:
 		return v, nil
+	case json.Number:
+		return decimal.NewFromString(v.String())
 	default:
+		fmt.Printf("❌ Invalid decimal type: %T, value: %+v\n", v, v)
 		return decimal.Zero, fmt.Errorf("%T is not a valid Decimal", v)
 	}
 }

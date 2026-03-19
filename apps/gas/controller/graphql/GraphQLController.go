@@ -66,7 +66,7 @@ func (c *GraphQLController) GetMetadata() *dto.Metadata {
 		Tag:           "GraphQL",
 		Endpoints:     []dto.OpenEndpoint{},
 		EnableOpenAPI: false,
-		IsNotAuth:     true, // Set to false if you want authentication
+		IsNotAuth:     false, // Set to false if you want authentication
 	}
 }
 
@@ -98,4 +98,3 @@ func (c *GraphQLController) docsHandler() gin.HandlerFunc {
 		tmpl.Execute(ctx.Writer, data)
 	}
 }
-

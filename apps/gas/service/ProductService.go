@@ -42,7 +42,7 @@ func (p *ProductService) FindAll(ctx context.Context) *[]*mekyra_db.Mkrtb_Produc
 		ctx,
 		tenancy,
 		func(tx *gorm.DB) error {
-			return tx.Find(&list).Error
+			return tx.Order("updated_at desc").Find(&list).Error
 		},
 	)
 
