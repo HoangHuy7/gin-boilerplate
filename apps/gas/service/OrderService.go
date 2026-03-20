@@ -81,6 +81,7 @@ func (s *OrderService) Create(ctx context.Context, order *mekyra_db.Mkrtb_Order,
 		s.logger.Error("Failed to get tenancy")
 		return fmt.Errorf("failed to get tenancy")
 	}
+	order.Code = fmt.Sprintf("ORD-%s", utils.GenerateUUID())
 	return database.WithTenant(
 		s.db.Mekyra_db,
 		ctx,

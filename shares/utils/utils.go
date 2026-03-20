@@ -1,6 +1,10 @@
 package utils
 
-import "context"
+import (
+	"context"
+
+	"github.com/google/uuid"
+)
 
 type contextKey string
 
@@ -13,4 +17,8 @@ func SetOrg(ctx context.Context, org string) context.Context {
 func GetOrg(ctx context.Context) (string, bool) {
 	org, ok := ctx.Value(OrgKey).(string)
 	return org, !ok
+}
+
+func GenerateUUID() string {
+	return uuid.New().String()
 }
