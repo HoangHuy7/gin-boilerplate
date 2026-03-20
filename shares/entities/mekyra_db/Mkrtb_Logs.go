@@ -10,6 +10,7 @@ import (
 type Mkrtb_Logs struct {
 	Id        int64     `gorm:"column:id;type:bigserial;primaryKey;autoIncrement"`
 	Action    string    `gorm:"column:action;type:varchar(100)"`
+	Status    string    `gorm:"column:status;type:varchar(100)"`
 	Feature   string    `gorm:"column:feature;type:varchar(255)"`
 	OldData   []byte    `gorm:"column:old_data;type:jsonb"`
 	NewData   []byte    `gorm:"column:new_data;type:jsonb"`
