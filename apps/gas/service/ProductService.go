@@ -9,6 +9,7 @@ import (
 	"monorepo/shares/entities/mekyra_db"
 	"monorepo/shares/utils"
 
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -298,4 +299,58 @@ func (p *ProductService) FindWithPagination(
 	}
 
 	return list, total, nil
+}
+
+// Restock adds quantity to product stock
+func (p *ProductService) Restock(ctx context.Context, productID uuid.UUID, quantity int) (*mekyra_db.Mkrtb_Product, error) {
+	org, err := utils.GetOrg(ctx)
+	if err {
+		p.logger.Error("Failed to get organization from context")
+		return nil, fmt.Errorf("failed to get organization from context")
+	}
+	tenancy, tenancyErr := config.GetTenancy(org)
+	if tenancyErr {
+		p.logger.Error("Failed to get tenancy")
+		return nil, fmt.Errorf("failed to get tenancy")
+	}
+
+	var product mekyra_db.Mkrtb_Product
+	errDB := database.WithTenant(
+		p.db.Mekyra_db,
+		ctx,
+		tenancy,
+		func(tx *gorm.DB) error {
+			if err := tx.First(&product, "id = ?", productID).Error; err != nil {
+				return err
+			}
+
+			// Lưu old data trước khi update
+			oldStockQuantity := product.StockQuantity
+
+			product.StockQuantity += quantity
+
+			// Log the restock action với old_data
+			if p.logSvc != nil {
+				oldProduct := &mekyra_db.Mkrtb_Product{
+					StockQuantity: oldStockQuantity,
+				}
+				p.logSvc.LogSuccess(ctx, "RESTOCK", "PRODUCT", oldProduct, map[string]interface{}{
+					"product_id":     product.Id.String(),
+					"quantity_added": quantity,
+					"new_stock":      product.StockQuantity,
+				})
+			}
+
+			return tx.Save(&product).Error
+		},
+	)
+
+	if errDB != nil {
+		if p.logSvc != nil {
+			p.logSvc.LogError(ctx, "RESTOCK", "PRODUCT", nil, errDB.Error())
+		}
+		return nil, errDB
+	}
+
+	return &product, nil
 }

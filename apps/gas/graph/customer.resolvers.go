@@ -88,12 +88,7 @@ func (r *mutationResolver) DeleteCustomer(ctx context.Context, id string) (bool,
 }
 
 // Customers is the resolver for the customers field.
-func (r *queryResolver) Customers(
-	ctx context.Context,
-	filter *model.CustomerFilter,
-	pagination *model.PaginationInput,
-) (*model.CustomerPaginationResponse, error) {
-
+func (r *queryResolver) Customers(ctx context.Context, filter *model.CustomerFilter, pagination *model.PaginationInput) (*model.CustomerPaginationResponse, error) {
 	offset := 0
 	limit := 20
 

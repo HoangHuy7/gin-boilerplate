@@ -124,6 +124,40 @@ func (r *mutationResolver) DeleteProduct(ctx context.Context, id string) (bool, 
 	return true, nil
 }
 
+// RestockProduct is the resolver for the restockProduct field.
+func (r *mutationResolver) RestockProduct(ctx context.Context, id string, quantity int) (*model.Product, error) {
+	productID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid product ID: %w", err)
+	}
+
+	existingProduct := r.ProdService.FindByID(ctx, id)
+	if existingProduct == nil || existingProduct.Id == uuid.Nil {
+		return nil, fmt.Errorf("product not found")
+	}
+
+	updatedProduct, err := r.ProdService.Restock(ctx, productID, quantity)
+	if err != nil {
+		return nil, err
+	}
+
+	var resultCostPrice *decimal.Decimal
+	if !updatedProduct.CostPrice.IsZero() {
+		resultCostPrice = &updatedProduct.CostPrice
+	}
+
+	return &model.Product{
+		ID:            updatedProduct.Id.String(),
+		Name:          updatedProduct.Name,
+		Price:         updatedProduct.Price,
+		CostPrice:     resultCostPrice,
+		StockQuantity: updatedProduct.StockQuantity,
+		Category:      &updatedProduct.Category,
+		Unit:          &updatedProduct.Unit,
+		Barcode:       &updatedProduct.Barcode,
+	}, nil
+}
+
 // Products is the resolver for the products field.
 func (r *queryResolver) Products(ctx context.Context, filter *model.ProductFilter, pagination *model.PaginationInput) (*model.ProductPaginationResponse, error) {
 	offset := 0
