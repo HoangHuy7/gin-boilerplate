@@ -55,6 +55,11 @@ input OrderFilter {
     to_date: Time
 }
 
+type OrderPaginationResponse{
+    data: [Order!]!
+    pagination: PageInfo!
+}
+
 # =========================
 # QUERY
 # =========================
@@ -62,7 +67,7 @@ extend type Query {
     orders(
         filter: OrderFilter
         pagination: PaginationInput
-    ): [Order!]!
+    ): OrderPaginationResponse
     order(id: ID!): Order
 }
 

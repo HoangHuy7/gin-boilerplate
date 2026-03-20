@@ -143,6 +143,11 @@ type ComplexityRoot struct {
 		Total       func(childComplexity int) int
 	}
 
+	OrderPaginationResponse struct {
+		Data       func(childComplexity int) int
+		Pagination func(childComplexity int) int
+	}
+
 	PageInfo struct {
 		HasNext  func(childComplexity int) int
 		Page     func(childComplexity int) int
@@ -221,7 +226,7 @@ type QueryResolver interface {
 	InventoryLog(ctx context.Context, id string) (*model.InventoryLog, error)
 	Menus(ctx context.Context) ([]*model.Menu, error)
 	Menu(ctx context.Context, id string) (*model.Menu, error)
-	Orders(ctx context.Context, filter *model.OrderFilter, pagination *model.PaginationInput) ([]*model.Order, error)
+	Orders(ctx context.Context, filter *model.OrderFilter, pagination *model.PaginationInput) (*model.OrderPaginationResponse, error)
 	Order(ctx context.Context, id string) (*model.Order, error)
 	Products(ctx context.Context, filter *model.ProductFilter, pagination *model.PaginationInput) (*model.ProductPaginationResponse, error)
 	Product(ctx context.Context, id string) (*model.Product, error)
@@ -817,6 +822,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.OrderItem.Total(childComplexity), true
+
+	case "OrderPaginationResponse.data":
+		if e.ComplexityRoot.OrderPaginationResponse.Data == nil {
+			break
+		}
+
+		return e.ComplexityRoot.OrderPaginationResponse.Data(childComplexity), true
+	case "OrderPaginationResponse.pagination":
+		if e.ComplexityRoot.OrderPaginationResponse.Pagination == nil {
+			break
+		}
+
+		return e.ComplexityRoot.OrderPaginationResponse.Pagination(childComplexity), true
 
 	case "PageInfo.has_next":
 		if e.ComplexityRoot.PageInfo.HasNext == nil {
@@ -4594,6 +4612,98 @@ func (ec *executionContext) fieldContext_OrderItem_total(_ context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _OrderPaginationResponse_data(ctx context.Context, field graphql.CollectedField, obj *model.OrderPaginationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_OrderPaginationResponse_data,
+		func(ctx context.Context) (any, error) {
+			return obj.Data, nil
+		},
+		nil,
+		ec.marshalNOrder2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐOrderᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_OrderPaginationResponse_data(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OrderPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Order_id(ctx, field)
+			case "code":
+				return ec.fieldContext_Order_code(ctx, field)
+			case "customer_id":
+				return ec.fieldContext_Order_customer_id(ctx, field)
+			case "customer":
+				return ec.fieldContext_Order_customer(ctx, field)
+			case "total_amount":
+				return ec.fieldContext_Order_total_amount(ctx, field)
+			case "paid_amount":
+				return ec.fieldContext_Order_paid_amount(ctx, field)
+			case "debt_amount":
+				return ec.fieldContext_Order_debt_amount(ctx, field)
+			case "status":
+				return ec.fieldContext_Order_status(ctx, field)
+			case "note":
+				return ec.fieldContext_Order_note(ctx, field)
+			case "items":
+				return ec.fieldContext_Order_items(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Order_created_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Order", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OrderPaginationResponse_pagination(ctx context.Context, field graphql.CollectedField, obj *model.OrderPaginationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_OrderPaginationResponse_pagination,
+		func(ctx context.Context) (any, error) {
+			return obj.Pagination, nil
+		},
+		nil,
+		ec.marshalNPageInfo2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐPageInfo,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_OrderPaginationResponse_pagination(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OrderPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "total":
+				return ec.fieldContext_PageInfo_total(ctx, field)
+			case "page":
+				return ec.fieldContext_PageInfo_page(ctx, field)
+			case "page_size":
+				return ec.fieldContext_PageInfo_page_size(ctx, field)
+			case "has_next":
+				return ec.fieldContext_PageInfo_has_next(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PageInfo_total(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -5704,9 +5814,9 @@ func (ec *executionContext) _Query_orders(ctx context.Context, field graphql.Col
 			return ec.Resolvers.Query().Orders(ctx, fc.Args["filter"].(*model.OrderFilter), fc.Args["pagination"].(*model.PaginationInput))
 		},
 		nil,
-		ec.marshalNOrder2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐOrderᚄ,
+		ec.marshalOOrderPaginationResponse2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐOrderPaginationResponse,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -5718,30 +5828,12 @@ func (ec *executionContext) fieldContext_Query_orders(ctx context.Context, field
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Order_id(ctx, field)
-			case "code":
-				return ec.fieldContext_Order_code(ctx, field)
-			case "customer_id":
-				return ec.fieldContext_Order_customer_id(ctx, field)
-			case "customer":
-				return ec.fieldContext_Order_customer(ctx, field)
-			case "total_amount":
-				return ec.fieldContext_Order_total_amount(ctx, field)
-			case "paid_amount":
-				return ec.fieldContext_Order_paid_amount(ctx, field)
-			case "debt_amount":
-				return ec.fieldContext_Order_debt_amount(ctx, field)
-			case "status":
-				return ec.fieldContext_Order_status(ctx, field)
-			case "note":
-				return ec.fieldContext_Order_note(ctx, field)
-			case "items":
-				return ec.fieldContext_Order_items(ctx, field)
-			case "created_at":
-				return ec.fieldContext_Order_created_at(ctx, field)
+			case "data":
+				return ec.fieldContext_OrderPaginationResponse_data(ctx, field)
+			case "pagination":
+				return ec.fieldContext_OrderPaginationResponse_pagination(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Order", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type OrderPaginationResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -9194,6 +9286,50 @@ func (ec *executionContext) _OrderItem(ctx context.Context, sel ast.SelectionSet
 	return out
 }
 
+var orderPaginationResponseImplementors = []string{"OrderPaginationResponse"}
+
+func (ec *executionContext) _OrderPaginationResponse(ctx context.Context, sel ast.SelectionSet, obj *model.OrderPaginationResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, orderPaginationResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("OrderPaginationResponse")
+		case "data":
+			out.Values[i] = ec._OrderPaginationResponse_data(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pagination":
+			out.Values[i] = ec._OrderPaginationResponse_pagination(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var pageInfoImplementors = []string{"PageInfo"}
 
 func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet, obj *model.PageInfo) graphql.Marshaler {
@@ -9601,16 +9737,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "orders":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._Query_orders(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 
@@ -10784,6 +10917,13 @@ func (ec *executionContext) unmarshalOOrderFilter2ᚖmonorepoᚋappsᚋgasᚋgra
 	}
 	res, err := ec.unmarshalInputOrderFilter(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOOrderPaginationResponse2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐOrderPaginationResponse(ctx context.Context, sel ast.SelectionSet, v *model.OrderPaginationResponse) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._OrderPaginationResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOPaginationInput2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐPaginationInput(ctx context.Context, v any) (*model.PaginationInput, error) {

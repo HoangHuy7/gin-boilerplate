@@ -66,15 +66,15 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input model.CreateOr
 	}
 
 	return &model.Order{
-		ID:           createdOrder.Id.String(),
-		Code:         &createdOrder.Code,
-		CustomerID:   customerID,
-		TotalAmount:  createdOrder.TotalAmount,
-		PaidAmount:   createdOrder.PaidAmount,
-		DebtAmount:   createdOrder.DebtAmount,
-		Status:       createdOrder.Status,
-		Note:         &createdOrder.Note,
-		CreatedAt:    &createdOrder.CreatedAt,
+		ID:          createdOrder.Id.String(),
+		Code:        &createdOrder.Code,
+		CustomerID:  customerID,
+		TotalAmount: createdOrder.TotalAmount,
+		PaidAmount:  createdOrder.PaidAmount,
+		DebtAmount:  createdOrder.DebtAmount,
+		Status:      createdOrder.Status,
+		Note:        &createdOrder.Note,
+		CreatedAt:   &createdOrder.CreatedAt,
 	}, nil
 }
 
@@ -110,15 +110,15 @@ func (r *mutationResolver) UpdateOrder(ctx context.Context, id string, input mod
 	}
 
 	return &model.Order{
-		ID:           updatedOrder.Id.String(),
-		Code:         &updatedOrder.Code,
-		CustomerID:   customerID,
-		TotalAmount:  updatedOrder.TotalAmount,
-		PaidAmount:   updatedOrder.PaidAmount,
-		DebtAmount:   updatedOrder.DebtAmount,
-		Status:       updatedOrder.Status,
-		Note:         &updatedOrder.Note,
-		CreatedAt:    &updatedOrder.CreatedAt,
+		ID:          updatedOrder.Id.String(),
+		Code:        &updatedOrder.Code,
+		CustomerID:  customerID,
+		TotalAmount: updatedOrder.TotalAmount,
+		PaidAmount:  updatedOrder.PaidAmount,
+		DebtAmount:  updatedOrder.DebtAmount,
+		Status:      updatedOrder.Status,
+		Note:        &updatedOrder.Note,
+		CreatedAt:   &updatedOrder.CreatedAt,
 	}, nil
 }
 
@@ -131,14 +131,26 @@ func (r *mutationResolver) DeleteOrder(ctx context.Context, id string) (bool, er
 }
 
 // Orders is the resolver for the orders field.
-func (r *queryResolver) Orders(ctx context.Context, filter *model.OrderFilter, pagination *model.PaginationInput) ([]*model.Order, error) {
-	list := r.OrderService.FindAll(ctx)
-	if list == nil {
-		return []*model.Order{}, nil
+func (r *queryResolver) Orders(ctx context.Context, filter *model.OrderFilter, pagination *model.PaginationInput) (*model.OrderPaginationResponse, error) {
+	offset := 0
+	limit := 20
+
+	if pagination != nil {
+		if pagination.Offset != nil {
+			offset = *pagination.Offset
+		}
+		if pagination.Limit != nil {
+			limit = *pagination.Limit
+		}
+	}
+
+	list, total, err := r.OrderService.FindWithPagination(ctx, filter, offset, limit)
+	if err != nil {
+		return nil, err
 	}
 
 	var result []*model.Order
-	for _, o := range *list {
+	for _, o := range list {
 		var customerID *string
 		if o.CustomerId != nil {
 			cid := o.CustomerId.String()
@@ -146,18 +158,30 @@ func (r *queryResolver) Orders(ctx context.Context, filter *model.OrderFilter, p
 		}
 
 		result = append(result, &model.Order{
-			ID:           o.Id.String(),
-			Code:         &o.Code,
-			CustomerID:   customerID,
-			TotalAmount:  o.TotalAmount,
-			PaidAmount:   o.PaidAmount,
-			DebtAmount:   o.DebtAmount,
-			Status:       o.Status,
-			Note:         &o.Note,
-			CreatedAt:    &o.CreatedAt,
+			ID:          o.Id.String(),
+			Code:        &o.Code,
+			CustomerID:  customerID,
+			TotalAmount: o.TotalAmount,
+			PaidAmount:  o.PaidAmount,
+			DebtAmount:  o.DebtAmount,
+			Status:      o.Status,
+			Note:        &o.Note,
+			CreatedAt:   &o.CreatedAt,
 		})
 	}
-	return result, nil
+
+	page := (offset / limit) + 1
+	hasNext := int64(offset+len(result)) < total
+
+	return &model.OrderPaginationResponse{
+		Data: result,
+		Pagination: &model.PageInfo{
+			Total:    int(total),
+			Page:     page,
+			PageSize: limit,
+			HasNext:  hasNext,
+		},
+	}, nil
 }
 
 // Order is the resolver for the order field.
@@ -174,20 +198,26 @@ func (r *queryResolver) Order(ctx context.Context, id string) (*model.Order, err
 	}
 
 	return &model.Order{
-		ID:           o.Id.String(),
-		Code:         &o.Code,
-		CustomerID:   customerID,
-		TotalAmount:  o.TotalAmount,
-		PaidAmount:   o.PaidAmount,
-		DebtAmount:   o.DebtAmount,
-		Status:       o.Status,
-		Note:         &o.Note,
-		CreatedAt:    &o.CreatedAt,
+		ID:          o.Id.String(),
+		Code:        &o.Code,
+		CustomerID:  customerID,
+		TotalAmount: o.TotalAmount,
+		PaidAmount:  o.PaidAmount,
+		DebtAmount:  o.DebtAmount,
+		Status:      o.Status,
+		Note:        &o.Note,
+		CreatedAt:   &o.CreatedAt,
 	}, nil
 }
 
-// OrderItems is the resolver for the items field.
-func (r *mutationResolver) Items(ctx context.Context, obj *model.Order) ([]*model.OrderItem, error) {
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+/*
+	func (r *mutationResolver) Items(ctx context.Context, obj *model.Order) ([]*model.OrderItem, error) {
 	items := r.OrderService.GetOrderItems(ctx, obj.ID)
 	if items == nil {
 		return []*model.OrderItem{}, nil
@@ -207,3 +237,4 @@ func (r *mutationResolver) Items(ctx context.Context, obj *model.Order) ([]*mode
 	}
 	return result, nil
 }
+*/

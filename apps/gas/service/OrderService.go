@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"monorepo/apps/gas/app/config"
 	"monorepo/apps/gas/app/database"
+	"monorepo/apps/gas/graph/model"
 	"monorepo/shares/entities/mekyra_db"
 	"monorepo/shares/utils"
 
@@ -45,6 +46,80 @@ func (s *OrderService) FindAll(ctx context.Context) *[]*mekyra_db.Mkrtb_Order {
 		},
 	)
 	return &list
+}
+
+func (s *OrderService) FindWithPagination(
+	ctx context.Context,
+	filter *model.OrderFilter,
+	offset int,
+	limit int,
+) ([]*mekyra_db.Mkrtb_Order, int64, error) {
+
+	var list []*mekyra_db.Mkrtb_Order
+	var total int64
+
+	org, err := utils.GetOrg(ctx)
+	if err {
+		s.logger.Error("Failed to get organization from context")
+		return nil, 0, fmt.Errorf("failed to get organization from context")
+	}
+
+	tenancy, err := config.GetTenancy(org)
+	if err {
+		s.logger.Error("Failed to get tenancy")
+		return nil, 0, fmt.Errorf("failed to get tenancy")
+	}
+
+	errDB := database.WithTenant(
+		s.db.Mekyra_db,
+		ctx,
+		tenancy,
+		func(tx *gorm.DB) error {
+
+			query := tx.Model(&mekyra_db.Mkrtb_Order{})
+
+			// =========================
+			// FILTER
+			// =========================
+			if filter != nil {
+				if filter.Status != nil && *filter.Status != "" {
+					query = query.Where("status = ?", *filter.Status)
+				}
+				if filter.CustomerID != nil && *filter.CustomerID != "" {
+					query = query.Where("customer_id = ?", *filter.CustomerID)
+				}
+				if filter.FromDate != nil {
+					query = query.Where("created_at >= ?", *filter.FromDate)
+				}
+				if filter.ToDate != nil {
+					query = query.Where("created_at <= ?", *filter.ToDate)
+				}
+			}
+
+			// 👉 count
+			if err := query.Count(&total).Error; err != nil {
+				return err
+			}
+
+			// 👉 data
+			if err := query.
+				Preload("Items").
+				Order("created_at desc").
+				Offset(offset).
+				Limit(limit).
+				Find(&list).Error; err != nil {
+				return err
+			}
+
+			return nil
+		},
+	)
+
+	if errDB != nil {
+		return nil, 0, errDB
+	}
+
+	return list, total, nil
 }
 
 func (s *OrderService) FindByID(ctx context.Context, id string) *mekyra_db.Mkrtb_Order {

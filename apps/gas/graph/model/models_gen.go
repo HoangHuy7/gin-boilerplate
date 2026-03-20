@@ -184,6 +184,11 @@ type OrderItem struct {
 	Total       decimal.Decimal `json:"total"`
 }
 
+type OrderPaginationResponse struct {
+	Data       []*Order  `json:"data"`
+	Pagination *PageInfo `json:"pagination"`
+}
+
 type PageInfo struct {
 	Total    int  `json:"total"`
 	Page     int  `json:"page"`
