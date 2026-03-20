@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"monorepo/apps/gas/graph/model"
 	"monorepo/shares/entities/mekyra_db"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -87,20 +88,69 @@ func (r *mutationResolver) DeleteCustomer(ctx context.Context, id string) (bool,
 }
 
 // Customers is the resolver for the customers field.
-func (r *queryResolver) Customers(ctx context.Context, filter *model.CustomerFilter, pagination *model.PaginationInput) ([]*model.Customer, error) {
-	list := r.CustomerService.FindAll(ctx)
+func (r *queryResolver) Customers(
+	ctx context.Context,
+	filter *model.CustomerFilter,
+	pagination *model.PaginationInput,
+) (*model.CustomerPaginationResponse, error) {
+
+	offset := 0
+	limit := 20
+
+	if pagination != nil {
+		if pagination.Offset != nil {
+			offset = *pagination.Offset
+		}
+		if pagination.Limit != nil {
+			limit = *pagination.Limit
+		}
+	}
+
+	list, total, err := r.CustomerService.FindWithPagination(ctx, filter, offset, limit)
+	if err != nil {
+		return nil, err
+	}
+
 	var result []*model.Customer
-	for _, c := range *list {
+	for _, c := range list {
+
+		var phone *string
+		if c.Phone != "" {
+			phone = &c.Phone
+		}
+
+		var address *string
+		if c.Address != "" {
+			address = &c.Address
+		}
+
+		var createdAt *time.Time
+		if !c.CreatedAt.IsZero() {
+			createdAt = &c.CreatedAt
+		}
+
 		result = append(result, &model.Customer{
 			ID:        c.Id.String(),
 			Name:      c.Name,
-			Phone:     &c.Phone,
-			Address:   &c.Address,
+			Phone:     phone,
+			Address:   address,
 			TotalDebt: c.TotalDebt,
-			CreatedAt: &c.CreatedAt,
+			CreatedAt: createdAt,
 		})
 	}
-	return result, nil
+
+	page := (offset / limit) + 1
+	hasNext := int64(offset+len(result)) < total
+
+	return &model.CustomerPaginationResponse{
+		Data: result,
+		Pagination: &model.PageInfo{
+			Total:    int(total),
+			Page:     page,
+			PageSize: limit,
+			HasNext:  hasNext,
+		},
+	}, nil
 }
 
 // Customer is the resolver for the customer field.

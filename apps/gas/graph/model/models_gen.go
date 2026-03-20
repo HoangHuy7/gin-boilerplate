@@ -80,6 +80,11 @@ type CustomerFilter struct {
 	Phone  *string `json:"phone,omitempty"`
 }
 
+type CustomerPaginationResponse struct {
+	Data       []*Customer `json:"data"`
+	Pagination *PageInfo   `json:"pagination"`
+}
+
 type DebtTransaction struct {
 	ID         string          `json:"id"`
 	CustomerID string          `json:"customer_id"`

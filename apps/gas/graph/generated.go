@@ -47,6 +47,11 @@ type ComplexityRoot struct {
 		TotalDebt func(childComplexity int) int
 	}
 
+	CustomerPaginationResponse struct {
+		Data       func(childComplexity int) int
+		Pagination func(childComplexity int) int
+	}
+
 	DebtTransaction struct {
 		Amount     func(childComplexity int) int
 		CreatedAt  func(childComplexity int) int
@@ -203,7 +208,7 @@ type MutationResolver interface {
 	DeleteProduct(ctx context.Context, id string) (bool, error)
 }
 type QueryResolver interface {
-	Customers(ctx context.Context, filter *model.CustomerFilter, pagination *model.PaginationInput) ([]*model.Customer, error)
+	Customers(ctx context.Context, filter *model.CustomerFilter, pagination *model.PaginationInput) (*model.CustomerPaginationResponse, error)
 	Customer(ctx context.Context, id string) (*model.Customer, error)
 	DebtTransactions(ctx context.Context, filter *model.DebtTransactionFilter, pagination *model.PaginationInput) ([]*model.DebtTransaction, error)
 	DebtTransaction(ctx context.Context, id string) (*model.DebtTransaction, error)
@@ -270,6 +275,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Customer.TotalDebt(childComplexity), true
+
+	case "CustomerPaginationResponse.data":
+		if e.ComplexityRoot.CustomerPaginationResponse.Data == nil {
+			break
+		}
+
+		return e.ComplexityRoot.CustomerPaginationResponse.Data(childComplexity), true
+	case "CustomerPaginationResponse.pagination":
+		if e.ComplexityRoot.CustomerPaginationResponse.Pagination == nil {
+			break
+		}
+
+		return e.ComplexityRoot.CustomerPaginationResponse.Pagination(childComplexity), true
 
 	case "DebtTransaction.amount":
 		if e.ComplexityRoot.DebtTransaction.Amount == nil {
@@ -1806,6 +1824,88 @@ func (ec *executionContext) fieldContext_Customer_created_at(_ context.Context, 
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CustomerPaginationResponse_data(ctx context.Context, field graphql.CollectedField, obj *model.CustomerPaginationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_CustomerPaginationResponse_data,
+		func(ctx context.Context) (any, error) {
+			return obj.Data, nil
+		},
+		nil,
+		ec.marshalNCustomer2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐCustomerᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_CustomerPaginationResponse_data(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CustomerPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Customer_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Customer_name(ctx, field)
+			case "phone":
+				return ec.fieldContext_Customer_phone(ctx, field)
+			case "address":
+				return ec.fieldContext_Customer_address(ctx, field)
+			case "total_debt":
+				return ec.fieldContext_Customer_total_debt(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Customer_created_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Customer", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CustomerPaginationResponse_pagination(ctx context.Context, field graphql.CollectedField, obj *model.CustomerPaginationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_CustomerPaginationResponse_pagination,
+		func(ctx context.Context) (any, error) {
+			return obj.Pagination, nil
+		},
+		nil,
+		ec.marshalNPageInfo2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐPageInfo,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_CustomerPaginationResponse_pagination(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CustomerPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "total":
+				return ec.fieldContext_PageInfo_total(ctx, field)
+			case "page":
+				return ec.fieldContext_PageInfo_page(ctx, field)
+			case "page_size":
+				return ec.fieldContext_PageInfo_page_size(ctx, field)
+			case "has_next":
+				return ec.fieldContext_PageInfo_has_next(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
 		},
 	}
 	return fc, nil
@@ -4909,9 +5009,9 @@ func (ec *executionContext) _Query_customers(ctx context.Context, field graphql.
 			return ec.Resolvers.Query().Customers(ctx, fc.Args["filter"].(*model.CustomerFilter), fc.Args["pagination"].(*model.PaginationInput))
 		},
 		nil,
-		ec.marshalNCustomer2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐCustomerᚄ,
+		ec.marshalOCustomerPaginationResponse2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐCustomerPaginationResponse,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -4923,20 +5023,12 @@ func (ec *executionContext) fieldContext_Query_customers(ctx context.Context, fi
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Customer_id(ctx, field)
-			case "name":
-				return ec.fieldContext_Customer_name(ctx, field)
-			case "phone":
-				return ec.fieldContext_Customer_phone(ctx, field)
-			case "address":
-				return ec.fieldContext_Customer_address(ctx, field)
-			case "total_debt":
-				return ec.fieldContext_Customer_total_debt(ctx, field)
-			case "created_at":
-				return ec.fieldContext_Customer_created_at(ctx, field)
+			case "data":
+				return ec.fieldContext_CustomerPaginationResponse_data(ctx, field)
+			case "pagination":
+				return ec.fieldContext_CustomerPaginationResponse_pagination(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Customer", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type CustomerPaginationResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -8393,6 +8485,50 @@ func (ec *executionContext) _Customer(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var customerPaginationResponseImplementors = []string{"CustomerPaginationResponse"}
+
+func (ec *executionContext) _CustomerPaginationResponse(ctx context.Context, sel ast.SelectionSet, obj *model.CustomerPaginationResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, customerPaginationResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CustomerPaginationResponse")
+		case "data":
+			out.Values[i] = ec._CustomerPaginationResponse_data(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pagination":
+			out.Values[i] = ec._CustomerPaginationResponse_pagination(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var debtTransactionImplementors = []string{"DebtTransaction"}
 
 func (ec *executionContext) _DebtTransaction(ctx context.Context, sel ast.SelectionSet, obj *model.DebtTransaction) graphql.Marshaler {
@@ -9142,16 +9278,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "customers":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._Query_customers(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 
@@ -10410,6 +10543,13 @@ func (ec *executionContext) unmarshalOCustomerFilter2ᚖmonorepoᚋappsᚋgasᚋ
 	}
 	res, err := ec.unmarshalInputCustomerFilter(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOCustomerPaginationResponse2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐCustomerPaginationResponse(ctx context.Context, sel ast.SelectionSet, v *model.CustomerPaginationResponse) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CustomerPaginationResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalODebtTransaction2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐDebtTransaction(ctx context.Context, sel ast.SelectionSet, v *model.DebtTransaction) graphql.Marshaler {
