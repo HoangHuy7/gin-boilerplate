@@ -12,5 +12,6 @@ var Module = fx.Options(
 		NewInventoryService,
 		NewDebtService,
 		NewDeliveryService,
+		NewLogService,
 	),
 )

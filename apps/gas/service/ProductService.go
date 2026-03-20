@@ -16,13 +16,20 @@ import (
 type ProductService struct {
 	db     *database.DataSources
 	logger *zap.Logger
+	logSvc *LogService
 }
 
-func NewProductService(db *database.DataSources, lg *zap.Logger) *ProductService {
+func NewProductService(db *database.DataSources, logSvc *LogService, lg *zap.Logger) *ProductService {
 	return &ProductService{
 		db:     db,
 		logger: lg,
+		logSvc: logSvc,
 	}
+}
+
+// SetLogService sets the log service for audit logging
+func (p *ProductService) SetLogService(logSvc *LogService) {
+	p.logSvc = logSvc
 }
 
 func (p *ProductService) FindAll(ctx context.Context) ([]*mekyra_db.Mkrtb_Product, error) {
@@ -73,17 +80,18 @@ func (p *ProductService) FindByID(ctx context.Context, id string) *mekyra_db.Mkr
 }
 
 func (p *ProductService) Create(ctx context.Context, product *mekyra_db.Mkrtb_Product) error {
-	org, err := utils.GetOrg(ctx)
-	if err {
+	org, getOrgErr := utils.GetOrg(ctx)
+	if getOrgErr {
 		p.logger.Error("Failed to get organization from context")
 		return fmt.Errorf("failed to get organization from context")
 	}
-	tenancy, err := config.GetTenancy(org)
-	if err {
+	tenancy, tenancyErr := config.GetTenancy(org)
+	if tenancyErr {
 		p.logger.Error("Failed to get tenancy")
 		return fmt.Errorf("failed to get tenancy")
 	}
-	return database.WithTenant(
+
+	err := database.WithTenant(
 		p.db.Mekyra_db,
 		ctx,
 		tenancy,
@@ -91,20 +99,51 @@ func (p *ProductService) Create(ctx context.Context, product *mekyra_db.Mkrtb_Pr
 			return tx.Create(product).Error
 		},
 	)
+	if err != nil {
+		if p.logSvc != nil {
+			p.logSvc.LogError(ctx, "CREATE", "PRODUCT", product, err.Error())
+		}
+		return err
+	}
+
+	// Log the create action
+	if p.logSvc != nil {
+		p.logSvc.LogSuccess(ctx, "CREATE", "PRODUCT", nil, product)
+	}
+
+	return nil
 }
 
 func (p *ProductService) Update(ctx context.Context, product *mekyra_db.Mkrtb_Product) error {
-	org, err := utils.GetOrg(ctx)
-	if err {
+	org, getOrgErr := utils.GetOrg(ctx)
+	if getOrgErr {
 		p.logger.Error("Failed to get organization from context")
 		return fmt.Errorf("failed to get organization from context")
 	}
-	tenancy, err := config.GetTenancy(org)
-	if err {
+	tenancy, tenancyErr := config.GetTenancy(org)
+	if tenancyErr {
 		p.logger.Error("Failed to get tenancy")
 		return fmt.Errorf("failed to get tenancy")
 	}
-	return database.WithTenant(
+
+	// Get old data before update
+	var oldProduct mekyra_db.Mkrtb_Product
+	err := database.WithTenant(
+		p.db.Mekyra_db,
+		ctx,
+		tenancy,
+		func(tx *gorm.DB) error {
+			return tx.First(&oldProduct, "id = ?", product.Id).Error
+		},
+	)
+	if err != nil {
+		if p.logSvc != nil {
+			p.logSvc.LogError(ctx, "UPDATE", "PRODUCT", nil, err.Error())
+		}
+		return err
+	}
+
+	err = database.WithTenant(
 		p.db.Mekyra_db,
 		ctx,
 		tenancy,
@@ -112,20 +151,51 @@ func (p *ProductService) Update(ctx context.Context, product *mekyra_db.Mkrtb_Pr
 			return tx.Save(product).Error
 		},
 	)
+	if err != nil {
+		if p.logSvc != nil {
+			p.logSvc.LogError(ctx, "UPDATE", "PRODUCT", &oldProduct, err.Error())
+		}
+		return err
+	}
+
+	// Log the update action
+	if p.logSvc != nil {
+		p.logSvc.LogSuccess(ctx, "UPDATE", "PRODUCT", &oldProduct, product)
+	}
+
+	return nil
 }
 
 func (p *ProductService) Delete(ctx context.Context, id string) error {
-	org, err := utils.GetOrg(ctx)
-	if err {
+	org, getOrgErr := utils.GetOrg(ctx)
+	if getOrgErr {
 		p.logger.Error("Failed to get organization from context")
 		return fmt.Errorf("failed to get organization from context")
 	}
-	tenancy, err := config.GetTenancy(org)
-	if err {
+	tenancy, tenancyErr := config.GetTenancy(org)
+	if tenancyErr {
 		p.logger.Error("Failed to get tenancy")
 		return fmt.Errorf("failed to get tenancy")
 	}
-	return database.WithTenant(
+
+	// Get old data before delete
+	var oldProduct mekyra_db.Mkrtb_Product
+	err := database.WithTenant(
+		p.db.Mekyra_db,
+		ctx,
+		tenancy,
+		func(tx *gorm.DB) error {
+			return tx.First(&oldProduct, "id = ?", id).Error
+		},
+	)
+	if err != nil {
+		if p.logSvc != nil {
+			p.logSvc.LogError(ctx, "DELETE", "PRODUCT", nil, err.Error())
+		}
+		return err
+	}
+
+	err = database.WithTenant(
 		p.db.Mekyra_db,
 		ctx,
 		tenancy,
@@ -133,6 +203,19 @@ func (p *ProductService) Delete(ctx context.Context, id string) error {
 			return tx.Delete(&mekyra_db.Mkrtb_Product{}, "id = ?", id).Error
 		},
 	)
+	if err != nil {
+		if p.logSvc != nil {
+			p.logSvc.LogError(ctx, "DELETE", "PRODUCT", &oldProduct, err.Error())
+		}
+		return err
+	}
+
+	// Log the delete action
+	if p.logSvc != nil {
+		p.logSvc.LogSuccess(ctx, "DELETE", "PRODUCT", &oldProduct, nil)
+	}
+
+	return nil
 }
 func (p *ProductService) FindWithPagination(
 	ctx context.Context,
