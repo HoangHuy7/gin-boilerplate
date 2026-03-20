@@ -170,6 +170,24 @@ func (s *OrderService) Create(ctx context.Context, order *mekyra_db.Mkrtb_Order,
 				if err := tx.Create(item).Error; err != nil {
 					return err
 				}
+
+				// Subtract stock quantity
+				if err := tx.Model(&mekyra_db.Mkrtb_Product{}).
+					Where("id = ?", item.ProductId).
+					Update("stock_quantity", gorm.Expr("stock_quantity - ?", item.Quantity)).Error; err != nil {
+					return err
+				}
+
+				// Create inventory log
+				invLog := &mekyra_db.Mkrtb_InventoryLog{
+					ProductId: item.ProductId,
+					Type:      "sale",
+					Quantity:  -item.Quantity,
+					Note:      fmt.Sprintf("Order %s", order.Code),
+				}
+				if err := tx.Create(invLog).Error; err != nil {
+					return err
+				}
 			}
 			return nil
 		},
