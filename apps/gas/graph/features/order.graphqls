@@ -69,6 +69,7 @@ extend type Query {
         pagination: PaginationInput
     ): OrderPaginationResponse
     order(id: ID!): Order
+    items(order_id: ID!): [OrderItem!]!
 }
 
 # =========================

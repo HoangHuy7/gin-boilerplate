@@ -152,15 +152,38 @@ func (r *queryResolver) Orders(ctx context.Context, filter *model.OrderFilter, p
 	var result []*model.Order
 	for _, o := range list {
 		var customerID *string
+		var customer *model.Customer
 		if o.CustomerId != nil {
 			cid := o.CustomerId.String()
 			customerID = &cid
+
+			// Fetch customer data
+			c := r.CustomerService.FindByID(ctx, cid)
+			if c != nil && c.Id != uuid.Nil {
+				phone := &c.Phone
+				address := &c.Address
+				if c.Phone == "" {
+					phone = nil
+				}
+				if c.Address == "" {
+					address = nil
+				}
+				customer = &model.Customer{
+					ID:        c.Id.String(),
+					Name:      c.Name,
+					Phone:     phone,
+					Address:   address,
+					TotalDebt: c.TotalDebt,
+					CreatedAt: &c.CreatedAt,
+				}
+			}
 		}
 
 		result = append(result, &model.Order{
 			ID:          o.Id.String(),
 			Code:        &o.Code,
 			CustomerID:  customerID,
+			Customer:    customer,
 			TotalAmount: o.TotalAmount,
 			PaidAmount:  o.PaidAmount,
 			DebtAmount:  o.DebtAmount,
@@ -192,15 +215,38 @@ func (r *queryResolver) Order(ctx context.Context, id string) (*model.Order, err
 	}
 
 	var customerID *string
+	var customer *model.Customer
 	if o.CustomerId != nil {
 		cid := o.CustomerId.String()
 		customerID = &cid
+
+		// Fetch customer data
+		c := r.CustomerService.FindByID(ctx, cid)
+		if c != nil && c.Id != uuid.Nil {
+			phone := &c.Phone
+			address := &c.Address
+			if c.Phone == "" {
+				phone = nil
+			}
+			if c.Address == "" {
+				address = nil
+			}
+			customer = &model.Customer{
+				ID:        c.Id.String(),
+				Name:      c.Name,
+				Phone:     phone,
+				Address:   address,
+				TotalDebt: c.TotalDebt,
+				CreatedAt: &c.CreatedAt,
+			}
+		}
 	}
 
 	return &model.Order{
 		ID:          o.Id.String(),
 		Code:        &o.Code,
 		CustomerID:  customerID,
+		Customer:    customer,
 		TotalAmount: o.TotalAmount,
 		PaidAmount:  o.PaidAmount,
 		DebtAmount:  o.DebtAmount,
@@ -210,15 +256,9 @@ func (r *queryResolver) Order(ctx context.Context, id string) (*model.Order, err
 	}, nil
 }
 
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *mutationResolver) Items(ctx context.Context, obj *model.Order) ([]*model.OrderItem, error) {
-	items := r.OrderService.GetOrderItems(ctx, obj.ID)
+// Items is the resolver for the items field.
+func (r *queryResolver) Items(ctx context.Context, orderID string) ([]*model.OrderItem, error) {
+	items := r.OrderService.GetOrderItems(ctx, orderID)
 	if items == nil {
 		return []*model.OrderItem{}, nil
 	}
@@ -237,4 +277,3 @@ func (r *queryResolver) Order(ctx context.Context, id string) (*model.Order, err
 	}
 	return result, nil
 }
-*/
