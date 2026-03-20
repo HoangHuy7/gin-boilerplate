@@ -36,12 +36,18 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input model.CreateOr
 
 	var items []*mekyra_db.Mkrtb_OrderItem
 	for _, itemInput := range input.Items {
+		productName := ""
+		p := r.ProdService.FindByID(ctx, itemInput.ProductID)
+		if p != nil && p.Id != uuid.Nil {
+			productName = p.Name
+		}
+
 		item := &mekyra_db.Mkrtb_OrderItem{
 			ProductId:   uuid.MustParse(itemInput.ProductID),
 			Quantity:    itemInput.Quantity,
 			Price:       itemInput.Price,
 			Total:       itemInput.Price.Mul(decimal.NewFromInt(int64(itemInput.Quantity))),
-			ProductName: "",
+			ProductName: productName,
 		}
 		items = append(items, item)
 		order.TotalAmount = order.TotalAmount.Add(item.Total)
@@ -179,6 +185,19 @@ func (r *queryResolver) Orders(ctx context.Context, filter *model.OrderFilter, p
 			}
 		}
 
+		var items []*model.OrderItem
+		for _, item := range o.Items {
+			items = append(items, &model.OrderItem{
+				ID:          item.Id.String(),
+				OrderID:     item.OrderId.String(),
+				ProductID:   item.ProductId.String(),
+				ProductName: item.ProductName,
+				Quantity:    item.Quantity,
+				Price:       item.Price,
+				Total:       item.Total,
+			})
+		}
+
 		result = append(result, &model.Order{
 			ID:          o.Id.String(),
 			Code:        &o.Code,
@@ -189,6 +208,7 @@ func (r *queryResolver) Orders(ctx context.Context, filter *model.OrderFilter, p
 			DebtAmount:  o.DebtAmount,
 			Status:      o.Status,
 			Note:        &o.Note,
+			Items:       items,
 			CreatedAt:   &o.CreatedAt,
 		})
 	}
@@ -242,6 +262,19 @@ func (r *queryResolver) Order(ctx context.Context, id string) (*model.Order, err
 		}
 	}
 
+	var items []*model.OrderItem
+	for _, item := range o.Items {
+		items = append(items, &model.OrderItem{
+			ID:          item.Id.String(),
+			OrderID:     item.OrderId.String(),
+			ProductID:   item.ProductId.String(),
+			ProductName: item.ProductName,
+			Quantity:    item.Quantity,
+			Price:       item.Price,
+			Total:       item.Total,
+		})
+	}
+
 	return &model.Order{
 		ID:          o.Id.String(),
 		Code:        &o.Code,
@@ -252,6 +285,7 @@ func (r *queryResolver) Order(ctx context.Context, id string) (*model.Order, err
 		DebtAmount:  o.DebtAmount,
 		Status:      o.Status,
 		Note:        &o.Note,
+		Items:       items,
 		CreatedAt:   &o.CreatedAt,
 	}, nil
 }
