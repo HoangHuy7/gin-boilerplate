@@ -52,6 +52,17 @@ type ComplexityRoot struct {
 		Pagination func(childComplexity int) int
 	}
 
+	DailySales struct {
+		Quantity func(childComplexity int) int
+		SaleDate func(childComplexity int) int
+		Total    func(childComplexity int) int
+	}
+
+	DailySalesPaginationResponse struct {
+		Data       func(childComplexity int) int
+		Pagination func(childComplexity int) int
+	}
+
 	DebtTransaction struct {
 		Amount     func(childComplexity int) int
 		CreatedAt  func(childComplexity int) int
@@ -93,6 +104,17 @@ type ComplexityRoot struct {
 		Name        func(childComplexity int) int
 		Price       func(childComplexity int) int
 		UpdatedAt   func(childComplexity int) int
+	}
+
+	MonthlySales struct {
+		Quantity  func(childComplexity int) int
+		SaleMonth func(childComplexity int) int
+		Total     func(childComplexity int) int
+	}
+
+	MonthlySalesPaginationResponse struct {
+		Data       func(childComplexity int) int
+		Pagination func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -189,7 +211,36 @@ type ComplexityRoot struct {
 		Orders           func(childComplexity int, filter *model.OrderFilter, pagination *model.PaginationInput) int
 		Product          func(childComplexity int, id string) int
 		Products         func(childComplexity int, filter *model.ProductFilter, pagination *model.PaginationInput) int
+		SalesByDay       func(childComplexity int, filter *model.SalesFilter, pagination *model.PaginationInput) int
+		SalesByMonth     func(childComplexity int, filter *model.SalesFilter, pagination *model.PaginationInput) int
+		SalesByYear      func(childComplexity int, filter *model.SalesFilter, pagination *model.PaginationInput) int
+		SalesSummary     func(childComplexity int, filter *model.SalesFilter, pagination *model.PaginationInput) int
 		TodayDeliveries  func(childComplexity int) int
+	}
+
+	SalesSummary struct {
+		CreatedAt func(childComplexity int) int
+		Quantity  func(childComplexity int) int
+		SaleDate  func(childComplexity int) int
+		SaleMonth func(childComplexity int) int
+		SaleYear  func(childComplexity int) int
+		Total     func(childComplexity int) int
+	}
+
+	SalesSummaryPaginationResponse struct {
+		Data       func(childComplexity int) int
+		Pagination func(childComplexity int) int
+	}
+
+	YearlySales struct {
+		Quantity func(childComplexity int) int
+		SaleYear func(childComplexity int) int
+		Total    func(childComplexity int) int
+	}
+
+	YearlySalesPaginationResponse struct {
+		Data       func(childComplexity int) int
+		Pagination func(childComplexity int) int
 	}
 }
 
@@ -216,6 +267,10 @@ type MutationResolver interface {
 	RestockProduct(ctx context.Context, id string, quantity int) (*model.Product, error)
 }
 type QueryResolver interface {
+	SalesSummary(ctx context.Context, filter *model.SalesFilter, pagination *model.PaginationInput) (*model.SalesSummaryPaginationResponse, error)
+	SalesByDay(ctx context.Context, filter *model.SalesFilter, pagination *model.PaginationInput) (*model.DailySalesPaginationResponse, error)
+	SalesByMonth(ctx context.Context, filter *model.SalesFilter, pagination *model.PaginationInput) (*model.MonthlySalesPaginationResponse, error)
+	SalesByYear(ctx context.Context, filter *model.SalesFilter, pagination *model.PaginationInput) (*model.YearlySalesPaginationResponse, error)
 	Customers(ctx context.Context, filter *model.CustomerFilter, pagination *model.PaginationInput) (*model.CustomerPaginationResponse, error)
 	Customer(ctx context.Context, id string) (*model.Customer, error)
 	DebtTransactions(ctx context.Context, filter *model.DebtTransactionFilter, pagination *model.PaginationInput) ([]*model.DebtTransaction, error)
@@ -297,6 +352,38 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.CustomerPaginationResponse.Pagination(childComplexity), true
+
+	case "DailySales.quantity":
+		if e.ComplexityRoot.DailySales.Quantity == nil {
+			break
+		}
+
+		return e.ComplexityRoot.DailySales.Quantity(childComplexity), true
+	case "DailySales.sale_date":
+		if e.ComplexityRoot.DailySales.SaleDate == nil {
+			break
+		}
+
+		return e.ComplexityRoot.DailySales.SaleDate(childComplexity), true
+	case "DailySales.total":
+		if e.ComplexityRoot.DailySales.Total == nil {
+			break
+		}
+
+		return e.ComplexityRoot.DailySales.Total(childComplexity), true
+
+	case "DailySalesPaginationResponse.data":
+		if e.ComplexityRoot.DailySalesPaginationResponse.Data == nil {
+			break
+		}
+
+		return e.ComplexityRoot.DailySalesPaginationResponse.Data(childComplexity), true
+	case "DailySalesPaginationResponse.pagination":
+		if e.ComplexityRoot.DailySalesPaginationResponse.Pagination == nil {
+			break
+		}
+
+		return e.ComplexityRoot.DailySalesPaginationResponse.Pagination(childComplexity), true
 
 	case "DebtTransaction.amount":
 		if e.ComplexityRoot.DebtTransaction.Amount == nil {
@@ -487,6 +574,38 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Menu.UpdatedAt(childComplexity), true
+
+	case "MonthlySales.quantity":
+		if e.ComplexityRoot.MonthlySales.Quantity == nil {
+			break
+		}
+
+		return e.ComplexityRoot.MonthlySales.Quantity(childComplexity), true
+	case "MonthlySales.sale_month":
+		if e.ComplexityRoot.MonthlySales.SaleMonth == nil {
+			break
+		}
+
+		return e.ComplexityRoot.MonthlySales.SaleMonth(childComplexity), true
+	case "MonthlySales.total":
+		if e.ComplexityRoot.MonthlySales.Total == nil {
+			break
+		}
+
+		return e.ComplexityRoot.MonthlySales.Total(childComplexity), true
+
+	case "MonthlySalesPaginationResponse.data":
+		if e.ComplexityRoot.MonthlySalesPaginationResponse.Data == nil {
+			break
+		}
+
+		return e.ComplexityRoot.MonthlySalesPaginationResponse.Data(childComplexity), true
+	case "MonthlySalesPaginationResponse.pagination":
+		if e.ComplexityRoot.MonthlySalesPaginationResponse.Pagination == nil {
+			break
+		}
+
+		return e.ComplexityRoot.MonthlySalesPaginationResponse.Pagination(childComplexity), true
 
 	case "Mutation.createCustomer":
 		if e.ComplexityRoot.Mutation.CreateCustomer == nil {
@@ -1098,12 +1217,138 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Query.Products(childComplexity, args["filter"].(*model.ProductFilter), args["pagination"].(*model.PaginationInput)), true
+	case "Query.salesByDay":
+		if e.ComplexityRoot.Query.SalesByDay == nil {
+			break
+		}
+
+		args, err := ec.field_Query_salesByDay_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.SalesByDay(childComplexity, args["filter"].(*model.SalesFilter), args["pagination"].(*model.PaginationInput)), true
+	case "Query.salesByMonth":
+		if e.ComplexityRoot.Query.SalesByMonth == nil {
+			break
+		}
+
+		args, err := ec.field_Query_salesByMonth_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.SalesByMonth(childComplexity, args["filter"].(*model.SalesFilter), args["pagination"].(*model.PaginationInput)), true
+	case "Query.salesByYear":
+		if e.ComplexityRoot.Query.SalesByYear == nil {
+			break
+		}
+
+		args, err := ec.field_Query_salesByYear_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.SalesByYear(childComplexity, args["filter"].(*model.SalesFilter), args["pagination"].(*model.PaginationInput)), true
+	case "Query.salesSummary":
+		if e.ComplexityRoot.Query.SalesSummary == nil {
+			break
+		}
+
+		args, err := ec.field_Query_salesSummary_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.SalesSummary(childComplexity, args["filter"].(*model.SalesFilter), args["pagination"].(*model.PaginationInput)), true
 	case "Query.todayDeliveries":
 		if e.ComplexityRoot.Query.TodayDeliveries == nil {
 			break
 		}
 
 		return e.ComplexityRoot.Query.TodayDeliveries(childComplexity), true
+
+	case "SalesSummary.created_at":
+		if e.ComplexityRoot.SalesSummary.CreatedAt == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SalesSummary.CreatedAt(childComplexity), true
+	case "SalesSummary.quantity":
+		if e.ComplexityRoot.SalesSummary.Quantity == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SalesSummary.Quantity(childComplexity), true
+	case "SalesSummary.sale_date":
+		if e.ComplexityRoot.SalesSummary.SaleDate == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SalesSummary.SaleDate(childComplexity), true
+	case "SalesSummary.sale_month":
+		if e.ComplexityRoot.SalesSummary.SaleMonth == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SalesSummary.SaleMonth(childComplexity), true
+	case "SalesSummary.sale_year":
+		if e.ComplexityRoot.SalesSummary.SaleYear == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SalesSummary.SaleYear(childComplexity), true
+	case "SalesSummary.total":
+		if e.ComplexityRoot.SalesSummary.Total == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SalesSummary.Total(childComplexity), true
+
+	case "SalesSummaryPaginationResponse.data":
+		if e.ComplexityRoot.SalesSummaryPaginationResponse.Data == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SalesSummaryPaginationResponse.Data(childComplexity), true
+	case "SalesSummaryPaginationResponse.pagination":
+		if e.ComplexityRoot.SalesSummaryPaginationResponse.Pagination == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SalesSummaryPaginationResponse.Pagination(childComplexity), true
+
+	case "YearlySales.quantity":
+		if e.ComplexityRoot.YearlySales.Quantity == nil {
+			break
+		}
+
+		return e.ComplexityRoot.YearlySales.Quantity(childComplexity), true
+	case "YearlySales.sale_year":
+		if e.ComplexityRoot.YearlySales.SaleYear == nil {
+			break
+		}
+
+		return e.ComplexityRoot.YearlySales.SaleYear(childComplexity), true
+	case "YearlySales.total":
+		if e.ComplexityRoot.YearlySales.Total == nil {
+			break
+		}
+
+		return e.ComplexityRoot.YearlySales.Total(childComplexity), true
+
+	case "YearlySalesPaginationResponse.data":
+		if e.ComplexityRoot.YearlySalesPaginationResponse.Data == nil {
+			break
+		}
+
+		return e.ComplexityRoot.YearlySalesPaginationResponse.Data(childComplexity), true
+	case "YearlySalesPaginationResponse.pagination":
+		if e.ComplexityRoot.YearlySalesPaginationResponse.Pagination == nil {
+			break
+		}
+
+		return e.ComplexityRoot.YearlySalesPaginationResponse.Pagination(childComplexity), true
 
 	}
 	return 0, false
@@ -1128,6 +1373,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputOrderFilter,
 		ec.unmarshalInputPaginationInput,
 		ec.unmarshalInputProductFilter,
+		ec.unmarshalInputSalesFilter,
 		ec.unmarshalInputUpdateCustomerInput,
 		ec.unmarshalInputUpdateDeliveryInput,
 		ec.unmarshalInputUpdateMenuInput,
@@ -1207,7 +1453,7 @@ func newExecutionContext(
 	}
 }
 
-//go:embed "schema.graphqls" "features/customer.graphqls" "features/debt.graphqls" "features/delivery.graphqls" "features/inventory.graphqls" "features/menu.graphqls" "features/order.graphqls" "features/product.graphqls"
+//go:embed "schema.graphqls" "features/analysis.graphqls" "features/customer.graphqls" "features/debt.graphqls" "features/delivery.graphqls" "features/inventory.graphqls" "features/menu.graphqls" "features/order.graphqls" "features/product.graphqls"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -1220,6 +1466,7 @@ func sourceData(filename string) string {
 
 var sources = []*ast.Source{
 	{Name: "schema.graphqls", Input: sourceData("schema.graphqls"), BuiltIn: false},
+	{Name: "features/analysis.graphqls", Input: sourceData("features/analysis.graphqls"), BuiltIn: false},
 	{Name: "features/customer.graphqls", Input: sourceData("features/customer.graphqls"), BuiltIn: false},
 	{Name: "features/debt.graphqls", Input: sourceData("features/debt.graphqls"), BuiltIn: false},
 	{Name: "features/delivery.graphqls", Input: sourceData("features/delivery.graphqls"), BuiltIn: false},
@@ -1674,6 +1921,70 @@ func (ec *executionContext) field_Query_products_args(ctx context.Context, rawAr
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_salesByDay_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSalesFilter2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐSalesFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "pagination", ec.unmarshalOPaginationInput2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐPaginationInput)
+	if err != nil {
+		return nil, err
+	}
+	args["pagination"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_salesByMonth_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSalesFilter2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐSalesFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "pagination", ec.unmarshalOPaginationInput2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐPaginationInput)
+	if err != nil {
+		return nil, err
+	}
+	args["pagination"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_salesByYear_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSalesFilter2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐSalesFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "pagination", ec.unmarshalOPaginationInput2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐPaginationInput)
+	if err != nil {
+		return nil, err
+	}
+	args["pagination"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_salesSummary_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filter", ec.unmarshalOSalesFilter2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐSalesFilter)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "pagination", ec.unmarshalOPaginationInput2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐPaginationInput)
+	if err != nil {
+		return nil, err
+	}
+	args["pagination"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field___Directive_args_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -1962,6 +2273,169 @@ func (ec *executionContext) _CustomerPaginationResponse_pagination(ctx context.C
 func (ec *executionContext) fieldContext_CustomerPaginationResponse_pagination(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "CustomerPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "total":
+				return ec.fieldContext_PageInfo_total(ctx, field)
+			case "page":
+				return ec.fieldContext_PageInfo_page(ctx, field)
+			case "page_size":
+				return ec.fieldContext_PageInfo_page_size(ctx, field)
+			case "has_next":
+				return ec.fieldContext_PageInfo_has_next(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailySales_sale_date(ctx context.Context, field graphql.CollectedField, obj *model.DailySales) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DailySales_sale_date,
+		func(ctx context.Context) (any, error) {
+			return obj.SaleDate, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DailySales_sale_date(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailySales",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailySales_quantity(ctx context.Context, field graphql.CollectedField, obj *model.DailySales) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DailySales_quantity,
+		func(ctx context.Context) (any, error) {
+			return obj.Quantity, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DailySales_quantity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailySales",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailySales_total(ctx context.Context, field graphql.CollectedField, obj *model.DailySales) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DailySales_total,
+		func(ctx context.Context) (any, error) {
+			return obj.Total, nil
+		},
+		nil,
+		ec.marshalNDecimal2githubᚗcomᚋshopspringᚋdecimalᚐDecimal,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DailySales_total(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailySales",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Decimal does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailySalesPaginationResponse_data(ctx context.Context, field graphql.CollectedField, obj *model.DailySalesPaginationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DailySalesPaginationResponse_data,
+		func(ctx context.Context) (any, error) {
+			return obj.Data, nil
+		},
+		nil,
+		ec.marshalNDailySales2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐDailySalesᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DailySalesPaginationResponse_data(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailySalesPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "sale_date":
+				return ec.fieldContext_DailySales_sale_date(ctx, field)
+			case "quantity":
+				return ec.fieldContext_DailySales_quantity(ctx, field)
+			case "total":
+				return ec.fieldContext_DailySales_total(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailySales", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DailySalesPaginationResponse_pagination(ctx context.Context, field graphql.CollectedField, obj *model.DailySalesPaginationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DailySalesPaginationResponse_pagination,
+		func(ctx context.Context) (any, error) {
+			return obj.Pagination, nil
+		},
+		nil,
+		ec.marshalNPageInfo2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐPageInfo,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DailySalesPaginationResponse_pagination(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DailySalesPaginationResponse",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -2960,6 +3434,169 @@ func (ec *executionContext) fieldContext_Menu_updatedAt(_ context.Context, field
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MonthlySales_sale_month(ctx context.Context, field graphql.CollectedField, obj *model.MonthlySales) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_MonthlySales_sale_month,
+		func(ctx context.Context) (any, error) {
+			return obj.SaleMonth, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_MonthlySales_sale_month(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MonthlySales",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MonthlySales_quantity(ctx context.Context, field graphql.CollectedField, obj *model.MonthlySales) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_MonthlySales_quantity,
+		func(ctx context.Context) (any, error) {
+			return obj.Quantity, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_MonthlySales_quantity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MonthlySales",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MonthlySales_total(ctx context.Context, field graphql.CollectedField, obj *model.MonthlySales) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_MonthlySales_total,
+		func(ctx context.Context) (any, error) {
+			return obj.Total, nil
+		},
+		nil,
+		ec.marshalNDecimal2githubᚗcomᚋshopspringᚋdecimalᚐDecimal,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_MonthlySales_total(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MonthlySales",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Decimal does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MonthlySalesPaginationResponse_data(ctx context.Context, field graphql.CollectedField, obj *model.MonthlySalesPaginationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_MonthlySalesPaginationResponse_data,
+		func(ctx context.Context) (any, error) {
+			return obj.Data, nil
+		},
+		nil,
+		ec.marshalNMonthlySales2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐMonthlySalesᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_MonthlySalesPaginationResponse_data(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MonthlySalesPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "sale_month":
+				return ec.fieldContext_MonthlySales_sale_month(ctx, field)
+			case "quantity":
+				return ec.fieldContext_MonthlySales_quantity(ctx, field)
+			case "total":
+				return ec.fieldContext_MonthlySales_total(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type MonthlySales", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MonthlySalesPaginationResponse_pagination(ctx context.Context, field graphql.CollectedField, obj *model.MonthlySalesPaginationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_MonthlySalesPaginationResponse_pagination,
+		func(ctx context.Context) (any, error) {
+			return obj.Pagination, nil
+		},
+		nil,
+		ec.marshalNPageInfo2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐPageInfo,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_MonthlySalesPaginationResponse_pagination(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MonthlySalesPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "total":
+				return ec.fieldContext_PageInfo_total(ctx, field)
+			case "page":
+				return ec.fieldContext_PageInfo_page(ctx, field)
+			case "page_size":
+				return ec.fieldContext_PageInfo_page_size(ctx, field)
+			case "has_next":
+				return ec.fieldContext_PageInfo_has_next(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
 		},
 	}
 	return fc, nil
@@ -5224,6 +5861,194 @@ func (ec *executionContext) fieldContext_ProductPaginationResponse_page_info(_ c
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_salesSummary(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_salesSummary,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().SalesSummary(ctx, fc.Args["filter"].(*model.SalesFilter), fc.Args["pagination"].(*model.PaginationInput))
+		},
+		nil,
+		ec.marshalNSalesSummaryPaginationResponse2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐSalesSummaryPaginationResponse,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_salesSummary(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "data":
+				return ec.fieldContext_SalesSummaryPaginationResponse_data(ctx, field)
+			case "pagination":
+				return ec.fieldContext_SalesSummaryPaginationResponse_pagination(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SalesSummaryPaginationResponse", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_salesSummary_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_salesByDay(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_salesByDay,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().SalesByDay(ctx, fc.Args["filter"].(*model.SalesFilter), fc.Args["pagination"].(*model.PaginationInput))
+		},
+		nil,
+		ec.marshalNDailySalesPaginationResponse2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐDailySalesPaginationResponse,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_salesByDay(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "data":
+				return ec.fieldContext_DailySalesPaginationResponse_data(ctx, field)
+			case "pagination":
+				return ec.fieldContext_DailySalesPaginationResponse_pagination(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DailySalesPaginationResponse", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_salesByDay_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_salesByMonth(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_salesByMonth,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().SalesByMonth(ctx, fc.Args["filter"].(*model.SalesFilter), fc.Args["pagination"].(*model.PaginationInput))
+		},
+		nil,
+		ec.marshalNMonthlySalesPaginationResponse2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐMonthlySalesPaginationResponse,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_salesByMonth(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "data":
+				return ec.fieldContext_MonthlySalesPaginationResponse_data(ctx, field)
+			case "pagination":
+				return ec.fieldContext_MonthlySalesPaginationResponse_pagination(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type MonthlySalesPaginationResponse", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_salesByMonth_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_salesByYear(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_salesByYear,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().SalesByYear(ctx, fc.Args["filter"].(*model.SalesFilter), fc.Args["pagination"].(*model.PaginationInput))
+		},
+		nil,
+		ec.marshalNYearlySalesPaginationResponse2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐYearlySalesPaginationResponse,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_salesByYear(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "data":
+				return ec.fieldContext_YearlySalesPaginationResponse_data(ctx, field)
+			case "pagination":
+				return ec.fieldContext_YearlySalesPaginationResponse_pagination(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type YearlySalesPaginationResponse", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_salesByYear_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_customers(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -6211,6 +7036,425 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SalesSummary_created_at(ctx context.Context, field graphql.CollectedField, obj *model.SalesSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SalesSummary_created_at,
+		func(ctx context.Context) (any, error) {
+			return obj.CreatedAt, nil
+		},
+		nil,
+		ec.marshalOTime2ᚖtimeᚐTime,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SalesSummary_created_at(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SalesSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SalesSummary_sale_date(ctx context.Context, field graphql.CollectedField, obj *model.SalesSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SalesSummary_sale_date,
+		func(ctx context.Context) (any, error) {
+			return obj.SaleDate, nil
+		},
+		nil,
+		ec.marshalOTime2ᚖtimeᚐTime,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SalesSummary_sale_date(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SalesSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SalesSummary_sale_month(ctx context.Context, field graphql.CollectedField, obj *model.SalesSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SalesSummary_sale_month,
+		func(ctx context.Context) (any, error) {
+			return obj.SaleMonth, nil
+		},
+		nil,
+		ec.marshalOTime2ᚖtimeᚐTime,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SalesSummary_sale_month(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SalesSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SalesSummary_sale_year(ctx context.Context, field graphql.CollectedField, obj *model.SalesSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SalesSummary_sale_year,
+		func(ctx context.Context) (any, error) {
+			return obj.SaleYear, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SalesSummary_sale_year(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SalesSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SalesSummary_quantity(ctx context.Context, field graphql.CollectedField, obj *model.SalesSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SalesSummary_quantity,
+		func(ctx context.Context) (any, error) {
+			return obj.Quantity, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SalesSummary_quantity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SalesSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SalesSummary_total(ctx context.Context, field graphql.CollectedField, obj *model.SalesSummary) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SalesSummary_total,
+		func(ctx context.Context) (any, error) {
+			return obj.Total, nil
+		},
+		nil,
+		ec.marshalNDecimal2githubᚗcomᚋshopspringᚋdecimalᚐDecimal,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SalesSummary_total(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SalesSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Decimal does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SalesSummaryPaginationResponse_data(ctx context.Context, field graphql.CollectedField, obj *model.SalesSummaryPaginationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SalesSummaryPaginationResponse_data,
+		func(ctx context.Context) (any, error) {
+			return obj.Data, nil
+		},
+		nil,
+		ec.marshalNSalesSummary2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐSalesSummaryᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SalesSummaryPaginationResponse_data(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SalesSummaryPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "created_at":
+				return ec.fieldContext_SalesSummary_created_at(ctx, field)
+			case "sale_date":
+				return ec.fieldContext_SalesSummary_sale_date(ctx, field)
+			case "sale_month":
+				return ec.fieldContext_SalesSummary_sale_month(ctx, field)
+			case "sale_year":
+				return ec.fieldContext_SalesSummary_sale_year(ctx, field)
+			case "quantity":
+				return ec.fieldContext_SalesSummary_quantity(ctx, field)
+			case "total":
+				return ec.fieldContext_SalesSummary_total(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SalesSummary", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SalesSummaryPaginationResponse_pagination(ctx context.Context, field graphql.CollectedField, obj *model.SalesSummaryPaginationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SalesSummaryPaginationResponse_pagination,
+		func(ctx context.Context) (any, error) {
+			return obj.Pagination, nil
+		},
+		nil,
+		ec.marshalNPageInfo2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐPageInfo,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SalesSummaryPaginationResponse_pagination(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SalesSummaryPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "total":
+				return ec.fieldContext_PageInfo_total(ctx, field)
+			case "page":
+				return ec.fieldContext_PageInfo_page(ctx, field)
+			case "page_size":
+				return ec.fieldContext_PageInfo_page_size(ctx, field)
+			case "has_next":
+				return ec.fieldContext_PageInfo_has_next(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _YearlySales_sale_year(ctx context.Context, field graphql.CollectedField, obj *model.YearlySales) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_YearlySales_sale_year,
+		func(ctx context.Context) (any, error) {
+			return obj.SaleYear, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_YearlySales_sale_year(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "YearlySales",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _YearlySales_quantity(ctx context.Context, field graphql.CollectedField, obj *model.YearlySales) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_YearlySales_quantity,
+		func(ctx context.Context) (any, error) {
+			return obj.Quantity, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_YearlySales_quantity(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "YearlySales",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _YearlySales_total(ctx context.Context, field graphql.CollectedField, obj *model.YearlySales) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_YearlySales_total,
+		func(ctx context.Context) (any, error) {
+			return obj.Total, nil
+		},
+		nil,
+		ec.marshalNDecimal2githubᚗcomᚋshopspringᚋdecimalᚐDecimal,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_YearlySales_total(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "YearlySales",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Decimal does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _YearlySalesPaginationResponse_data(ctx context.Context, field graphql.CollectedField, obj *model.YearlySalesPaginationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_YearlySalesPaginationResponse_data,
+		func(ctx context.Context) (any, error) {
+			return obj.Data, nil
+		},
+		nil,
+		ec.marshalNYearlySales2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐYearlySalesᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_YearlySalesPaginationResponse_data(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "YearlySalesPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "sale_year":
+				return ec.fieldContext_YearlySales_sale_year(ctx, field)
+			case "quantity":
+				return ec.fieldContext_YearlySales_quantity(ctx, field)
+			case "total":
+				return ec.fieldContext_YearlySales_total(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type YearlySales", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _YearlySalesPaginationResponse_pagination(ctx context.Context, field graphql.CollectedField, obj *model.YearlySalesPaginationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_YearlySalesPaginationResponse_pagination,
+		func(ctx context.Context) (any, error) {
+			return obj.Pagination, nil
+		},
+		nil,
+		ec.marshalNPageInfo2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐPageInfo,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_YearlySalesPaginationResponse_pagination(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "YearlySalesPaginationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "total":
+				return ec.fieldContext_PageInfo_total(ctx, field)
+			case "page":
+				return ec.fieldContext_PageInfo_page(ctx, field)
+			case "page_size":
+				return ec.fieldContext_PageInfo_page_size(ctx, field)
+			case "has_next":
+				return ec.fieldContext_PageInfo_has_next(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
 		},
 	}
 	return fc, nil
@@ -8427,6 +9671,43 @@ func (ec *executionContext) unmarshalInputProductFilter(ctx context.Context, obj
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSalesFilter(ctx context.Context, obj any) (model.SalesFilter, error) {
+	var it model.SalesFilter
+	if obj == nil {
+		return it, nil
+	}
+
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"from_date", "to_date"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "from_date":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from_date"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FromDate = data
+		case "to_date":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("to_date"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ToDate = data
+		}
+	}
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateCustomerInput(ctx context.Context, obj any) (model.UpdateCustomerInput, error) {
 	var it model.UpdateCustomerInput
 	if obj == nil {
@@ -8796,6 +10077,99 @@ func (ec *executionContext) _CustomerPaginationResponse(ctx context.Context, sel
 	return out
 }
 
+var dailySalesImplementors = []string{"DailySales"}
+
+func (ec *executionContext) _DailySales(ctx context.Context, sel ast.SelectionSet, obj *model.DailySales) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, dailySalesImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DailySales")
+		case "sale_date":
+			out.Values[i] = ec._DailySales_sale_date(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "quantity":
+			out.Values[i] = ec._DailySales_quantity(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "total":
+			out.Values[i] = ec._DailySales_total(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var dailySalesPaginationResponseImplementors = []string{"DailySalesPaginationResponse"}
+
+func (ec *executionContext) _DailySalesPaginationResponse(ctx context.Context, sel ast.SelectionSet, obj *model.DailySalesPaginationResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, dailySalesPaginationResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DailySalesPaginationResponse")
+		case "data":
+			out.Values[i] = ec._DailySalesPaginationResponse_data(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pagination":
+			out.Values[i] = ec._DailySalesPaginationResponse_pagination(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var debtTransactionImplementors = []string{"DebtTransaction"}
 
 func (ec *executionContext) _DebtTransaction(ctx context.Context, sel ast.SelectionSet, obj *model.DebtTransaction) graphql.Marshaler {
@@ -9019,6 +10393,99 @@ func (ec *executionContext) _Menu(ctx context.Context, sel ast.SelectionSet, obj
 			out.Values[i] = ec._Menu_createdAt(ctx, field, obj)
 		case "updatedAt":
 			out.Values[i] = ec._Menu_updatedAt(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var monthlySalesImplementors = []string{"MonthlySales"}
+
+func (ec *executionContext) _MonthlySales(ctx context.Context, sel ast.SelectionSet, obj *model.MonthlySales) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, monthlySalesImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("MonthlySales")
+		case "sale_month":
+			out.Values[i] = ec._MonthlySales_sale_month(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "quantity":
+			out.Values[i] = ec._MonthlySales_quantity(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "total":
+			out.Values[i] = ec._MonthlySales_total(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var monthlySalesPaginationResponseImplementors = []string{"MonthlySalesPaginationResponse"}
+
+func (ec *executionContext) _MonthlySalesPaginationResponse(ctx context.Context, sel ast.SelectionSet, obj *model.MonthlySalesPaginationResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, monthlySalesPaginationResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("MonthlySalesPaginationResponse")
+		case "data":
+			out.Values[i] = ec._MonthlySalesPaginationResponse_data(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pagination":
+			out.Values[i] = ec._MonthlySalesPaginationResponse_pagination(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9593,6 +11060,94 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "salesSummary":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_salesSummary(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "salesByDay":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_salesByDay(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "salesByMonth":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_salesByMonth(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "salesByYear":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_salesByYear(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "customers":
 			field := field
 
@@ -9923,6 +11478,198 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___schema(ctx, field)
 			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var salesSummaryImplementors = []string{"SalesSummary"}
+
+func (ec *executionContext) _SalesSummary(ctx context.Context, sel ast.SelectionSet, obj *model.SalesSummary) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, salesSummaryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SalesSummary")
+		case "created_at":
+			out.Values[i] = ec._SalesSummary_created_at(ctx, field, obj)
+		case "sale_date":
+			out.Values[i] = ec._SalesSummary_sale_date(ctx, field, obj)
+		case "sale_month":
+			out.Values[i] = ec._SalesSummary_sale_month(ctx, field, obj)
+		case "sale_year":
+			out.Values[i] = ec._SalesSummary_sale_year(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "quantity":
+			out.Values[i] = ec._SalesSummary_quantity(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "total":
+			out.Values[i] = ec._SalesSummary_total(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var salesSummaryPaginationResponseImplementors = []string{"SalesSummaryPaginationResponse"}
+
+func (ec *executionContext) _SalesSummaryPaginationResponse(ctx context.Context, sel ast.SelectionSet, obj *model.SalesSummaryPaginationResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, salesSummaryPaginationResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SalesSummaryPaginationResponse")
+		case "data":
+			out.Values[i] = ec._SalesSummaryPaginationResponse_data(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pagination":
+			out.Values[i] = ec._SalesSummaryPaginationResponse_pagination(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var yearlySalesImplementors = []string{"YearlySales"}
+
+func (ec *executionContext) _YearlySales(ctx context.Context, sel ast.SelectionSet, obj *model.YearlySales) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, yearlySalesImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("YearlySales")
+		case "sale_year":
+			out.Values[i] = ec._YearlySales_sale_year(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "quantity":
+			out.Values[i] = ec._YearlySales_quantity(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "total":
+			out.Values[i] = ec._YearlySales_total(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var yearlySalesPaginationResponseImplementors = []string{"YearlySalesPaginationResponse"}
+
+func (ec *executionContext) _YearlySalesPaginationResponse(ctx context.Context, sel ast.SelectionSet, obj *model.YearlySalesPaginationResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, yearlySalesPaginationResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("YearlySalesPaginationResponse")
+		case "data":
+			out.Values[i] = ec._YearlySalesPaginationResponse_data(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pagination":
+			out.Values[i] = ec._YearlySalesPaginationResponse_pagination(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10382,6 +12129,46 @@ func (ec *executionContext) marshalNCustomer2ᚖmonorepoᚋappsᚋgasᚋgraphᚋ
 	return ec._Customer(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNDailySales2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐDailySalesᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.DailySales) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNDailySales2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐDailySales(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNDailySales2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐDailySales(ctx context.Context, sel ast.SelectionSet, v *model.DailySales) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DailySales(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDailySalesPaginationResponse2monorepoᚋappsᚋgasᚋgraphᚋmodelᚐDailySalesPaginationResponse(ctx context.Context, sel ast.SelectionSet, v model.DailySalesPaginationResponse) graphql.Marshaler {
+	return ec._DailySalesPaginationResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDailySalesPaginationResponse2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐDailySalesPaginationResponse(ctx context.Context, sel ast.SelectionSet, v *model.DailySalesPaginationResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DailySalesPaginationResponse(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNDebtTransaction2monorepoᚋappsᚋgasᚋgraphᚋmodelᚐDebtTransaction(ctx context.Context, sel ast.SelectionSet, v model.DebtTransaction) graphql.Marshaler {
 	return ec._DebtTransaction(ctx, sel, &v)
 }
@@ -10559,6 +12346,46 @@ func (ec *executionContext) marshalNMenu2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmode
 	return ec._Menu(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNMonthlySales2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐMonthlySalesᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.MonthlySales) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNMonthlySales2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐMonthlySales(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNMonthlySales2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐMonthlySales(ctx context.Context, sel ast.SelectionSet, v *model.MonthlySales) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._MonthlySales(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNMonthlySalesPaginationResponse2monorepoᚋappsᚋgasᚋgraphᚋmodelᚐMonthlySalesPaginationResponse(ctx context.Context, sel ast.SelectionSet, v model.MonthlySalesPaginationResponse) graphql.Marshaler {
+	return ec._MonthlySalesPaginationResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNMonthlySalesPaginationResponse2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐMonthlySalesPaginationResponse(ctx context.Context, sel ast.SelectionSet, v *model.MonthlySalesPaginationResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._MonthlySalesPaginationResponse(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNOrder2monorepoᚋappsᚋgasᚋgraphᚋmodelᚐOrder(ctx context.Context, sel ast.SelectionSet, v model.Order) graphql.Marshaler {
 	return ec._Order(ctx, sel, &v)
 }
@@ -10639,6 +12466,46 @@ func (ec *executionContext) marshalNProduct2ᚖmonorepoᚋappsᚋgasᚋgraphᚋm
 	return ec._Product(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNSalesSummary2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐSalesSummaryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SalesSummary) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNSalesSummary2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐSalesSummary(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNSalesSummary2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐSalesSummary(ctx context.Context, sel ast.SelectionSet, v *model.SalesSummary) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SalesSummary(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNSalesSummaryPaginationResponse2monorepoᚋappsᚋgasᚋgraphᚋmodelᚐSalesSummaryPaginationResponse(ctx context.Context, sel ast.SelectionSet, v model.SalesSummaryPaginationResponse) graphql.Marshaler {
+	return ec._SalesSummaryPaginationResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSalesSummaryPaginationResponse2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐSalesSummaryPaginationResponse(ctx context.Context, sel ast.SelectionSet, v *model.SalesSummaryPaginationResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SalesSummaryPaginationResponse(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -10694,6 +12561,46 @@ func (ec *executionContext) unmarshalNUpdateOrderInput2monorepoᚋappsᚋgasᚋg
 func (ec *executionContext) unmarshalNUpdateProductInput2monorepoᚋappsᚋgasᚋgraphᚋmodelᚐUpdateProductInput(ctx context.Context, v any) (model.UpdateProductInput, error) {
 	res, err := ec.unmarshalInputUpdateProductInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNYearlySales2ᚕᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐYearlySalesᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.YearlySales) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNYearlySales2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐYearlySales(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNYearlySales2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐYearlySales(ctx context.Context, sel ast.SelectionSet, v *model.YearlySales) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._YearlySales(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNYearlySalesPaginationResponse2monorepoᚋappsᚋgasᚋgraphᚋmodelᚐYearlySalesPaginationResponse(ctx context.Context, sel ast.SelectionSet, v model.YearlySalesPaginationResponse) graphql.Marshaler {
+	return ec._YearlySalesPaginationResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNYearlySalesPaginationResponse2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐYearlySalesPaginationResponse(ctx context.Context, sel ast.SelectionSet, v *model.YearlySalesPaginationResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._YearlySalesPaginationResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -11078,6 +12985,14 @@ func (ec *executionContext) marshalOProductPaginationResponse2ᚖmonorepoᚋapps
 		return graphql.Null
 	}
 	return ec._ProductPaginationResponse(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOSalesFilter2ᚖmonorepoᚋappsᚋgasᚋgraphᚋmodelᚐSalesFilter(ctx context.Context, v any) (*model.SalesFilter, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputSalesFilter(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v any) (*string, error) {

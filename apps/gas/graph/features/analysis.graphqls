@@ -1,0 +1,83 @@
+# =========================
+# TYPES
+# =========================
+
+type SalesSummary {
+    created_at: Time
+    sale_date: Time
+    sale_month: Time
+    sale_year: Int!
+    quantity: Int!
+    total: Decimal!
+}
+
+type DailySales {
+    sale_date: Time!
+    quantity: Int!
+    total: Decimal!
+}
+
+type MonthlySales {
+    sale_month: Time!
+    quantity: Int!
+    total: Decimal!
+}
+
+type YearlySales {
+    sale_year: Int!
+    quantity: Int!
+    total: Decimal!
+}
+
+# =========================
+# INPUTS
+# =========================
+input SalesFilter {
+    from_date: Time
+    to_date: Time
+}
+
+# =========================
+# QUERY
+# =========================
+type SalesSummaryPaginationResponse {
+    data: [SalesSummary!]!
+    pagination: PageInfo!
+}
+
+type DailySalesPaginationResponse {
+    data: [DailySales!]!
+    pagination: PageInfo!
+}
+
+type MonthlySalesPaginationResponse {
+    data: [MonthlySales!]!
+    pagination: PageInfo!
+}
+
+type YearlySalesPaginationResponse {
+    data: [YearlySales!]!
+    pagination: PageInfo!
+}
+
+extend type Query {
+    salesSummary(
+        filter: SalesFilter
+        pagination: PaginationInput
+    ): SalesSummaryPaginationResponse!
+    
+    salesByDay(
+        filter: SalesFilter
+        pagination: PaginationInput
+    ): DailySalesPaginationResponse!
+    
+    salesByMonth(
+        filter: SalesFilter
+        pagination: PaginationInput
+    ): MonthlySalesPaginationResponse!
+    
+    salesByYear(
+        filter: SalesFilter
+        pagination: PaginationInput
+    ): YearlySalesPaginationResponse!
+}

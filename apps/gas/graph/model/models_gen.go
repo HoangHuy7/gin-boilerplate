@@ -85,6 +85,17 @@ type CustomerPaginationResponse struct {
 	Pagination *PageInfo   `json:"pagination"`
 }
 
+type DailySales struct {
+	SaleDate time.Time       `json:"sale_date"`
+	Quantity int             `json:"quantity"`
+	Total    decimal.Decimal `json:"total"`
+}
+
+type DailySalesPaginationResponse struct {
+	Data       []*DailySales `json:"data"`
+	Pagination *PageInfo     `json:"pagination"`
+}
+
 type DebtTransaction struct {
 	ID         string          `json:"id"`
 	CustomerID string          `json:"customer_id"`
@@ -147,6 +158,17 @@ type Menu struct {
 	IsAvailable bool    `json:"isAvailable"`
 	CreatedAt   *string `json:"createdAt,omitempty"`
 	UpdatedAt   *string `json:"updatedAt,omitempty"`
+}
+
+type MonthlySales struct {
+	SaleMonth time.Time       `json:"sale_month"`
+	Quantity  int             `json:"quantity"`
+	Total     decimal.Decimal `json:"total"`
+}
+
+type MonthlySalesPaginationResponse struct {
+	Data       []*MonthlySales `json:"data"`
+	Pagination *PageInfo       `json:"pagination"`
 }
 
 type Mutation struct {
@@ -230,6 +252,25 @@ type ProductPaginationResponse struct {
 type Query struct {
 }
 
+type SalesFilter struct {
+	FromDate *time.Time `json:"from_date,omitempty"`
+	ToDate   *time.Time `json:"to_date,omitempty"`
+}
+
+type SalesSummary struct {
+	CreatedAt *time.Time      `json:"created_at,omitempty"`
+	SaleDate  *time.Time      `json:"sale_date,omitempty"`
+	SaleMonth *time.Time      `json:"sale_month,omitempty"`
+	SaleYear  int             `json:"sale_year"`
+	Quantity  int             `json:"quantity"`
+	Total     decimal.Decimal `json:"total"`
+}
+
+type SalesSummaryPaginationResponse struct {
+	Data       []*SalesSummary `json:"data"`
+	Pagination *PageInfo       `json:"pagination"`
+}
+
 type UpdateCustomerInput struct {
 	Name    *string `json:"name,omitempty"`
 	Phone   *string `json:"phone,omitempty"`
@@ -264,4 +305,15 @@ type UpdateProductInput struct {
 	CostPrice     *decimal.Decimal `json:"cost_price,omitempty"`
 	StockQuantity *int             `json:"stock_quantity,omitempty"`
 	Barcode       *string          `json:"barcode,omitempty"`
+}
+
+type YearlySales struct {
+	SaleYear int             `json:"sale_year"`
+	Quantity int             `json:"quantity"`
+	Total    decimal.Decimal `json:"total"`
+}
+
+type YearlySalesPaginationResponse struct {
+	Data       []*YearlySales `json:"data"`
+	Pagination *PageInfo      `json:"pagination"`
 }
