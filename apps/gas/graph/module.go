@@ -3,7 +3,12 @@
 package graph
 
 import (
+	"context"
+	"errors"
+	"monorepo/shares/exception"
+
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 	"go.uber.org/fx"
 )
 
@@ -22,5 +27,22 @@ func NewGraphQLHandler(resolver *Resolver) *handler.Server {
 		Resolvers: resolver,
 	}))
 
+	// 👇 đặt ở đây
+	srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
+		var appErr *exception.AppError
+		if errors.As(e, &appErr) {
+			return &gqlerror.Error{
+				Message: appErr.Message,
+				Extensions: map[string]interface{}{
+					"code": appErr.Code,
+				},
+				Err: appErr,
+			}
+		}
+
+		return &gqlerror.Error{
+			Message: "Internal server error",
+		}
+	})
 	return srv
 }

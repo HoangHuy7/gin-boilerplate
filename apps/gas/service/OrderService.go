@@ -7,6 +7,7 @@ import (
 	"monorepo/apps/gas/app/database"
 	"monorepo/apps/gas/graph/model"
 	"monorepo/shares/entities/mekyra_db"
+	"monorepo/shares/exception"
 	"monorepo/shares/utils"
 
 	"go.uber.org/zap"
@@ -162,6 +163,25 @@ func (s *OrderService) Create(ctx context.Context, order *mekyra_db.Mkrtb_Order,
 		ctx,
 		tenancy,
 		func(tx *gorm.DB) error {
+			// Validate stock quantity for all items before creating order
+			for _, item := range items {
+				var product mekyra_db.Mkrtb_Product
+				if err := tx.First(&product, "id = ?", item.ProductId).Error; err != nil {
+					//return fmt.Errorf("product not found: %w", err)
+					return &exception.AppError{
+						Code:    "PRODUCT_NOT_FOUND",
+						Message: "Sản phẩm không tồn tại",
+					}
+				}
+				if product.StockQuantity < item.Quantity {
+					return &exception.AppError{
+						Code: "INSUFFICIENT_STOCK",
+						Message: fmt.Sprintf("Số lượng hàng tồn kho không đủ cho sản phẩm %s: yêu cầu %d, còn %d",
+							product.Name, item.Quantity, product.StockQuantity),
+					}
+				}
+			}
+
 			if err := tx.Create(order).Error; err != nil {
 				return err
 			}
