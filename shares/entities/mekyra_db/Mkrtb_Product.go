@@ -21,6 +21,7 @@ type Mkrtb_Product struct {
 	Barcode       string          `gorm:"column:barcode;type:text;unique"`
 	CreatedAt     time.Time       `gorm:"column:created_at;autoCreateTime"`
 	UpdatedAt     time.Time       `gorm:"column:updated_at;autoUpdateTime"`
+	ImgUrl        string          `gorm:"column:img_url;type:varchar(1024)"`
 }
 
 func (Mkrtb_Product) TableName() string {

@@ -183,6 +183,7 @@ type ComplexityRoot struct {
 		CostPrice     func(childComplexity int) int
 		CreatedAt     func(childComplexity int) int
 		ID            func(childComplexity int) int
+		ImgURL        func(childComplexity int) int
 		Name          func(childComplexity int) int
 		Price         func(childComplexity int) int
 		StockQuantity func(childComplexity int) int
@@ -1012,6 +1013,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Product.ID(childComplexity), true
+	case "Product.img_url":
+		if e.ComplexityRoot.Product.ImgURL == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Product.ImgURL(childComplexity), true
 	case "Product.name":
 		if e.ComplexityRoot.Product.Name == nil {
 			break
@@ -3084,6 +3091,8 @@ func (ec *executionContext) fieldContext_InventoryLog_product(_ context.Context,
 				return ec.fieldContext_Product_created_at(ctx, field)
 			case "updated_at":
 				return ec.fieldContext_Product_updated_at(ctx, field)
+			case "img_url":
+				return ec.fieldContext_Product_img_url(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
 		},
@@ -4483,6 +4492,8 @@ func (ec *executionContext) fieldContext_Mutation_createProduct(ctx context.Cont
 				return ec.fieldContext_Product_created_at(ctx, field)
 			case "updated_at":
 				return ec.fieldContext_Product_updated_at(ctx, field)
+			case "img_url":
+				return ec.fieldContext_Product_img_url(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
 		},
@@ -4546,6 +4557,8 @@ func (ec *executionContext) fieldContext_Mutation_updateProduct(ctx context.Cont
 				return ec.fieldContext_Product_created_at(ctx, field)
 			case "updated_at":
 				return ec.fieldContext_Product_updated_at(ctx, field)
+			case "img_url":
+				return ec.fieldContext_Product_img_url(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
 		},
@@ -4650,6 +4663,8 @@ func (ec *executionContext) fieldContext_Mutation_restockProduct(ctx context.Con
 				return ec.fieldContext_Product_created_at(ctx, field)
 			case "updated_at":
 				return ec.fieldContext_Product_updated_at(ctx, field)
+			case "img_url":
+				return ec.fieldContext_Product_img_url(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
 		},
@@ -5150,6 +5165,8 @@ func (ec *executionContext) fieldContext_OrderItem_product(_ context.Context, fi
 				return ec.fieldContext_Product_created_at(ctx, field)
 			case "updated_at":
 				return ec.fieldContext_Product_updated_at(ctx, field)
+			case "img_url":
+				return ec.fieldContext_Product_img_url(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
 		},
@@ -5771,6 +5788,35 @@ func (ec *executionContext) fieldContext_Product_updated_at(_ context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _Product_img_url(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Product_img_url,
+		func(ctx context.Context) (any, error) {
+			return obj.ImgURL, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Product_img_url(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Product",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _ProductPaginationResponse_data(ctx context.Context, field graphql.CollectedField, obj *model.ProductPaginationResponse) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -5815,6 +5861,8 @@ func (ec *executionContext) fieldContext_ProductPaginationResponse_data(_ contex
 				return ec.fieldContext_Product_created_at(ctx, field)
 			case "updated_at":
 				return ec.fieldContext_Product_updated_at(ctx, field)
+			case "img_url":
+				return ec.fieldContext_Product_img_url(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
 		},
@@ -6915,6 +6963,8 @@ func (ec *executionContext) fieldContext_Query_product(ctx context.Context, fiel
 				return ec.fieldContext_Product_created_at(ctx, field)
 			case "updated_at":
 				return ec.fieldContext_Product_updated_at(ctx, field)
+			case "img_url":
+				return ec.fieldContext_Product_img_url(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
 		},
@@ -10977,6 +11027,8 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 			out.Values[i] = ec._Product_created_at(ctx, field, obj)
 		case "updated_at":
 			out.Values[i] = ec._Product_updated_at(ctx, field, obj)
+		case "img_url":
+			out.Values[i] = ec._Product_img_url(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

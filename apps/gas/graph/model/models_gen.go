@@ -234,6 +234,7 @@ type Product struct {
 	Barcode       *string          `json:"barcode,omitempty"`
 	CreatedAt     *time.Time       `json:"created_at,omitempty"`
 	UpdatedAt     *time.Time       `json:"updated_at,omitempty"`
+	ImgURL        *string          `json:"img_url,omitempty"`
 }
 
 type ProductFilter struct {

@@ -193,6 +193,7 @@ func (r *queryResolver) Products(ctx context.Context, filter *model.ProductFilte
 			Category:      &p.Category,
 			Unit:          &p.Unit,
 			Barcode:       &p.Barcode,
+			ImgURL:        &p.ImgUrl,
 		})
 	}
 
@@ -233,5 +234,6 @@ func (r *queryResolver) Product(ctx context.Context, id string) (*model.Product,
 		Category:      &p.Category,
 		Unit:          &p.Unit,
 		Barcode:       &p.Barcode,
+		ImgURL:        &p.ImgUrl,
 	}, nil
 }
