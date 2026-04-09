@@ -25,3 +25,64 @@ go.work
 # OS specific
 .DS_Store
 Thumbs.db
+
+
+# =========================
+# 🧱 Build output
+# =========================
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Binary build (custom name)
+gas-app
+bin/
+dist/
+build/
+
+# =========================
+# 📦 Go workspace
+# =========================
+go.work
+go.work.sum
+
+# =========================
+# 📁 Dependency cache (optional)
+# =========================
+vendor/
+
+# =========================
+# 🧪 Test & coverage
+# =========================
+coverage.out
+*.coverprofile
+
+# =========================
+# ⚙️ Environment & config
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# 🧠 IDE / Editor
+# =========================
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# =========================
+# 🍎 OS files
+# =========================
+.DS_Store
+
+# =========================
+# 🐳 Docker (optional)
+# =========================
+*.log
+tmp/
