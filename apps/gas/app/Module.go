@@ -3,10 +3,12 @@
 package app
 
 import (
-	"go.uber.org/fx"
 	"monorepo/apps/gas/app/config"
 	"monorepo/apps/gas/app/database"
 	"monorepo/apps/gas/app/redis"
+	"monorepo/apps/gas/app/s3app"
+
+	"go.uber.org/fx"
 )
 
 var Module = fx.Options(
@@ -15,5 +17,6 @@ var Module = fx.Options(
 		config.NewAppMetadata,
 		database.NewDataSources,
 		redis.NewRedisClient,
+		s3app.NewS3Client,
 	),
 )
