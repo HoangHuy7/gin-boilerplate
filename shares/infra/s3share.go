@@ -19,6 +19,7 @@ func GetS3Client(
 ) *s3.Client {
 	if access_key_id == "" || secret_access_key == "" || region == "" || endpoint == "" {
 		log.Fatal("missing the env: RUSTFS_ACCESS_KEY_ID / RUSTFS_SECRET_ACCESS_KEY / RUSTFS_REGION / RUSTFS_ENDPOINT_URL")
+		return nil
 	}
 	cfg := aws.Config{
 		Region: region,
