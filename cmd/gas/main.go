@@ -4,7 +4,6 @@ package main
 
 import (
 	"monorepo/apps/gas/app"
-	"monorepo/apps/gas/app/s3app"
 	"monorepo/apps/gas/controller"
 	"monorepo/apps/gas/domain"
 	"monorepo/apps/gas/graph"
@@ -21,10 +20,10 @@ import (
 
 func NewGinEngine(gl *logger.GoLogger,
 	s *security.Security,
-	s3app *s3app.S3Client,
+//s3app *s3app.S3Client,
 ) *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
-	println(s3app)
+	//println(s3app)
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
