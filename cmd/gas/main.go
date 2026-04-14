@@ -20,7 +20,7 @@ import (
 
 func NewGinEngine(gl *logger.GoLogger,
 	s *security.Security,
-//s3app *s3app.S3Client,
+	// s3app *s3app.S3Client,
 ) *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	//println(s3app)
