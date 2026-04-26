@@ -17,6 +17,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+	"moul.io/zapgorm2"
 )
 
 func LoadConfig[T any](appName string) (*T, error) {
@@ -61,6 +62,7 @@ func Connect(dbCfg *dto.DatabaseConfig, logger *zap.Logger) (*gorm.DB, error) {
 		dbCfg.SSLMode,
 	)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger:                 zapgorm2.New(logger),
 		PrepareStmt:            true,
 		SkipDefaultTransaction: true,
 		NamingStrategy: schema.NamingStrategy{

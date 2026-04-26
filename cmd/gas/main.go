@@ -45,8 +45,13 @@ func main() {
 		domain.Module,
 		graph.Module,
 		security.Module,
+		// fx.WithLogger(func(gl *logger.GoLogger) fxevent.Logger {
+		// return &fxevent.ZapLogger{Logger: gl.Zap}
+		// }),
 		fx.WithLogger(func(gl *logger.GoLogger) fxevent.Logger {
-			return &fxevent.ZapLogger{Logger: gl.Zap}
+			l := &fxevent.ZapLogger{Logger: gl.Zap}
+			// Bạn có thể tùy chỉnh level log của fx ở đây nếu muốn
+			return l
 		}),
 		fx.Provide(NewGinEngine),
 		fx.Invoke(server.RunServer),

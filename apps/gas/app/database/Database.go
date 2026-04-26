@@ -21,7 +21,9 @@ type DataSources struct {
 func NewDataSources(cfg *config.Config, gLogger *logger.GoLogger) *DataSources {
 	master, err := utils.Connect(&cfg.Database.Mekyra_db, gLogger.Zap)
 	if err != nil {
-		panic(err)
+		gLogger.Zap.Error("Failed to connect to Mekyra_db", zap.Error(err))
+		master = nil
+		// panic(err)
 	}
 
 	//worker, err := utils.Connect(&cfg.Database.Worker, gLogger.Zap)
