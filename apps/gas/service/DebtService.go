@@ -6,10 +6,14 @@ import (
 	"monorepo/apps/gas/app/config"
 	"monorepo/apps/gas/app/database"
 	"monorepo/shares/entities/mekyra_db"
+	"monorepo/shares/exception"
 	"monorepo/shares/utils"
+	"strings"
 
+	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type DebtService struct {
@@ -86,6 +90,48 @@ func (s *DebtService) Create(ctx context.Context, debt *mekyra_db.Mkrtb_DebtTran
 		ctx,
 		tenancy,
 		func(tx *gorm.DB) error {
+			if debt.Amount.LessThanOrEqual(decimal.Zero) {
+				return &exception.AppError{
+					Code:    "INVALID_AMOUNT",
+					Message: "Số tiền phải lớn hơn 0",
+				}
+			}
+			debtType := strings.ToLower(strings.TrimSpace(debt.Type))
+			if debtType != "borrow" && debtType != "pay" {
+				return &exception.AppError{
+					Code:    "INVALID_DEBT_TYPE",
+					Message: "Loại công nợ chỉ hỗ trợ borrow hoặc pay",
+				}
+			}
+
+			var customer mekyra_db.Mkrtb_Customer
+			if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+				First(&customer, "id = ?", debt.CustomerId).Error; err != nil {
+				return &exception.AppError{
+					Code:    "CUSTOMER_NOT_FOUND",
+					Message: "Khách hàng không tồn tại",
+				}
+			}
+
+			delta := debt.Amount
+			if debtType == "pay" {
+				delta = debt.Amount.Neg()
+			}
+			nextDebt := customer.TotalDebt.Add(delta)
+			if nextDebt.LessThan(decimal.Zero) {
+				return &exception.AppError{
+					Code:    "OVERPAY_NOT_ALLOWED",
+					Message: "Số tiền trả nợ vượt quá công nợ hiện tại",
+				}
+			}
+
+			debt.Type = debtType
+			if err := tx.Model(&mekyra_db.Mkrtb_Customer{}).
+				Where("id = ?", customer.Id).
+				Update("total_debt", nextDebt).Error; err != nil {
+				return err
+			}
+
 			return tx.Create(debt).Error
 		},
 	)
@@ -107,6 +153,38 @@ func (s *DebtService) Delete(ctx context.Context, id string) error {
 		ctx,
 		tenancy,
 		func(tx *gorm.DB) error {
+			var debt mekyra_db.Mkrtb_DebtTransaction
+			if err := tx.First(&debt, "id = ?", id).Error; err != nil {
+				return err
+			}
+
+			var customer mekyra_db.Mkrtb_Customer
+			if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+				First(&customer, "id = ?", debt.CustomerId).Error; err != nil {
+				return &exception.AppError{
+					Code:    "CUSTOMER_NOT_FOUND",
+					Message: "Khách hàng không tồn tại",
+				}
+			}
+
+			delta := debt.Amount
+			if strings.ToLower(strings.TrimSpace(debt.Type)) == "borrow" {
+				delta = debt.Amount.Neg()
+			}
+			nextDebt := customer.TotalDebt.Add(delta)
+			if nextDebt.LessThan(decimal.Zero) {
+				return &exception.AppError{
+					Code:    "INVALID_DEBT_STATE",
+					Message: "Không thể xóa giao dịch vì sẽ làm dữ liệu công nợ âm",
+				}
+			}
+
+			if err := tx.Model(&mekyra_db.Mkrtb_Customer{}).
+				Where("id = ?", customer.Id).
+				Update("total_debt", nextDebt).Error; err != nil {
+				return err
+			}
+
 			return tx.Delete(&mekyra_db.Mkrtb_DebtTransaction{}, "id = ?", id).Error
 		},
 	)

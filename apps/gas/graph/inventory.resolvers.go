@@ -10,14 +10,23 @@ import (
 	"fmt"
 	"monorepo/apps/gas/graph/model"
 	"monorepo/shares/entities/mekyra_db"
+	"monorepo/shares/exception"
 
 	"github.com/google/uuid"
 )
 
 // CreateInventoryLog is the resolver for the createInventoryLog field.
 func (r *mutationResolver) CreateInventoryLog(ctx context.Context, input model.CreateInventoryLogInput) (*model.InventoryLog, error) {
+	productID, err := uuid.Parse(input.ProductID)
+	if err != nil {
+		return nil, &exception.AppError{
+			Code:    "INVALID_PRODUCT_ID",
+			Message: "ID sản phẩm không hợp lệ",
+		}
+	}
+
 	log := &mekyra_db.Mkrtb_InventoryLog{
-		ProductId: uuid.MustParse(input.ProductID),
+		ProductId: productID,
 		Type:      input.Type,
 		Quantity:  input.Quantity,
 		Note:      "",
@@ -51,6 +60,9 @@ func (r *mutationResolver) DeleteInventoryLog(ctx context.Context, id string) (b
 // InventoryLogs is the resolver for the inventoryLogs field.
 func (r *queryResolver) InventoryLogs(ctx context.Context, filter *model.InventoryLogFilter, pagination *model.PaginationInput) ([]*model.InventoryLog, error) {
 	list := r.InventoryService.FindAll(ctx)
+	if list == nil {
+		return []*model.InventoryLog{}, nil
+	}
 	var result []*model.InventoryLog
 	for _, l := range *list {
 		result = append(result, &model.InventoryLog{

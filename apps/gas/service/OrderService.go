@@ -10,8 +10,10 @@ import (
 	"monorepo/shares/exception"
 	"monorepo/shares/utils"
 
+	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type OrderService struct {
@@ -157,6 +159,18 @@ func (s *OrderService) Create(ctx context.Context, order *mekyra_db.Mkrtb_Order,
 		s.logger.Error("Failed to get tenancy")
 		return fmt.Errorf("failed to get tenancy")
 	}
+	if order.PaidAmount.GreaterThan(order.TotalAmount) {
+		return &exception.AppError{
+			Code:    "OVERPAID_NOT_ALLOWED",
+			Message: "Số tiền đã trả không được lớn hơn tổng tiền đơn",
+		}
+	}
+	if order.PaidAmount.LessThan(decimal.Zero) {
+		return &exception.AppError{
+			Code:    "INVALID_PAID_AMOUNT",
+			Message: "Số tiền đã trả không hợp lệ",
+		}
+	}
 	order.Code = fmt.Sprintf("ORD-%s", utils.GenerateUUID())
 	return database.WithTenant(
 		s.db.Mekyra_db,
@@ -187,6 +201,12 @@ func (s *OrderService) Create(ctx context.Context, order *mekyra_db.Mkrtb_Order,
 			}
 			for _, item := range items {
 				item.OrderId = order.Id
+				if item.Quantity <= 0 {
+					return &exception.AppError{
+						Code:    "INVALID_QUANTITY",
+						Message: "Số lượng sản phẩm phải lớn hơn 0",
+					}
+				}
 				if err := tx.Create(item).Error; err != nil {
 					return err
 				}
@@ -206,6 +226,35 @@ func (s *OrderService) Create(ctx context.Context, order *mekyra_db.Mkrtb_Order,
 					Note:      fmt.Sprintf("Order %s", order.Code),
 				}
 				if err := tx.Create(invLog).Error; err != nil {
+					return err
+				}
+			}
+
+			if order.CustomerId != nil && order.DebtAmount.GreaterThan(decimal.Zero) {
+				var customer mekyra_db.Mkrtb_Customer
+				if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+					First(&customer, "id = ?", *order.CustomerId).Error; err != nil {
+					return &exception.AppError{
+						Code:    "CUSTOMER_NOT_FOUND",
+						Message: "Khách hàng không tồn tại",
+					}
+				}
+				nextDebt := customer.TotalDebt.Add(order.DebtAmount)
+				if err := tx.Model(&mekyra_db.Mkrtb_Customer{}).
+					Where("id = ?", customer.Id).
+					Update("total_debt", nextDebt).Error; err != nil {
+					return err
+				}
+
+				orderID := order.Id
+				debtTx := &mekyra_db.Mkrtb_DebtTransaction{
+					CustomerId: customer.Id,
+					OrderId:    &orderID,
+					Amount:     order.DebtAmount,
+					Type:       "borrow",
+					Note:       fmt.Sprintf("Phát sinh công nợ từ đơn %s", order.Code),
+				}
+				if err := tx.Create(debtTx).Error; err != nil {
 					return err
 				}
 			}
@@ -251,6 +300,59 @@ func (s *OrderService) Delete(ctx context.Context, id string) error {
 		ctx,
 		tenancy,
 		func(tx *gorm.DB) error {
+			var order mekyra_db.Mkrtb_Order
+			if err := tx.Preload("Items").First(&order, "id = ?", id).Error; err != nil {
+				return err
+			}
+
+			for _, item := range order.Items {
+				if err := tx.Model(&mekyra_db.Mkrtb_Product{}).
+					Where("id = ?", item.ProductId).
+					Update("stock_quantity", gorm.Expr("stock_quantity + ?", item.Quantity)).Error; err != nil {
+					return err
+				}
+
+				note := fmt.Sprintf("Rollback delete order %s", order.Code)
+				invLog := &mekyra_db.Mkrtb_InventoryLog{
+					ProductId: item.ProductId,
+					Type:      "adjust",
+					Quantity:  item.Quantity,
+					Note:      note,
+				}
+				if err := tx.Create(invLog).Error; err != nil {
+					return err
+				}
+			}
+
+			if order.CustomerId != nil && order.DebtAmount.GreaterThan(decimal.Zero) {
+				var customer mekyra_db.Mkrtb_Customer
+				if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+					First(&customer, "id = ?", *order.CustomerId).Error; err != nil {
+					return &exception.AppError{
+						Code:    "CUSTOMER_NOT_FOUND",
+						Message: "Khách hàng không tồn tại",
+					}
+				}
+				nextDebt := customer.TotalDebt.Sub(order.DebtAmount)
+				if nextDebt.LessThan(decimal.Zero) {
+					nextDebt = decimal.Zero
+				}
+				if err := tx.Model(&mekyra_db.Mkrtb_Customer{}).
+					Where("id = ?", customer.Id).
+					Update("total_debt", nextDebt).Error; err != nil {
+					return err
+				}
+
+				if err := tx.Delete(
+					&mekyra_db.Mkrtb_DebtTransaction{},
+					"order_id = ? AND lower(type) = ?",
+					order.Id,
+					"borrow",
+				).Error; err != nil {
+					return err
+				}
+			}
+
 			if err := tx.Delete(&mekyra_db.Mkrtb_OrderItem{}, "order_id = ?", id).Error; err != nil {
 				return err
 			}

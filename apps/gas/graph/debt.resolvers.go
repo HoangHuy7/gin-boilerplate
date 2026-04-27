@@ -10,20 +10,35 @@ import (
 	"fmt"
 	"monorepo/apps/gas/graph/model"
 	"monorepo/shares/entities/mekyra_db"
+	"monorepo/shares/exception"
 
 	"github.com/google/uuid"
 )
 
 // CreateDebtTransaction is the resolver for the createDebtTransaction field.
 func (r *mutationResolver) CreateDebtTransaction(ctx context.Context, input model.CreateDebtTransactionInput) (*model.DebtTransaction, error) {
+	customerID, err := uuid.Parse(input.CustomerID)
+	if err != nil {
+		return nil, &exception.AppError{
+			Code:    "INVALID_CUSTOMER_ID",
+			Message: "ID khách hàng không hợp lệ",
+		}
+	}
+
 	debt := &mekyra_db.Mkrtb_DebtTransaction{
-		CustomerId: uuid.MustParse(input.CustomerID),
+		CustomerId: customerID,
 		Amount:     input.Amount,
 		Type:       input.Type,
 		Note:       "",
 	}
 	if input.OrderID != nil {
-		oid, _ := uuid.Parse(*input.OrderID)
+		oid, err := uuid.Parse(*input.OrderID)
+		if err != nil {
+			return nil, &exception.AppError{
+				Code:    "INVALID_ORDER_ID",
+				Message: "ID đơn hàng không hợp lệ",
+			}
+		}
 		debt.OrderId = &oid
 	}
 	if input.Note != nil {
@@ -48,6 +63,9 @@ func (r *mutationResolver) DeleteDebtTransaction(ctx context.Context, id string)
 // DebtTransactions is the resolver for the debtTransactions field.
 func (r *queryResolver) DebtTransactions(ctx context.Context, filter *model.DebtTransactionFilter, pagination *model.PaginationInput) ([]*model.DebtTransaction, error) {
 	list := r.DebtService.FindAll(ctx)
+	if list == nil {
+		return []*model.DebtTransaction{}, nil
+	}
 	var result []*model.DebtTransaction
 	for _, d := range *list {
 		result = append(result, r.mapDebtToModel(d))

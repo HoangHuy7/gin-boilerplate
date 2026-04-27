@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"monorepo/apps/gas/graph/model"
 	"monorepo/shares/entities/mekyra_db"
+	"monorepo/shares/exception"
 
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
@@ -27,7 +28,13 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input model.CreateOr
 	}
 
 	if input.CustomerID != nil {
-		cid, _ := uuid.Parse(*input.CustomerID)
+		cid, err := uuid.Parse(*input.CustomerID)
+		if err != nil {
+			return nil, &exception.AppError{
+				Code:    "INVALID_CUSTOMER_ID",
+				Message: "ID khách hàng không hợp lệ",
+			}
+		}
 		order.CustomerId = &cid
 	}
 	if input.Note != nil {
@@ -36,6 +43,21 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input model.CreateOr
 
 	var items []*mekyra_db.Mkrtb_OrderItem
 	for _, itemInput := range input.Items {
+		if itemInput.Quantity <= 0 {
+			return nil, &exception.AppError{
+				Code:    "INVALID_QUANTITY",
+				Message: "Số lượng sản phẩm phải lớn hơn 0",
+			}
+		}
+
+		productID, err := uuid.Parse(itemInput.ProductID)
+		if err != nil {
+			return nil, &exception.AppError{
+				Code:    "INVALID_PRODUCT_ID",
+				Message: "ID sản phẩm không hợp lệ",
+			}
+		}
+
 		productName := ""
 		p := r.ProdService.FindByID(ctx, itemInput.ProductID)
 		if p != nil && p.Id != uuid.Nil {
@@ -43,7 +65,7 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input model.CreateOr
 		}
 
 		item := &mekyra_db.Mkrtb_OrderItem{
-			ProductId:   uuid.MustParse(itemInput.ProductID),
+			ProductId:   productID,
 			Quantity:    itemInput.Quantity,
 			Price:       itemInput.Price,
 			Total:       itemInput.Price.Mul(decimal.NewFromInt(int64(itemInput.Quantity))),

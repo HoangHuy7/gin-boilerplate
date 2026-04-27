@@ -6,10 +6,13 @@ import (
 	"monorepo/apps/gas/app/config"
 	"monorepo/apps/gas/app/database"
 	"monorepo/shares/entities/mekyra_db"
+	"monorepo/shares/exception"
 	"monorepo/shares/utils"
+	"strings"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type InventoryService struct {
@@ -86,7 +89,77 @@ func (s *InventoryService) Create(ctx context.Context, log *mekyra_db.Mkrtb_Inve
 		ctx,
 		tenancy,
 		func(tx *gorm.DB) error {
-			return tx.Create(log).Error
+			logType := strings.ToLower(strings.TrimSpace(log.Type))
+			if logType == "" {
+				return &exception.AppError{
+					Code:    "INVALID_INVENTORY_TYPE",
+					Message: "Loại giao dịch kho không hợp lệ",
+				}
+			}
+			if log.Quantity == 0 {
+				return &exception.AppError{
+					Code:    "INVALID_QUANTITY",
+					Message: "Số lượng phải khác 0",
+				}
+			}
+
+			var delta int
+			switch logType {
+			case "import":
+				if log.Quantity < 0 {
+					return &exception.AppError{
+						Code:    "INVALID_IMPORT_QUANTITY",
+						Message: "Nhập kho phải có số lượng dương",
+					}
+				}
+				delta = log.Quantity
+			case "sale":
+				if log.Quantity > 0 {
+					delta = -log.Quantity
+				} else {
+					delta = log.Quantity
+				}
+			case "adjust":
+				delta = log.Quantity
+			default:
+				return &exception.AppError{
+					Code:    "INVALID_INVENTORY_TYPE",
+					Message: "Loại giao dịch kho chỉ hỗ trợ import, sale, adjust",
+				}
+			}
+
+			var product mekyra_db.Mkrtb_Product
+			if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+				First(&product, "id = ?", log.ProductId).Error; err != nil {
+				return &exception.AppError{
+					Code:    "PRODUCT_NOT_FOUND",
+					Message: "Sản phẩm không tồn tại",
+				}
+			}
+
+			newStock := product.StockQuantity + delta
+			if newStock < 0 {
+				return &exception.AppError{
+					Code: "INSUFFICIENT_STOCK",
+					Message: fmt.Sprintf(
+						"Tồn kho không đủ cho sản phẩm %s: hiện có %d, thay đổi %d",
+						product.Name,
+						product.StockQuantity,
+						delta,
+					),
+				}
+			}
+
+			log.Type = logType
+			log.Quantity = delta
+
+			if err := tx.Create(log).Error; err != nil {
+				return err
+			}
+
+			return tx.Model(&mekyra_db.Mkrtb_Product{}).
+				Where("id = ?", product.Id).
+				Update("stock_quantity", newStock).Error
 		},
 	)
 }
