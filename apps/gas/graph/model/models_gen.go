@@ -35,14 +35,6 @@ type CreateInventoryLogInput struct {
 	Note      *string `json:"note,omitempty"`
 }
 
-type CreateMenuInput struct {
-	Name        string  `json:"name"`
-	Description *string `json:"description,omitempty"`
-	Price       float64 `json:"price"`
-	Category    *string `json:"category,omitempty"`
-	IsAvailable *bool   `json:"isAvailable,omitempty"`
-}
-
 type CreateOrderInput struct {
 	CustomerID *string                 `json:"customer_id,omitempty"`
 	Items      []*CreateOrderItemInput `json:"items"`
@@ -147,17 +139,6 @@ type InventoryLogFilter struct {
 	Type      *string    `json:"type,omitempty"`
 	FromDate  *time.Time `json:"from_date,omitempty"`
 	ToDate    *time.Time `json:"to_date,omitempty"`
-}
-
-type Menu struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name"`
-	Description *string `json:"description,omitempty"`
-	Price       float64 `json:"price"`
-	Category    *string `json:"category,omitempty"`
-	IsAvailable bool    `json:"isAvailable"`
-	CreatedAt   *string `json:"createdAt,omitempty"`
-	UpdatedAt   *string `json:"updatedAt,omitempty"`
 }
 
 type MonthlySales struct {
@@ -282,14 +263,6 @@ type UpdateDeliveryInput struct {
 	DeliveryDate *time.Time `json:"delivery_date,omitempty"`
 	Status       *string    `json:"status,omitempty"`
 	Note         *string    `json:"note,omitempty"`
-}
-
-type UpdateMenuInput struct {
-	Name        *string  `json:"name,omitempty"`
-	Description *string  `json:"description,omitempty"`
-	Price       *float64 `json:"price,omitempty"`
-	Category    *string  `json:"category,omitempty"`
-	IsAvailable *bool    `json:"isAvailable,omitempty"`
 }
 
 type UpdateOrderInput struct {

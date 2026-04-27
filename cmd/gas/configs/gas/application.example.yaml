@@ -1,0 +1,31 @@
+go:
+  port: 8081
+database:
+  mekyra_db:
+    host: 127.0.0.1
+    port: 5432
+    user: postgres
+    password: ${MEKYRA_DB_PASSWORD}
+    dbname: mekyra_db
+    sslmode: disable
+
+tenancies:
+  mekyra-web: vattumyloc
+
+casdoor:
+  organizations:
+    mekyra-web:
+      server_url: http://localhost:8000
+      client_id: ${CASDOOR_CLIENT_ID}
+      client_secret: ${CASDOOR_CLIENT_SECRET}
+      organization: mekyra-web
+      application: test1
+      certificate: |
+        -----BEGIN CERTIFICATE-----
+        YOUR_CERT_HERE
+        -----END CERTIFICATE-----
+
+redis:
+  host: localhost:6373
+  password: ""
+  db: 0
