@@ -41,7 +41,7 @@ func LoadConfig[T any](appName string) (*T, error) {
 		}
 	}
 
-	log.Println("Config file used:", v.ConfigFileUsed())
+	// log.Println("Config file used:", v.ConfigFileUsed())
 
 	var cfg T
 	if err := v.Unmarshal(&cfg); err != nil {

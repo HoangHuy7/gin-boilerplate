@@ -3,11 +3,12 @@
 package config
 
 import (
-	"log"
 	"monorepo/internal/dto"
+	"monorepo/internal/logger"
 	"monorepo/internal/utils"
 
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
 type Config struct {
@@ -50,15 +51,18 @@ func GetTenancy(key string) (string, bool) {
 	return val, !ok
 }
 
-func NewConfig(metadata *dto.AppMetadata) *Config {
+func NewConfig(metadata *dto.AppMetadata, lg *logger.GoLogger) *Config {
 
 	cfg, err := utils.LoadConfig[Config](metadata.AppName)
 
 	if err != nil {
 		panic("Load config failed: " + err.Error())
 	}
-
-	log.Println("Config loaded for app:", metadata.AppName, "instance:", metadata.Instance)
+	lg.INFO(
+		"Config loaded successfully",
+		zap.String("app", metadata.AppName),
+		zap.String("instance", metadata.Instance),
+	)
 	appConfig = cfg
 	return cfg
 }

@@ -4,7 +4,6 @@ package server
 
 import (
 	"fmt"
-	"log"
 	"monorepo/internal/base"
 	"monorepo/internal/base/routerx"
 	"monorepo/internal/base/security"
@@ -110,8 +109,7 @@ func (this *Router) exposeSwagger(r *gin.Engine) {
 			"/swagger/",
 		),
 	))
-	log.Println("Starting Swagger on http://localhost:8082/swagger")
-
+	this.Logger.INFO("Swagger UI available at http://localhost:8082/swagger")
 }
 
 func (this *Router) RegisterAll(r *gin.Engine, appMeta *dto.AppMetadata, se *security.Security) {

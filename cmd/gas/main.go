@@ -16,6 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
+	"go.uber.org/zap"
 )
 
 func NewGinEngine(gl *logger.GoLogger,
@@ -24,7 +25,10 @@ func NewGinEngine(gl *logger.GoLogger,
 ) *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	//println(s3app)
-	r := gin.Default()
+	// r := gin.Default()
+	r := gin.New()
+	r.Use(gin.Recovery())
+	r.Use(logger.ZapLogger(gl.Zap))
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -49,10 +53,13 @@ func main() {
 		// return &fxevent.ZapLogger{Logger: gl.Zap}
 		// }),
 		fx.WithLogger(func(gl *logger.GoLogger) fxevent.Logger {
-			l := &fxevent.ZapLogger{Logger: gl.Zap}
-			// Bạn có thể tùy chỉnh level log của fx ở đây nếu muốn
-			return l
+			// clone logger và nâng level lên WARN
+			fxLogger := gl.Zap.WithOptions(
+				zap.IncreaseLevel(zap.WarnLevel),
+			)
+			return &fxevent.ZapLogger{Logger: fxLogger}
 		}),
+
 		fx.Provide(NewGinEngine),
 		fx.Invoke(server.RunServer),
 	).Run()
